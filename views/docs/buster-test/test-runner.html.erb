@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>buster.testRunner</title>
+    <link rel="stylesheet" type="text/css" href="<%= context_path %>/stylesheets/buster.css">
+  </head>
+  <body>
+    <div id="masthead">
+      <p><a href="/">Buster.<span>JS</span></a> API Reference</p>
+    </div>
+    <div class="content">
+      <h1><code>buster.testRunner</code></h1>
+      <dl>
+        <dt>Version</dt>
+        <dd>0.1.0 <span class="date">(2011-03-23)</span></dd>
+        <dt>Module</dt>
+        <dd><code>require("buster-test").testRunner;</code></dd>
+        <dt>In browsers</dt>
+        <dd><code>buster.testRunner;</code></dd>
+      </dl>
+      <p>
+        Evented test runner for both synchronous and asynchronous tests. The
+        runner itself always executes asynchronously, making it very good at
+        visualizing ongoing progress and helps avoid long running script
+        warnings in browsers.
+      </p>
+      <pre><code>var testRunner = require("buster-test").testRunner;
+var runner = testRunner.<a href="#create">create</a>();
+
+runner.on("context:start", function (<a href="../test-context/">testContext</a>) {
+    console.log("Started context " + testContext.name);
+});
+
+runner.<a href="#run-suite">runSuite</a>([<a href="../test-context/">testContext</a>, testContext2, ...]);</code></pre>
+      <div class="section">
+        <h2 id="events">Events</h2>
+        <%= event("suite:start") %>
+        <p>
+          Emitted once, as the runner starts running a test suite (typically
+          when <a href="#run-suite"><code>runSuite</code></a> is called).
+        </p>
+        <%= event("suite:end", :results => "#results") %>
+        <p>
+          Emitted once, when all contexts are run (typically when
+          <a href="#run-suite"><code>runSuite</code></a> completes).
+        </p>
+        <%= event("context:start", :testContext => "../test-context/") %>
+        <p>
+          Emitted every time a <a href="../test-context/">context</a> is
+          entered.
+        </p>
+        <%= event("context:end", :testContext => "../test-context/") %>
+        <p>
+          Emitted every time a context is completed.
+        </p>
+        <%= event("test:setUp", :test => "../test-context/#test") %>
+        <p>
+          Emitted once per test before the setup method(s) for a test is called.
+        </p>
+        <%= event("test:start", :test => "../test-context/#test") %>
+        <p>
+          Emitted after running the test's setup(s), but before the test itself
+          runs.
+        </p>
+        <%= event("test:async", :test => "../test-context/#test") %>
+        <p>
+          Emitted when a test has been found to be asynchronous (usually means
+          that the test function was called and has returned).
+        </p>
+        <%= event("test:tearDown", :test => "../test-context/#test") %>
+        <p>
+          Emitted once per test before the tear down method(s) for a test is called.
+        </p>
+        <%= event("test:failure", :error => "#error") %>
+        <p>
+          Emitted when the test throws
+          (or <a href="#assertion-failure">otherwise flags</a>)
+          an <code>AssertionFailure</code>. Only emitted once per test.
+        </p>
+        <%= event("test:error", :error => "#error") %>
+        <p>
+          Emitted when the test throws any error that is not an
+          <code>AssertionFailure</code>. Only emitted once per test.
+        </p>
+        <%= event("test:success", :test => "../test-context#test") %>
+        <p>
+          Emitted if the test passes.
+        </p>
+        <%= event("test:timeout", :test => "../test-context#test") %>
+        <p>
+          Emitted if the test runner forcefully aborts the test. This happens
+          when the test is asynchronous and does not resolve within the
+          <a href="#timeout">configured timeout</a>.
+        </p>
+        <%= event("test:deferred", :test => "../test-context#test") %>
+        <p>
+          Emitted when a test is marked as deferred. The test is not run.
+        </p>
+        <%= event("uncaughtException", :exception => "#exception") %>
+        <p>
+          Uncaught errors are errors that the test runner is unable to associate
+          with the test that threw it. They occur in two situations:
+        </p>
+        <ol>
+          <li>
+            A synchronous test spawns an asynchronous task that results in an
+            error. For instance, calling <code>setTimeout</code> with a callback
+            that throws an error in a synchronous test.
+          </li>
+          <li>
+            An aborted asynchronous test throws (for instance, by failing an
+            assertion).
+          </li>
+        </ol>
+        <p>
+          The <code>"uncaughtException"</code> event will only be emitted when
+          the environment supports it and the
+          <a href="#handle-uncaught-exceptions"><code>handleUncaughtExceptions</code></a>
+          property is set to <code>true</code>. Browsers that do not support
+          <a href="https://developer.mozilla.org/en/DOM/window.onerror"><code>window.onerror</code></a>
+          are unable to support this feature.
+        </p>
+      </div>
+      <div class="section">
+        <h2 id="properties">Properties</h2>
+        <p>
+          Test runner properties can be set when creating an instance, or simply
+          by assigning to the property on an existing runner.
+        </p>
+        <pre><code>var runner = buster.testRunner.create({
+    timeout: 500
+});
+
+// Or:
+
+var runner = buster.testRunner.create();
+runner.timeout = 500;</code></pre>
+        <%= property("failOnNoAssertions", "true") %>
+        <p>
+          When <code>true</code>, a test with no assertions is considered a
+          failure. The number of assertions are measured with
+          <a href="#assertion-count"><code>assertionCount</code></a>.
+        </p>
+        <%= property("timeout", "250") %>
+        <p>
+          When an asynchronous test runs for more than <code>timeout</code> ms, the
+          runner will abort it and emit a <%= l(:event, "test:timeout") %> event.
+        </p>
+        <%= property("handleUncaughtExceptions", "true") %>
+        <p>
+          When <code>true</code>, the runner will attempt to
+          handle <a href="event-uncaughtexception">uncaght exceptions</a>, by
+          registering a listener on <code>process</code> for
+          <a href="http://nodejs.org/docs/v0.4.0/api/process.html#event_uncaughtException_"><code>"uncaughtException"</code></a>
+          (node.js) and assigning a callback to
+          <a href="https://developer.mozilla.org/en/DOM/window.onerror"><code>window.onerror</code></a> (browsers).
+        </p>
+      </div>
+      <div class="section">
+        <h2 id="methods">Methods</h2>
+        <h3 id="create" data-title="+create([opts])+"><code>var runner = buster.testRunner.create([<a href="#properties">opts</a>]);</code></h3>
+        <p>
+          Creates a new test runner instance.
+        </p>
+        <h3 id="on-create" data-title="+onCreate(callback)+"><code>buster.testRunner.onCreate(function (<a href="#create">runner</a>) {});</code></h3>
+        <p>
+          Register a callback which is called everytime a runner is created with
+          <a href="#create"><code>create</code></a>.
+        </p>
+        <h3 id="run-suite" data-title="+runSuite(contexts)+"><code><a href="#create">runner</a>.runSuite([<a href="../test-context/">testContext</a>, testContext2, ...]);</code></h3>
+        <p>
+          Run an array of <a href="../test-context/"><code>testContext</code></a>
+          objects as a test suite.
+        </p>
+        <h3 id="run" data-title="+run(context)+"><code><a href="#create">runner</a>.run(<a href="../test-context/">testContext</a>);</code></h3>
+        <p>
+          Run a single <a href="../test-context/"><code>testContext</code></a>.
+          Note that this method does not trigger the
+          <%= l(:event, "suite:start") %> event, and using it instead
+          of <code>runSuite</code> may cause unintended behavior
+          in <a href="../reporters/">reporters</a>.
+        </p>
+        <h3 id="assertion-count" data-title="+assertionCount()+"><code>var count = <a href="#create">runner</a>.assertionCount();</code></h3>
+        <p>
+          The default implementation of this method is a no-op function. This
+          method is called by the runner after each test to determine the number
+          of assertions used in the test. It should not accumulate the assertion
+          count.
+        </p>
+        <p>
+          Because the runner itself has no knowledge of the assertion library,
+          this method is intended to be overridden by the assertion library in
+          use. For instance, this is the integration necessary to count
+          assertions with <a href="../../buster-assert/">buster-assert</a>:
+        </p>
+        <pre><code>var assertions = 0;
+
+buster.assert.on("pass", function () {
+    assertions += 1;
+});
+
+buster.testRunner.onCreate(function (runner) {
+    runner.on("test:start", function () {
+        assertions = 0;
+    });
+});
+
+buster.testRunner.assertionCount = function () {
+    return assertions;
+};</code></pre>
+        <h3 id="assertion-failure" data-title="+assertionFailure()+"><code><a href="#create">runner</a>.assertionFailure(<a href="#exception">exception</a>);</code></h3>
+        <p>
+          Can be called from assertion libraries that do not throw an exception
+          on assertion failure. For assertion failures to be picked up no matter
+          what in asynchronous tests, this method needs to be called, as some
+          exceptions are not possible for the runner to catch.
+        </p>
+      </div>
+      <div class="section">
+        <h2 id="supporting-objects">Supporting objects</h2>
+        <h3 id="results"><code>results</code></h3>
+        <p>
+          A high-level numeric report. Emitted with <%= l(:event, "suite:end") %>.
+        </p>
+        <pre><code>{
+    contexts: 0,
+    tests: 0,
+    errors: 0,
+    failures: 0,
+    assertions: 0,
+    timeouts: 0,
+    deferred: 0
+}</code></pre>
+        <h3 id="error"><code>error</code></h3>
+        <p>
+          An object representing a test failure (or error), emitted with
+          <%= l(:event, "test:failure") %> and <%= l(:event, "test:error") %>.
+        </p>
+        <pre><code>{
+    name: "Name of test",
+    error: {
+        name: "Type of exception",
+        message: "Exception message",
+        stack: "Stack trace as string"
+    }
+}</code></pre>
+        <h3 id="exception"><code>exception</code></h3>
+        <p>
+          An exception-like object, emitted with 
+          <%= l(:event, "uncaughtException") %>.
+          In browsers, this object does not have a stack trace.
+        </p>
+        <pre><code>{
+    name: "Type of exception",
+    message: "Exception message",
+    stack: "Stack trace as string"
+}</code></pre>
+      </div>
+    </div>
+    <div class="aside">
+      <%= module_navigation %>
+    </div>
+    <%= partial :footer %>
+    <script type="text/javascript" src="<%= context_path %>/javascripts/hijs.js"></script>
+    <script type="text/javascript" src="<%= context_path %>/javascripts/nav.js"></script>
+  </body>
+</html>
