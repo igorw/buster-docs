@@ -1,0 +1,3 @@
+[submodule "vendor/hijs"]
+	path = vendor/hijs
+	url = git://github.com/cloudhead/hijs.git

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Buster.JS</title>
+    <link rel="stylesheet" type="text/css" href="{{contextPath}}/stylesheets/buster.css">
+  </head>
+  <body>
+    <h1>Buster.JS</h1>
+    <p>
+      Here's a test motherfucker:
+    </p>
+    <pre><code>buster.testCase("Async test with node.js assertions", {
+    "should contact server": function (done) {
+        myApi.request(function (data) {
+            done(function () {
+                assert.notEqual(data, null);
+            });
+        });
+    }
+});</code></pre>
+    <script type="text/javascript" src="{{contextPath}}/javascripts/hijs.js"></script>
+  </body>
+</html>
