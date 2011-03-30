@@ -50,10 +50,16 @@ h2 {
 
 h3 {
     border-bottom: 1px solid #f0f0f0;
-    display: inline-block;
+    /*display: inline-block;*/
     font-size: 1.25em;
     line-height: 1.5;
     margin: 0 0 0.5em;
+}
+
+h4 {
+    font-size: 1em;
+    font-weight: bold;
+    margin: 0 0 0.25em;
 }
 
 dl {
@@ -164,9 +170,15 @@ code {
 
 p code,
 li code {
-    background: #f6f9fc;
+    /*background: #f6f9fc;*/
     border-radius: 6px;
     padding: 2px;
+    white-space: nowrap;
+}
+
+.msg p code,
+.msg li code {
+    background: #f6f9fc;
 }
 
 code .keyword { font-weight: bold; }
@@ -247,11 +259,38 @@ pre code {
     margin: 0 0 1.5em;
 }
 
+.section pre + h3,
+.section dl + h3,
+.section ol + h3,
+.section p + h3 {
+    margin-top: 1em;
+}
+
+.section pre,
+.section dl,
+.section ol,
+.section p,
+.section h4 {
+    margin-left: 2em;
+}
+
+.msg p {
+    margin-bottom: .5em;
+}
+
+.msg dt {
+    width: 3em;
+}
+
+.msg dd {
+    float: none;
+}
+
 /* Aside */
 .aside {
     float: left;
     padding: 2.7em 0 2em 2em;
-    width: 280px;
+    width: 320px;
 }
 
 .aside h2 {
@@ -319,6 +358,10 @@ pre code {
 .aside .nav code {
     background: none;
     padding: 0;
+}
+
+.aside .nav ul code {
+    font-size: 12px;
 }
 
 /* Footer */

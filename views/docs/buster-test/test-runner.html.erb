@@ -26,11 +26,11 @@
         warnings in browsers.
       </p>
       <pre><code>var testRunner = require("buster-test").testRunner;
-var runner = testRunner.<a href="#create">create</a>();
+var xUnitConsoleReporter = require("buster-test").xUnitConsoleReporter;
 
-runner.on("context:start", function (<a href="../test-context/">testContext</a>) {
-    console.log("Started context " + testContext.name);
-});
+var runner = testRunner.<a href="#create">create</a>();
+var reporter = xUnitConsoleReporter.create({ color: true });
+reporter.listen(runner);
 
 runner.<a href="#run-suite">runSuite</a>([<a href="../test-context/">testContext</a>, testContext2, ...]);</code></pre>
       <div class="section">
@@ -40,64 +40,64 @@ runner.<a href="#run-suite">runSuite</a>([<a href="../test-context/">testContext
           Emitted once, as the runner starts running a test suite (typically
           when <a href="#run-suite"><code>runSuite</code></a> is called).
         </p>
-        <%= event("suite:end", :results => "#results") %>
+        <%= event("suite:end", [[:results, "#results"]]) %>
         <p>
           Emitted once, when all contexts are run (typically when
           <a href="#run-suite"><code>runSuite</code></a> completes).
         </p>
-        <%= event("context:start", :testContext => "../test-context/") %>
+        <%= event("context:start", [[:testContext, "../test-context/"]]) %>
         <p>
           Emitted every time a <a href="../test-context/">context</a> is
           entered.
         </p>
-        <%= event("context:end", :testContext => "../test-context/") %>
+        <%= event("context:end", [[:testContext, "../test-context/"]]) %>
         <p>
           Emitted every time a context is completed.
         </p>
-        <%= event("test:setUp", :test => "../test-context/#test") %>
+        <%= event("test:setUp", [[:test, "../test-context/#test"]]) %>
         <p>
           Emitted once per test before the setup method(s) for a test is called.
         </p>
-        <%= event("test:start", :test => "../test-context/#test") %>
+        <%= event("test:start", [[:test, "../test-context/#test"]]) %>
         <p>
           Emitted after running the test's setup(s), but before the test itself
           runs.
         </p>
-        <%= event("test:async", :test => "../test-context/#test") %>
+        <%= event("test:async", [[:test, "../test-context/#test"]]) %>
         <p>
           Emitted when a test has been found to be asynchronous (usually means
           that the test function was called and has returned).
         </p>
-        <%= event("test:tearDown", :test => "../test-context/#test") %>
+        <%= event("test:tearDown", [[:test, "../test-context/#test"]]) %>
         <p>
           Emitted once per test before the tear down method(s) for a test is called.
         </p>
-        <%= event("test:failure", :error => "#error") %>
+        <%= event("test:failure", [[:error, "#error"]]) %>
         <p>
           Emitted when the test throws
           (or <a href="#assertion-failure">otherwise flags</a>)
           an <code>AssertionFailure</code>. Only emitted once per test.
         </p>
-        <%= event("test:error", :error => "#error") %>
+        <%= event("test:error", [[:error, "#error"]]) %>
         <p>
           Emitted when the test throws any error that is not an
           <code>AssertionFailure</code>. Only emitted once per test.
         </p>
-        <%= event("test:success", :test => "../test-context#test") %>
+        <%= event("test:success", [[:test, "../test-context#test"]]) %>
         <p>
           Emitted if the test passes.
         </p>
-        <%= event("test:timeout", :test => "../test-context#test") %>
+        <%= event("test:timeout", [[:test, "../test-context#test"]]) %>
         <p>
           Emitted if the test runner forcefully aborts the test. This happens
           when the test is asynchronous and does not resolve within the
           <a href="#timeout">configured timeout</a>.
         </p>
-        <%= event("test:deferred", :test => "../test-context#test") %>
+        <%= event("test:deferred", [[:test, "../test-context#test"]]) %>
         <p>
           Emitted when a test is marked as deferred. The test is not run.
         </p>
-        <%= event("uncaughtException", :exception => "#exception") %>
+        <%= event("uncaughtException", [[:exception, "#exception"]]) %>
         <p>
           Uncaught errors are errors that the test runner is unable to associate
           with the test that threw it. They occur in two situations:
@@ -159,7 +159,7 @@ runner.timeout = 500;</code></pre>
       </div>
       <div class="section">
         <h2 id="methods">Methods</h2>
-        <h3 id="create" data-title="+create([opts])+"><code>var runner = buster.testRunner.create([<a href="#properties">opts</a>]);</code></h3>
+        <h3 id="create" data-title="+create([opts])+"><code>var runner = buster.testRunner.create([<%= anchor("opts", "properties") %>]);</code></h3>
         <p>
           Creates a new test runner instance.
         </p>

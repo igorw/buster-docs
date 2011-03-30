@@ -12,7 +12,7 @@ module BusterDocsHelpers
 
   def module_list(dir)
     modules = Dir.entries(dir).entries.find_all do |d|
-      /^\.\.?$/ !~ d && File.directory?(File.join(dir, d))
+      /^\.\.?$/ !~ d
     end
 
     return "" if modules.length == 0
@@ -27,8 +27,8 @@ module BusterDocsHelpers
   def module_link(path)
     mod = File.basename(path)
     active = @path =~ /^\/#{mod}/
-    link = "<a href=\"/#{mod}/\">#{module_title(path)}</a>"
-    nav = module_list(path)
+    link = l(:module, path)
+    nav = File.directory?(path) ? module_list(path) : ""
 
     "<li#{' class="active"' if active}>#{link}#{nav}</li>"
   end
@@ -41,7 +41,7 @@ module BusterDocsHelpers
       title = File.read(index).match(/h1>(.*)<\/h1/)[1]
     end
 
-    title || File.basename(path)
+    title || File.basename(path).sub(/\.html\.erb$/, "")
   end
 
   def event(name, arguments = {})
@@ -49,7 +49,7 @@ module BusterDocsHelpers
       if kv[1].nil?
         sum << kv[0]
       elsif kv[1] =~ /^#/
-        sum << l(:bare, kv[0], id_hash(kv[1][1..-1]))
+        sum << l(:bare, kv[0], "##{id_hash(kv[1][1..-1])}")
       else
         sum << l(:bare, kv[0], kv[1])
       end
@@ -83,6 +83,9 @@ module BusterDocsHelpers
       "<a href=\"##{id_hash('event-' + url)}\"><code>\"#{name}\"</code></a>"
     elsif type == :bare
       "<a href=\"#{url}\">#{name}</a>"
+    elsif type == :module
+      url = url.sub(/^#{docs_root}/, "").sub(/\.html\.erb$/, "").gsub(/^\/?|\/?$/, "/")
+      "<a href=\"#{url}\">#{module_title(url)}</a>"
     else
       "<a href=\"##{id_hash(url)}\"><code>#{name}</code></a>"
     end
@@ -90,5 +93,13 @@ module BusterDocsHelpers
 
   def id_hash(name)
     "#{id_prefix}#{name.to_s.gsub(/:/, '-')}".downcase
+  end
+
+  def hash(name)
+    "##{id_hash(name)}"
+  end
+
+  def anchor(text, id)
+    l(:bare, text, hash(id))
   end
 end
