@@ -1,0 +1,234 @@
+<%= partial(:head, :title => "buster.format") %>
+  <body>
+    <div id="masthead">
+      <p><a href="/">Buster.<span>JS</span></a> API Reference</p>
+    </div>
+    <div class="wrapper">
+      <div class="aside">
+        <%= module_navigation %>
+      </div>
+      <div class="content">
+        <h1><code>buster.format</code></h1>
+        <dl>
+          <dt>Version</dt>
+          <dd>0.2.1 <span class="date">(2011-03-14)</span></dd>
+          <dt>Module</dt>
+          <dd><code>require("buster-format");</code></dd>
+          <dt>In browsers</dt>
+          <dd><code>buster.format;</code></dd>
+        </dl>
+        <p>
+          Utility functions with helpers for pretty formatting of arbitrary
+          JavaScript values. Currently only supports ascii formatting, suitable
+          for command-line utilities. Like
+          <a href="https://developer.mozilla.org/en/json"><code>JSON.stringify</code></a>,
+          it formats objects recursively, but unlike <code>JSON.stringify</code>,
+          it can handle regular expressions, functions and more.
+        </p>
+        <div class="section">
+          <h2 id="<%= id('methods') %>"><code>buster.format.ascii</code> methods</h2>
+          <div class="intro">
+            <p>
+              <code>buster.format.ascii</code> can take any JavaScript object and
+              format it nicely as plain text. It uses the helper functions described
+              below to format different types of objects.
+            </p>
+          </div>
+          <h3 id="<%= id('ascii') %>">
+            <code>buster.format.ascii(object)</code>
+          </h3>
+          <p>
+            <code>object</code> can be any kind of object, including DOM
+            elements.
+          </p>
+          <h4>Simple object</h4>
+          <pre><code>var format = require("buster-format");
+
+var object = {
+    name: "Christian"
+};
+
+console.log(format.ascii(object));
+
+// Outputs:
+// { name: "Christian" }</code></pre>
+          <h4>Complex object</h4>
+          <pre><code>var format = require("buster-format");
+
+var developer = {
+    name: "Christian",
+    interests: ["Programming", "Guitar", "TV"],
+
+    location: {
+        language: "Norway",
+        city: "Oslo",
+
+        getLatLon: function getLatLon(callback) {
+            // ...
+        },
+
+        distanceTo: function distanceTo(location) {
+        }
+    },
+
+    speak: function () {
+        return "Oh hi!";
+    }
+};
+
+console.log(format.ascii(developer));
+
+// Outputs:
+// {
+//   interests: ["Programming", "Guitar", "TV"],
+//   location: {
+//     city: "Oslo",
+//     distanceTo: function distanceTo() {},
+//     getLatLon: function getLatLon() {},
+//     language: "Norway"
+//   },
+//   name: "Christian",
+//   speak: function () {}
+// }</code></pre>
+          <h4>Custom constructor</h4>
+          <p>
+            If the object to format is not a generic <code>Object</code>
+            object, <strong>buster-format</strong> displays the type of object
+            (i.e. name of constructor). Set the <%=l "excludeConstructors" %>
+            property to control what constructors to include in formatted
+            output.
+          </p>
+          <pre><code>var format = require("buster-format");
+
+function Person(name) {
+    this.name = name;
+}
+
+var dude = new Person("Dude");
+console.log(format.ascii(dude));
+
+// Outputs:
+// [Person] { name: "Dude" }</code></pre>
+          <h4>DOM elements</h4>
+          <p>
+            DOM elements are formatted as abbreviated HTML source. 20 characters
+            of <code>innerHTML</code> is included, and if the content is longer,
+            it is truncated with <code>"[...]"</code>. Future editions will add
+            the possibility to format nested markup structures.
+          </p>
+          <pre><code>var p = document.createElement("p");
+p.id = "sample";
+p.className = "notice";
+p.setAttribute("data-custom", "42");
+p.innerHTML = "Hey there, here's some text for ya there buddy";
+
+console.log(buster.format.ascii(p));
+
+// Outputs
+// &lt;p id="sample" class="notice" data-custom="42">Hey there, here's so[...]&lt;/p></code></pre>
+          <h3 id="<%= id('functionName') %>"><code>functionName(func)</code></h3>
+          <p>
+            Guesses a function's name. If the function defines the
+            <code>displayName</code> property (used by
+            <a href="http://trac.webkit.org/changeset/42478">some debugging tools</a>)
+            it is preferred. If it is not found, the <code>name</code> property
+            is tried. If no name can be found this way, an attempt is made to
+            find the function name by looking at the
+            function's <code>toString()</code> representation.
+          </p>
+          <h3 id="<%= id('func') %>"><code>func(func)</code></h3>
+          <p>
+            Formats a function like <code>"function [name]() {}"</code>. The
+            name is retrieved from <%= l "functionName" %>.
+          </p>
+          <h3 id="<%= id('array') %>"><code>array(array)</code></h3>
+          <p>
+            Formats an array as <code>"[item1, item2, item3]"</code> where each
+            item is formatted with <%= l "buster.format.ascii" %>. Circular
+            references are represented in the resulting string as
+            <code>"[Circular]"</code>.
+          </p>
+          <h3 id="<%= id('object') %>"><code>object(object)</code></h3>
+          <p>
+            Formats all properties of the object with <%= l "buster.format.ascii" %>.
+            If the object can be fully represented in 80 characters, it's
+            formatted in one line. Otherwise, it's nicely indented over as many
+            lines as necessary. Circular references are represented by
+            <code>"[Circular]"</code>.
+          </p>
+          <p>
+            Objects created with custom constructors will be formatted as
+            <code>"[ConstructorName] { ... }"</code>. Set the
+            <%=l "excludeConstructors" %> property to control what constructors
+            are included in the output like this.
+          </p>
+          <h3 id="<%= id('element') %>"><code>element(element)</code></h3>
+          <p>
+            Formats a DOM element as HTML source. The tag name is represented in
+            lower-case and all attributes and their values are included. The
+            element's content is included, up to 20 characters. If the length
+            exceeds 20 characters, it's truncated with a <code>"[...]"</code>.
+          </p>
+          <h3 id="<%= id('constructorName') %>"><code>constructorName(object)</code></h3>
+          <p>
+            Attempts to guess the name of the constructor that created the
+            object. It does so by getting the name of
+            <code>object.constructor</code> using <%=l "functionName" %>. If a
+            name is found, <%=l "excludeConstructors" %> is consulted. If the
+            constructor name matches any of these elements, an empty string is
+            returned, otherwise the name is returned.
+          </p>
+        </div>
+        <div class="section">
+          <h2 id="<%= id('properties') %>"><code>buster.format.ascii</code> properties</h2>
+          <%= property("excludeConstructors", "[\"Object\", /^.$/]") %>
+          <p>
+            An array of strings and/or regular expressions naming constructors
+            that should be stripped from the formatted output. The default value
+            skips objects created by <code>Object</code> and constructors that
+            have one character names (which are typically used in
+            <code>Object.create</code> shims).
+          </p>
+          <p>
+            While you can set this property directly on
+            <code>buster.format.ascii</code>, it is recommended to create an
+            instance of <code>buster.format.ascii</code> and override the
+            property on that object.
+          </p>
+          <p>
+            <strong>Strings</strong> represent constructor names that should not
+            be represented in the formatted output. <strong>Regular
+            expressions</strong> are tested against constructor names when
+            formatting. If the expression is a match, the constructor name is
+            not included in the formatted output.
+          </p>
+          <pre><code>function Person(name) {
+    this.name = name;
+}
+
+var person = new Person("Chris");
+
+console.log(buster.format.ascii(person));
+
+// Outputs
+// [Person] { name: "Chris" }
+
+var formatter = Object.create(buster.format);
+formatter.excludeConstructors = ["Object", /^.$/, "Person"];
+console.log(formatter.ascii(person));
+
+// Outputs
+// { name: "Chris" }
+
+// Global overwrite, generally not recommended
+buster.format.excludeConstructors = ["Object", /^.$/, "Person"];
+console.log(buster.format.ascii(person));
+
+// Outputs
+// { name: "Chris" }</code></pre>
+        </div>
+      </div>
+    </div>
+    <%= partial :footer %>
+  </body>
+</html>
