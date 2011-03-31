@@ -1,9 +1,5 @@
 module BusterDocsHelpers
   def module_navigation
-    modules = Dir.entries(docs_root).entries.find_all do |d|
-      /^\.\.?$/ !~ d && File.directory?(File.join(docs_root, d))
-    end
-
     <<-HTML
       <h2>Buster.<span>JS</span> modules</h2>
       #{module_list(docs_root)}
@@ -21,7 +17,7 @@ module BusterDocsHelpers
 
     <<-HTML
       <ul class="nav">
-        #{modules.collect { |mod| module_list_item(File.expand_path(File.join(dir, mod))) }.join("\n        ")}
+        #{modules.sort.collect { |mod| module_list_item(File.expand_path(File.join(dir, mod))) }.join("\n        ")}
       </ul>
     HTML
   end
