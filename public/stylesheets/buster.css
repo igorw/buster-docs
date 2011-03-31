@@ -299,6 +299,20 @@ pre code {
     float: none;
 }
 
+.properties dt,
+.properties dd {
+    float: none;
+    width: auto;
+}
+
+.properties dd {
+    margin: 0 0 0.5em;
+}
+
+p + .properties {
+    margin-top: -0.5em;
+}
+
 /* Aside */
 .aside {
     padding: 2.7em 0 0 16px;
