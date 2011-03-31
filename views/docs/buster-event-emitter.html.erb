@@ -1,0 +1,198 @@
+<%= partial(:head, :title => "buster.eventEmitter") %>
+<h1><code>buster.eventEmitter</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.2.0 <span class="date">(2011-03-14)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-event-emitter");</code></dd>
+  <dt>In browsers</dt>
+  <dd><code>buster.eventEmitter;</code></dd>
+</dl>
+<p>
+  A simple pubsub implementation for JavaScript inspired by the
+  <a href="http://nodejs.org/docs/v0.4.0/api/events.html#events.EventEmitter">node.js  EventEmitter API</a>.
+</p>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('create') %>"><code>create()</code></h3>
+  <p>
+    Creates and returns a new "blank" event emitter.
+  </p>
+  <pre><code>var myObj = buster.eventEmitter.create();
+
+// Equivalent to doing
+var myObj2 = Object.create(buster.eventEmitter);</code></pre>
+  <h4>Creating event emitter APIs</h4>
+  <p>
+    <strong>buster-event-emitter</strong> is designed to power your custom event
+    emitters. There are a few ways you might want to do this. The simplest
+    approach is to create a new event emitter and add properties to it:
+  </p>
+  <pre><code>var eventedLogger = buster.eventEmitter.create();
+
+eventedLogger.LEVEL_ERROR = 0;
+eventedLogger.LEVEL_WARN = 1;
+eventedLogger.LEVEL_INFO = 2;
+eventedLogger.level = eventedLogger.LEVEL_INFO;
+
+eventedLogger.info = function () {
+    if (this.level >= this.LEVEL_INFO) {
+        this.emit("info", Array.prototype.slice(arguments));
+    }
+};
+
+eventedLogger.warn = function () {
+    if (this.level >= this.LEVEL_WARN) {
+        this.emit("warn", Array.prototype.slice(arguments));
+    }
+};
+
+eventedLogger.error = function () {
+    if (this.level >= this.LEVEL_ERROR) {
+        this.emit("error", Array.prototype.slice(arguments));
+    }
+};</code></pre>
+  <p>
+    This API could be used as such:
+  </p>
+  <pre><code>var logger = Object.create(eventedLogger);
+
+logger.on("info", function () {
+    console.log.apply(console, arguments);
+});</code></pre>
+  <p>
+    An alternative way of creating a custom event emitter is using
+    <%= m("core#extend", "<code>buster.extend</code>") %>, which copies
+    properties between objects:
+  </p>
+  <pre><code>var eventedLogger = buster.extend(buster.eventEmitter.create(), {
+    LEVEL_ERROR: 0,
+    LEVEL_WARN: 1,
+    LEVEL_INFO: 2,
+    level: 2,
+
+    info: function () {
+        if (this.level >= this.LEVEL_INFO) {
+            this.emit("info", Array.prototype.slice(arguments));
+        }
+    },
+
+    warn: function () {
+        if (this.level >= this.LEVEL_WARN) {
+            this.emit("warn", Array.prototype.slice(arguments));
+        }
+    },
+
+    error: function () {
+        if (this.level >= this.LEVEL_ERROR) {
+            this.emit("error", Array.prototype.slice(arguments));
+        }
+    }
+};</code></pre>
+  <h3 id="<%= id('on') %>"><code>on(event, listener[, thisObj])</code></h3>
+  <p>
+    Adds an event listener for the specified event. <code>event</code> is a
+    string, and the event listener must be a function. When the event is
+    emitted, the listener will be called with whatever arguments were emitted.
+  </p>
+  <pre><code>var emitter = buster.eventEmitter.create();
+emitter.on("message", function () { /* ... */ });</code></pre>
+  <p>
+    If a <code>thisObj</code> is passed, the method will be called with this
+    object as its <code>this</code> value.
+  </p>
+  <pre><code>var logger = {
+    log: function () {
+        for (var i = 0, l = arguments.length; i &lt; l; ++i) {
+            this.io.puts(arguments[i]);
+        }
+    }
+};
+
+logger.io = require("sys");
+var emitter = buster.eventEmitter.create();
+emitter.on("message", logger.log, logger);</code></pre>
+  <h3 id="<%= id('addListener') %>"><code>addListener(event, listener[, thisObj])</code></h3>
+  <p>Alias for <%=l "on" %>.</p>
+  <pre><code>var emitter = buster.eventEmitter.create();
+emitter.addListener("message", function () { /* ... */ });</code></pre>
+  <h3 id="<%= id('hasListener') %>"><code>hasListener(event, listener[, thisObj])</code></h3>
+  <p>Returns <code>true</code> if the emitter has the listener in question.</p>
+  <pre><code>var emitter = buster.eventEmitter.create();
+var listener = function () {};
+emitter.on("message", listener);
+
+emitter.hasListener("message", listener); // true
+emitter.hasListener("message", function () {}); // false
+
+emitter.on("click", logger.log, logger);
+emitter.hasListener("click", logger.log); // false
+emitter.hasListener("click", logger.log, logger); // true</code></pre>
+  <h3 id="<%= id('emit') %>"><code>emit(event[, data1, data2, ...])</code></h3>
+  <p>
+    Notifies all listeners of <code>event</code> of new data. Event is a
+    string. Any arguments passed after the event name is passed along to the
+    listeners.
+  </p>
+  <pre><code>var listener = function () {
+    console.log(Array.prototype.slice(arguments, ", "));
+};
+
+var emitter = buster.eventEmitter.create();
+emitter.on("some-event", listener);
+
+emitter.emit("some-event", 2, 3, 4, 5); // Listener prints "2, 3, 4, 5"</code></pre>
+  <h3 id="<%= id('bind') %>"><code>bind(object[, events])</code></h3>
+  <p>
+    Binds methods on an object as event listeners, ensuring the methods are
+    called with the proper <code>this</code> object.
+  </p>
+  <p>
+    If no <code>events</code> is passed, all the object's methods will be bound
+    to events with the same name:
+  </p>
+  <pre><code>var obj = {
+    message: function () {},
+    connection: function () {},
+    disconnect: function () {}
+};
+
+emitter.bind(obj);
+
+// Equivalent to:
+// emitter.on("message", obj.message, obj);
+// emitter.on("connection", obj.connection, obj);
+// emitter.on("disconnect", obj.disconnect, obj);</code></pre>
+  <p>
+    If <code>events</code> is an array of strings, only those methods will be
+    bound to their corresponding events:
+  </p>
+  <pre><code>var obj = {
+    message: function () {},
+    connection: function () {},
+    disconnect: function () {}
+};
+
+emitter.bind(obj, ["message", "disconnect"]);
+
+// Equivalent to:
+// emitter.on("message", obj.message, obj);
+// emitter.on("disconnect", obj.disconnect, obj);</code></pre>
+  <p>
+    If <code>events</code> is an object, the keys will be used as events and
+    their string values method names. This way you can bind methods as event
+    listeners and name methods differently from events:
+  </p>
+  <pre><code>var obj = {
+    onMessage: function () {},
+    onConnection: function () {},
+    onDisconnect: function () {}
+};
+
+emitter.bind(obj, { "message": "onMessage", "connection": "onConnection" });
+
+// Equivalent to:
+// emitter.on("message", obj.onMessage, obj);
+// emitter.on("connection", obj.onConnection, obj);</code></pre>
+</div>
+<%= partial :footer %>
