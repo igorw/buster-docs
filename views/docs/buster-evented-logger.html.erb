@@ -188,6 +188,15 @@ logger.debug("What's going on??", myObjToDebug);</code></pre>
   </p>
 </div>
 <div class="section">
+  <h2 id="<%= id('propeties') %>">Properties</h2>
+  <%= property("level", "\"debug\"") %>
+  <p>
+    Set the level of the logger, silence all messages for less severe
+    levels. The default level is the most permissive one - <code>"debug"</code>
+    when not using custom levels.
+  </p>
+</div>
+<div class="section">
   <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
   <h3 id="<%= id('envelope') %>"><code>envelope</code></h3>
   <p>
