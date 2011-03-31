@@ -1,45 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>buster.assert</title>
-    <link rel="stylesheet" type="text/css" href="<%= context_path %>/stylesheets/buster.css">
-  </head>
+<%= partial(:head, :title => "buster.assert") %>
   <body>
-    <div id="masthead">
+    <div id="<%= id('masthead') %>">
       <p><a href="/">Buster.<span>JS</span></a> API Reference</p>
     </div>
-    <div class="content">
-      <h1><code>buster.assert</code></h1>
-      <dl>
-        <dt>Version</dt>
-        <dd>0.4.0 <span class="date">(2011-03-20)</span></dd>
-        <dt>Module</dt>
-        <dd><code>require("buster-assert");</code></dd>
-        <dt>In browsers</dt>
-        <dd><code>buster.assert;</code></dd>
-      </dl>
-      <p>
-        A collection of assertions to be used with a unit testing framework.
-        <strong>buster-assert</strong> works well with any CommonJS compliant
-        testing framework out of the box, and can easily be configured to work
-        with most any testing framework.
-      </p>
-      <p>
-        <strong>buster-assert</strong> contains lots of assertions. We strongly
-        believe that high-level assertions are essential in the interest of
-        producing clear and intent-revealing tests, and they also give you
-        to-the-point failure messages even if you don't specify custom assertion
-        messages.
-      </p>
-      <h3>Assertion messages</h3>
-      <p>
-        The default assertion messages can be overridden per assertion. The
-        properties to overwrite are listed with each assertion along with the
-        arguments the string is fed. Here's an example of providing a new
-        assertion failure message for <%= anchor("<code>buster.assert.equals</code>", "assert-equals") %>:
-      </p>
-      <pre><code>buster.assert.equals.msgFail = "${0}I wanted ${1} == ${2}!"
+    <div class="wrapper">
+      <div class="aside">
+        <%= module_navigation %>
+      </div>
+      <div class="content">
+        <h1><code>buster.assert</code></h1>
+        <dl>
+          <dt>Version</dt>
+          <dd>0.4.0 <span class="date">(2011-03-20)</span></dd>
+          <dt>Module</dt>
+          <dd><code>require("buster-assert");</code></dd>
+          <dt>In browsers</dt>
+          <dd><code>buster.assert;</code></dd>
+        </dl>
+        <p>
+          A collection of assertions to be used with a unit testing framework.
+          <strong>buster-assert</strong> works well with any CommonJS compliant
+          testing framework out of the box, and can easily be configured to work
+          with most any testing framework.
+        </p>
+        <p>
+          <strong>buster-assert</strong> contains lots of assertions. We strongly
+          believe that high-level assertions are essential in the interest of
+          producing clear and intent-revealing tests, and they also give you
+          to-the-point failure messages even if you don't specify custom assertion
+          messages.
+        </p>
+        <h3>Assertion messages</h3>
+        <p>
+          The default assertion messages can be overridden per assertion. The
+          properties to overwrite are listed with each assertion along with the
+          arguments the string is fed. Here's an example of providing a new
+          assertion failure message for <%= anchor("<code>buster.assert.equals</code>", "assert-equals") %>:
+        </p>
+        <pre><code>buster.assert.equals.msgFail = "${0}I wanted ${1} == ${2}!"
 
 try {
     buster.assert.equals(3, 4, "Crap.");
@@ -49,615 +47,626 @@ try {
 
 // Prints:
 // "Crap. I wanted 3 == 4!"</code></pre>
-      <div class="section">
-        <h2 id="events">Events</h2>
-        <p>
-          <code>buster.assert</code> is a
-          <a href="../event-emitter/"><code>buster.eventEmitter</code></a>.
-          Listen to events with <code>on</code>:
-        </p>
-        <pre><code>buster.assert.on("failure", function (err) {
-    console.log(err.message);
-});</code></pre>
-        <%= event("pass") %>
-        <p>
-          Assertion passed. The callback is invoked with the assertion name,
-          e.g. <code>"isString"</code>, as its only argument.
-        </p>
-        <%= event("failure", [[:error, "#assertion-error"]]) %>
-        <p>
-          Assertion failed. The callback is invoked with an
-          <a href="#assertion-error"><code>AssertionError</code></a>
-          object.
-        </p>
-      </div>
-      <div class="section">
-        <h2 id="properties">Properties</h2>
-        <%= property("count", "0") %>
-        <p>
-          <code>buster.assert.count</code> is incremented anytime an assertion
-          is called. The assertion counter can be reset to any number at your
-          convenience.
-        </p>
-        <%= property("throwOnFailure", "true") %>
-        <p>
-          When using the <a href="#fail">default <code>fail</code></a>
-          implementation, this property can be set to <code>false</code> to make
-          assertion failures <strong>not</strong> throw exceptions (i.e. only
-          emit events). This may be suitable in asynchronous test runners, where
-          you might not be able to catch exceptions.
-        </p>
-      </div>
-      <div class="section">
-        <h2 id="assertions">Assertions</h2>
-        <h3 id="assert" data-title="+assert(actual[, msg])+"><code>buster.assert(actual[, message]);</code></h3>
-        <p>
-          Fails if <code>actual</code> is falsy
-          (<code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>,
-          <code>NaN</code>). Fails with either the provided message or "Expected
-          null to be truthy". This behavior differs from most other assertions,
-          which prepend the failure message with the optional message argument.
-        </p>
-        <pre><code>buster.assert({ not: "Falsy" }, "This will pass");
+        <div class="section">
+          <h2 id="<%= id('events') %>">Events</h2>
+          <div class="intro">
+            <p>
+              <code>buster.assert</code> is a <%= m("eventEmitter") %>. Listen to
+              events with <code>on</code>:
+            </p>
+            <pre><code>buster.assert.on("failure", function (err) {
+                console.log(err.message);
+                });</code></pre>
+          </div>
+          <%= event("pass") %>
+          <p>
+            Assertion passed. The callback is invoked with the assertion name,
+            e.g. <code>"isString"</code>, as its only argument.
+          </p>
+          <%= event("failure", [[:error, "#assertion-error"]]) %>
+          <p>
+            Assertion failed. The callback is invoked with an
+            <%=l "AssertionError" %> object.
+          </p>
+        </div>
+        <div class="section">
+          <h2 id="<%= id('properties') %>">Properties</h2>
+          <%= property("count", "0") %>
+          <p>
+            <code>buster.assert.count</code> is incremented anytime an assertion
+            is called. The assertion counter can be reset to any number at your
+            convenience.
+          </p>
+          <%= property("throwOnFailure", "true") %>
+          <p>
+            When using the <%= anchor("default <code>fail</code>", "fail") %>
+            implementation, this property can be set to <code>false</code> to make
+            assertion failures <strong>not</strong> throw exceptions (i.e. only
+            emit events). This may be suitable in asynchronous test runners, where
+            you might not be able to catch exceptions.
+          </p>
+        </div>
+        <div class="section">
+          <h2 id="<%= id('assertions') %>">Assertions</h2>
+          <h3 id="<%= id('assert') %>" data-title="+assert(actual[, msg])+"><code>buster.assert(actual[, message]);</code></h3>
+          <p>
+            Fails if <code>actual</code> is falsy
+            (<code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>,
+            <code>NaN</code>). Fails with either the provided message or "Expected
+            null to be truthy". This behavior differs from most other assertions,
+            which prepend the failure message with the optional message argument.
+          </p>
+          <pre><code>buster.assert({ not: "Falsy" }, "This will pass");
 buster.assert(null, "This will fail");
 buster.assert(null); // Fails
 buster.assert(34);   // Passes
 </code></pre>
-        <h3 id="assert-isTrue" data-title="+isTrue(actual[, msg])+"><code>buster.assert.isTrue(actual[, message])</code></h3>
-        <p>
-          Fails if the argument is not boolean <code>true</code>.  The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isTrue({ not: "Falsy" }, "This will fail");
+          <h3 id="<%= id('assert-isTrue') %>" data-title="+isTrue(actual[, msg])+"><code>buster.assert.isTrue(actual[, message])</code></h3>
+          <p>
+            Fails if the argument is not boolean <code>true</code>.  The optional
+            message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isTrue({ not: "Falsy" }, "This will fail");
 buster.assert.isTrue(true, "This will pass");
 buster.assert.isTrue("Something"); // Fails
 buster.assert.isTrue(true);        // Passes</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isTrue.msgFail = "${0}Expected ${1} to be true";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The value</dd>
-          </dl>
-        </div>
-        <h3 id="assert-isFalse" data-title="+isFalse(actual[, msg])+"><code>buster.assert.isFalse(actual[, message])</code></h3>
-        <p>
-          Fails if the argument is not boolean <code>false</code>. The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isFalse(false, "This will pass");
-buster.assert.isFalse("", "This will fail");
-buster.assert.isFalse({});    // Fails
-buster.assert.isFalse(false); // Passes</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isFalse.msgFail = "${0}Expected ${1} to be false";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The value</dd>
-          </dl>
-        </div>
-        <h3 id="assert-same" data-title="+same(expected, actual[, msg])+"><code>buster.assert.same(expected, actual[, message])</code></h3>
-        <p>
-          Fails if <code>actual</code> <strong>is not</strong> the same object
-          (<code>===</code>) as <code>expected</code>. To compare similar
-          objects, such as <code>{ name: "Chris", id: 42 }</code> and <code>{
-          id: 42, name: "Chris" }</code> (not the same instance), see
-          <a href="#assert-equals">equals</a>. The optional message is prepended
-          to the failure message if provided.
-        </p>
-        <pre><code>var obj = { id: 42, name: "Chris" };
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isTrue.msgFail = "${0}Expected ${1} to be true";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The value</dd>
+            </dl>
+          </div>
+          <h3 id="<%= id('assert-isFalse') %>" data-title="+isFalse(actual[, msg])+"><code>buster.assert.isFalse(actual[, message])</code></h3>
+          <p>
+            Fails if the argument is not boolean <code>false</code>. The optional
+            message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isFalse(false, "This will pass");
+              buster.assert.isFalse("", "This will fail");
+              buster.assert.isFalse({});    // Fails
+              buster.assert.isFalse(false); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isFalse.msgFail = "${0}Expected ${1} to be false";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The value</dd>
+            </dl>
+          </div>
+          <h3 id="<%= id('assert-same') %>" data-title="+same(expected, actual[, msg])+"><code>buster.assert.same(expected, actual[, message])</code></h3>
+          <p>
+            Fails if <code>actual</code> <strong>is not</strong> the same object
+            (<code>===</code>) as <code>expected</code>. To compare similar
+            objects, such as <code>{ name: "Chris", id: 42 }</code> and <code>{
+              id: 42, name: "Chris" }</code> (not the same instance), see
+            <%=l "assert.equals" %>. The optional message is prepended
+            to the failure message if provided.
+          </p>
+          <pre><code>var obj = { id: 42, name: "Chris" };
 
 buster.assert.same(obj, obj, "This will pass");
 buster.assert.same(obj, { id: 42, name: "Chris" }, "This will fail");
 buster.assert.same(obj, obj);                       // Passes
 buster.assert.same(obj, { id: 42, name: "Chris" }); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.same.msgFail = "${0}Expected ${1} to be the same object as ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code>
-              <dd>The expected object</dd>
-          </dl>
-        </div>
-        <h3 id="assert-notSame" data-title="+notSame(expected, actual[, msg])+"><code>buster.assert.notSame(expected, actual[, message])</code></h3>
-        <p>
-          Fails if <code>actual</code> <strong>is</strong> the same object
-          (<code>===</code>) as <code>expected</code>. To compare similar
-          objects, such as <code>{ name: "Chris", id: 42 }</code> and <code>{
-          id: 42, name: "Chris" }</code> (not the same instance),
-          see <a href="#assert-notEquals">notEquals</a>.  The optional message
-          is prepended to the failure message if provided.
-        </p>
-        <pre><code>var obj = { id: 42, name: "Chris" };
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.same.msgFail = "${0}Expected ${1} to be the same object as ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code>
+                <dd>The expected object</dd>
+            </dl>
+          </div>
+          <h3 id="<%= id('assert-notSame') %>" data-title="+notSame(expected, actual[, msg])+"><code>buster.assert.notSame(expected, actual[, message])</code></h3>
+          <p>
+            Fails if <code>actual</code> <strong>is</strong> the same object
+            (<code>===</code>) as <code>expected</code>. To compare similar
+            objects, such as <code>{ name: "Chris", id: 42 }</code> and <code>{
+              id: 42, name: "Chris" }</code> (not the same instance),
+            see <%=l "assert.notEquals" %>. The optional message
+            is prepended to the failure message if provided.
+          </p>
+          <pre><code>var obj = { id: 42, name: "Chris" };
 buster.assert.notSame(obj, { id: 42, name: "Chris" }, "This will pass");
 buster.assert.notSame(obj, obj, "This will fail");
 buster.assert.notSame(obj, { id: 42, name: "Chris" }); // Passes
 buster.assert.notSame(obj, obj);                       // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.notSame.msgFail = "${0}Expected ${1} not to be the same object as ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected object</dd>
-          </dl>
-        </div>
-        <h3 id="assert-equals" data-title="+equals(actual, expected[, msg])+"><code>buster.assert.equals(actual, expected[, message])</code></h3>
-        <p>
-          Compares <code>actual</code> to <code>expected</code> property for
-          property. If the property count does not match, or if any
-          of <code>actual</code>'s properties does not match the corresponding
-          property in <code>expected</code> the assertion fails.
-        </p>
-        <p>
-          If <code>actual</code> is <code>null</code>
-          or <code>undefined</code>, an exact match is required. Date objects
-          are compared by their <code>getTime</code> method. Regular
-          expressions are compare by their string representations. Primitives
-          are compared using <code>==</code>, i.e., with coercion.
-        </p>
-        <p>
-          <code>equals</code> passes when comparing an <code>arguments</code>
-          object to an array if the both contain the same elements.
-        </p>
-        <p>
-          The optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>var assert = buster.assert;
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.notSame.msgFail = "${0}Expected ${1} not to be the same object as ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected object</dd>
+            </dl>
+          </div>
+          <h3 id="<%= id('assert-equals') %>" data-title="+equals(actual, expected[, msg])+"><code>buster.assert.equals(actual, expected[, message])</code></h3>
+          <p>
+            Compares <code>actual</code> to <code>expected</code> property for
+            property. If the property count does not match, or if any
+            of <code>actual</code>'s properties does not match the corresponding
+            property in <code>expected</code> the assertion fails.
+          </p>
+          <p>
+            If <code>actual</code> is <code>null</code>
+            or <code>undefined</code>, an exact match is required. Date objects
+            are compared by their <code>getTime</code> method. Regular
+            expressions are compare by their string representations. Primitives
+            are compared using <code>==</code>, i.e., with coercion.
+          </p>
+          <p>
+            <code>equals</code> passes when comparing an <code>arguments</code>
+            object to an array if the both contain the same elements.
+          </p>
+          <p>
+            The optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>var assert = buster.assert;
 assert.equals({ name: "Professor Chaos" }, { name: "Professor Chaos" }, "Passes");
 assert.equals({ name: "Professor Chaos" }, { name: "Dr Evil" }, "Fails");
 assert.equals({ name: "Professor Chaos" }, { name: "Professor Chaos" }); // Passes
 assert.equals({ name: "Professor Chaos" }, { name: "Dr Evil" });         // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.equals.msgFail = "${0}Expected ${1} to be equal to ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected object</dd>
-          </dl>
-        </div>
-        <h3 id="assert-notEquals" data-title="+notEquals(actual, expected[, msg])+"><code>buster.assert.notEquals(actual, expected[, message])</code></h3>
-        <p>
-          Passes in any case where <a href="#assert-equals">equals</a> fails.
-          The optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>var assert = buster.assert;
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.equals.msgFail = "${0}Expected ${1} to be equal to ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected object</dd>
+            </dl>
+          </div>
+          <h3 id="<%= id('assert-notEquals') %>" data-title="+notEquals(actual, expected[, msg])+"><code>buster.assert.notEquals(actual, expected[, message])</code></h3>
+          <p>
+            Passes in any case where <%=l "assert.equals" %> fails.
+            The optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>var assert = buster.assert;
 assert.notEquals({ name: "Professor Chaos" }, { name: "Dr Evil" }, "Passes");
 assert.notEquals({ name: "Professor Chaos" }, { name: "Professor Chaos" }, "Fails");
 assert.notEquals({ name: "Professor Chaos" }, { name: "Dr Evil" });        // Passes
 assert.notEquals({ name: "Professor Chaos" }, { name: "Professor Chaos" });// Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.notEquals.msgFail = "${0}Expected ${1} not to be equal to ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+typeOf(object, expected[, msg])+" id="assert-typeOf"><code>buster.assert.typeOf(object, expected[, message])</code></h3>
-        <p>
-          Fails if <code>typeof object</code> is not <code>expected</code>.  The
-          optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.typeOf({}, "object", "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.notEquals.msgFail = "${0}Expected ${1} not to be equal to ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+typeOf(object, expected[, msg])+"
+              id="<%= id('assert-typeOf') %>"><code>buster.assert.typeOf(object, expected[, message])</code></h3>
+          <p>
+            Fails if <code>typeof object</code> is not <code>expected</code>.  The
+            optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.typeOf({}, "object", "This will pass");
 buster.assert.typeOf(null, "function", "This will fail");
 buster.assert.typeOf({}, "object");     // Passes
 buster.assert.typeOf(null, "function"); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.typeOf.msgFail = "${0}Expected typeof ${1} (${3}) to be ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected type, a string</dd>
-            <dt><code>${3}</code></dt>
-            <dd><code>typeof object</code></dd>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.typeOf.msgFail = "${0}Expected typeof ${1} (${3}) to be ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected type, a string</dd>
+              <dt><code>${3}</code></dt>
+              <dd><code>typeof object</code></dd>
             </dl>
-        </div>
-        <h3 data-title="+notTypeOf(object, expected[, msg])+" id="assert-notTypeOf"><code>buster.assert.notTypeOf(object, expected[, message])</code></h3>
-        <p>
-          Fails if <code>typeof object</code> is <code>expected</code>.  The
-          optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.notTypeOf(null, "function", "This will pass");
+          </div>
+          <h3 data-title="+notTypeOf(object, expected[, msg])+"
+              id="<%= id('assert-notTypeOf') %>"><code>buster.assert.notTypeOf(object, expected[, message])</code></h3>
+          <p>
+            Fails if <code>typeof object</code> is <code>expected</code>.  The
+            optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.notTypeOf(null, "function", "This will pass");
 buster.assert.notTypeOf({}, "object", "This will fail");
 buster.assert.notTypeOf(null, "function"); // Passes
 buster.assert.notTypeOf({}, "object");     // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.notTypeOf.msgFail = "${0}Expected typeof ${1} not to be ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected type, a string</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isString(object[, msg])+" id="assert-isString"><code>buster.assert.isString(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not a string.  The optional message is
-          prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isString("Hey there", "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.notTypeOf.msgFail = "${0}Expected typeof ${1} not to be ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected type, a string</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isString(object[, msg])+" id="<%= id('assert-isString') %>"><code>buster.assert.isString(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not a string.  The optional message is
+            prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isString("Hey there", "This will pass");
 buster.assert.isString({}, "This will fail");
 buster.assert.isString("function");     // Passes
 buster.assert.isString(function () {}); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isString.msgFail = "${0}Expected typeof ${1} (${2}) to be string";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd><code>typeof object</code></dd>
-          </dl>
-        </div>
-        <h3 data-title="+isObject(object[, msg])+" id="assert-isObject"><code>buster.assert.isObject(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not an object or if it
-          is <code>null</code>.  The optional message is prepended to the
-          failure message if provided.
-        </p>
-        <pre><code>buster.assert.isObject({}, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isString.msgFail = "${0}Expected typeof ${1} (${2}) to be string";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd><code>typeof object</code></dd>
+            </dl>
+          </div>
+          <h3 data-title="+isObject(object[, msg])+" id="<%= id('assert-isObject') %>"><code>buster.assert.isObject(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not an object or if it
+            is <code>null</code>.  The optional message is prepended to the
+            failure message if provided.
+          </p>
+          <pre><code>buster.assert.isObject({}, "This will pass");
 buster.assert.isObject(42, "This will fail");
 buster.assert.isObject([1, 2, 3]);      // Passes
 buster.assert.isObject(function () {}); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isObject.msgFail = "${0}Expected typeof ${1} (${2}) to be object";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd><code>typeof object</code></dd>
-          </dl>
-        </div>
-        <h3 data-title="+isFunction(object[, msg])+" id="assert-isFunction"><code>buster.assert.isFunction(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not a function.  The optional message
-          is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isFunction(function () {}, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isObject.msgFail = "${0}Expected typeof ${1} (${2}) to be object";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd><code>typeof object</code></dd>
+            </dl>
+          </div>
+          <h3 data-title="+isFunction(object[, msg])+"
+              id="<%= id('assert-isFunction') %>"><code>buster.assert.isFunction(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not a function.  The optional message
+            is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isFunction(function () {}, "This will pass");
 buster.assert.isFunction(42, "This will fail");
 buster.assert.isFunction(function () {}); // Passes
 buster.assert.isFunction([1, 2, 3]);      // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isFunction.msgFail = "${0}Expected typeof ${1} (${2}) to be function";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd><code>typeof object</code></dd>
-          </dl>
-        </div>
-        <h3 data-title="+isBoolean(object[, msg])+" id="assert-isBoolean"><code>buster.assert.isBoolean(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not a boolean.  The optional message
-          is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isBoolean(false, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isFunction.msgFail = "${0}Expected typeof ${1} (${2}) to be function";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd><code>typeof object</code></dd>
+            </dl>
+          </div>
+          <h3 data-title="+isBoolean(object[, msg])+"
+              id="<%= id('assert-isBoolean') %>"><code>buster.assert.isBoolean(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not a boolean.  The optional message
+            is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isBoolean(false, "This will pass");
 buster.assert.isBoolean(42, "This will fail");
 buster.assert.isBoolean(true);      // Passes
 buster.assert.isBoolean([1, 2, 3]); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isBoolean.msgFail = "${0}Expected typeof ${1} (${2}) to be boolean";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd><code>typeof object</code></dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNumber(object[, msg])+" id="assert-isNumber"><code>buster.assert.isNumber(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not a number <strong>or if it's
-          NaN</strong>. NaN is rarely an expected value, even when expecting
-          numbers. Use <code>isNaN</code> to check explicitly for NaN, or in
-          those cases where you actually expect <strong>any</strong> number
-          (including NaN), use
-          <code>assert.typeOf</code>. The optional message is prepended to the
-          failure message if provided.
-        </p>
-        <pre><code>buster.assert.isNumber(42, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isBoolean.msgFail = "${0}Expected typeof ${1} (${2}) to be boolean";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd><code>typeof object</code></dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNumber(object[, msg])+" id="<%= id('assert-isNumber') %>"><code>buster.assert.isNumber(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not a number <strong>or if it's
+              NaN</strong>. NaN is rarely an expected value, even when expecting
+            numbers. Use <code>isNaN</code> to check explicitly for NaN, or in
+            those cases where you actually expect <strong>any</strong> number
+            (including NaN), use
+            <code>assert.typeOf</code>. The optional message is prepended to the
+            failure message if provided.
+          </p>
+          <pre><code>buster.assert.isNumber(42, "This will pass");
 buster.assert.isNumber({}, "This will fail");
 buster.assert.isNumber(1423); // Passes
 buster.assert.isNumber(NaN);  // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNumber.msgFail = "${0}Expected ${1} (${2}) to be a non-NaN number";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd><code>typeof object</code></dd>
-          </dl>
-        </div>
-        <h3 data-title="+isUndefined(object[, msg])+" id="assert-isUndefined"><code>buster.assert.isUndefined(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not <code>undefined</code>.  The
-          optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>var a;
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNumber.msgFail = "${0}Expected ${1} (${2}) to be a non-NaN number";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd><code>typeof object</code></dd>
+            </dl>
+          </div>
+          <h3 data-title="+isUndefined(object[, msg])+"
+              id="<%= id('assert-isUndefined') %>"><code>buster.assert.isUndefined(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not <code>undefined</code>.  The
+            optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>var a;
 buster.assert.isUndefined(undefined, "This will pass");
 buster.assert.isUndefined({}, "This will fail");
 buster.assert.isUndefined(a);  // Passes
 buster.assert.isUndefined({}); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isUndefined.msgFail = "${0}Expected typeof ${1} (${2}) to undefined";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd><code>typeof object</code></dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNotUndefined(object[, msg])+" id="assert-isNotUndefined"><code>buster.assert.isNotUndefined(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is <code>undefined</code>.  The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>var a;
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isUndefined.msgFail = "${0}Expected typeof ${1} (${2}) to undefined";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd><code>typeof object</code></dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNotUndefined(object[, msg])+"
+              id="<%= id('assert-isNotUndefined') %>"><code>buster.assert.isNotUndefined(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is <code>undefined</code>.  The optional
+            message is prepended to the failure message if provided.
+          </p>
+          <pre><code>var a;
 
 buster.assert.isNotUndefined({}, "This will pass");
 buster.assert.isNotUndefined(undefined, "This will fail");
 buster.assert.isNotUndefined({});  // Passes
 buster.assert.isNotUndefined(a); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNotUndefined.msgFail = "${0}Expected typeof ${1} (${2}) not to be undefined";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd><code>typeof object</code></dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNull(object[, msg])+" id="assert-isNull"><code>buster.assert.isNull(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not <code>null</code>.  The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isNull(null, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNotUndefined.msgFail = "${0}Expected typeof ${1} (${2}) not to be undefined";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd><code>typeof object</code></dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNull(object[, msg])+" id="<%= id('assert-isNull') %>"><code>buster.assert.isNull(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not <code>null</code>.  The optional
+            message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isNull(null, "This will pass");
 buster.assert.isNull({}, "This will fail");
 buster.assert.isNull(null); // Passes
 buster.assert.isNull({});   // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNull.msgFail = "${0}Expected ${1} to be null";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNotNull(object[, msg])+" id="assert-isNotNull"><code>buster.assert.isNotNull(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is <code>null</code>.  The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isNotNull({}, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNull.msgFail = "${0}Expected ${1} to be null";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNotNull(object[, msg])+"
+              id="<%= id('assert-isNotNull') %>"><code>buster.assert.isNotNull(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is <code>null</code>.  The optional
+            message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isNotNull({}, "This will pass");
 buster.assert.isNotNull(null, "This will fail");
 buster.assert.isNotNull({});   // Passes
 buster.assert.isNotNull(null); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNotNull.msgFail = "${0}Expected not to be null";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNaN(object[, msg])+" id="assert-isNaN"><code>buster.assert.isNaN(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not <code>NaN</code>.
-          The optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isNaN(NaN, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNotNull.msgFail = "${0}Expected not to be null";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNaN(object[, msg])+" id="<%= id('assert-isNaN') %>"><code>buster.assert.isNaN(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not <code>NaN</code>.
+            The optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isNaN(NaN, "This will pass");
 buster.assert.isNaN(24, "This will fail");
 buster.assert.isNaN(NaN);    // Passes
 buster.assert.isNaN([1, 3]); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNaN.msgFail = "${0}Expected ${1} to be NaN";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNotNaN(object[, msg])+" id="assert-isNotNaN"><code>buster.assert.isNotNaN(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is <code>NaN</code>.  The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isNotNaN(24, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNaN.msgFail = "${0}Expected ${1} to be NaN";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNotNaN(object[, msg])+" id="<%= id('assert-isNotNaN') %>"><code>buster.assert.isNotNaN(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is <code>NaN</code>.  The optional
+            message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isNotNaN(24, "This will pass");
 buster.assert.isNotNaN(NaN, "This will fail");
 buster.assert.isNotNaN({});  // Passes
 buster.assert.isNotNaN(NaN); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNotNaN.msgFail = "${0}Expected ${1} not to be NaN";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isArray(object[, msg])+" id="assert-isArray"><code>buster.assert.isArray(object[, message])</code></h3>
-        <p>
-          Fails if <code>object</code> is not a true array.  The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isArray([1, ""], "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNotNaN.msgFail = "${0}Expected ${1} not to be NaN";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isArray(object[, msg])+" id="<%= id('assert-isArray') %>"><code>buster.assert.isArray(object[, message])</code></h3>
+          <p>
+            Fails if <code>object</code> is not a true array.  The optional
+            message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isArray([1, ""], "This will pass");
 buster.assert.isArray(42, "This will fail");
 buster.assert.isArray([]);  // Passes
 buster.assert.isArray({});  // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isArray.msgFail = "${0}Expected ${1} to be array";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNotArray(actual[, msg])+" id="assert-isNotArray"><code>buster.assert.isNotArray(actual[, message])</code></h3>
-        <p>
-          Fails if <code>actual</code> is a true array.  The optional message is
-          prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.isNotArray(42, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isArray.msgFail = "${0}Expected ${1} to be array";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNotArray(actual[, msg])+"
+              id="<%= id('assert-isNotArray') %>"><code>buster.assert.isNotArray(actual[, message])</code></h3>
+          <p>
+            Fails if <code>actual</code> is a true array.  The optional message is
+            prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.isNotArray(42, "This will pass");
 buster.assert.isNotArray([1, ""], "This will fail");
 buster.assert.isNotArray({});  // Passes
 buster.assert.isNotArray([]);  // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNotArray.msgFail = "${0}Expected ${1} not to be array";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isArrayLike(actual[, msg])+" id="assert-isArrayLike"><code>buster.assert.isArrayLike(actual[, message])</code></h3>
-        <p>
-          Fails if <code>actual</code> is not array-like. Array-like objects
-          include true arrays,
-          <code>arguments</code> objects and objects that have both a
-          numeric <code>length</code> property and a
-          <code>slice</code> method.  The optional message is prepended to the
-          failure message if provided.
-        </p>
-        <pre><code>buster.assert.isArrayLike({ length: 1, slice: function () {}, "0": 6 }, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNotArray.msgFail = "${0}Expected ${1} not to be array";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isArrayLike(actual[, msg])+"
+              id="<%= id('assert-isArrayLike') %>"><code>buster.assert.isArrayLike(actual[, message])</code></h3>
+          <p>
+            Fails if <code>actual</code> is not array-like. Array-like objects
+            include true arrays,
+            <code>arguments</code> objects and objects that have both a
+            numeric <code>length</code> property and a
+            <code>slice</code> method.  The optional message is prepended to the
+            failure message if provided.
+          </p>
+          <pre><code>buster.assert.isArrayLike({ length: 1, slice: function () {}, "0": 6 }, "This will pass");
 buster.assert.isArrayLike({ length: 1 }, "This will fail"); // Misses slice method
 buster.assert.isArrayLike([1, 2, 3]); // Passes
 buster.assert.isArrayLike(42);        // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isArrayLike.msgFail = "${0}Expected ${1} to be array like";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+isNotArrayLike(actual[, msg])+" id="assert-isNotArrayLike"><code>buster.assert.isNotArrayLike(actual[, message])</code></h3>
-        <p>
-          Fails if <code>actual</code> is array-like. Array-like objects include
-          true arrays,
-          <code>arguments</code> objects and objects that have both a
-          numeric <code>length</code> property and a
-          <code>slice</code> method.  The optional message is prepended to the
-          failure message if provided.
-        </p>
-        <pre><code>buster.assert.isNotArrayLike({ length: 1 }, "This will pass"); // Misses slice method
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isArrayLike.msgFail = "${0}Expected ${1} to be array like";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+isNotArrayLike(actual[, msg])+"
+              id="<%= id('assert-isNotArrayLike') %>"><code>buster.assert.isNotArrayLike(actual[, message])</code></h3>
+          <p>
+            Fails if <code>actual</code> is array-like. Array-like objects include
+            true arrays,
+            <code>arguments</code> objects and objects that have both a
+            numeric <code>length</code> property and a
+            <code>slice</code> method.  The optional message is prepended to the
+            failure message if provided.
+          </p>
+          <pre><code>buster.assert.isNotArrayLike({ length: 1 }, "This will pass"); // Misses slice method
 buster.assert.isNotArrayLike({ length: 1, slice: function () {}, "0": 6 }, "This will fail");
 buster.assert.isNotArrayLike(42);        // Passes
 buster.assert.isNotArrayLike([1, 2, 3]); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.isNotArrayLike.msgFail = "${0}Expected ${1} not to be array like";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+match(actual, matcher[, msg])+" id="assert-match"><code>buster.assert.match(actual, matcher[, message])</code></h3>
-        <p>
-          Fails if <code>matcher</code> is not a partial match
-          about <code>actual</code>. Accepts a wide range of input combinations.
-        </p>
-        <h4>String matcher</h4>
-        <p>
-          In its simplest form, <code>buster.assert.match</code> performs a case
-          insensitive substring match. When the matcher is a string,
-          the <code>actual</code> object is converted to a string, and the
-          assertion passes if <code>actual</code> is a case-insensitive
-          substring of <code>expected</code> as a string.
-        </p>
-        <pre><code>buster.assert.match("Give me something", "Give", "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.isNotArrayLike.msgFail = "${0}Expected ${1} not to be array like";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+match(actual, matcher[, msg])+"
+              id="<%= id('assert-match') %>"><code>buster.assert.match(actual, matcher[, message])</code></h3>
+          <p>
+            Fails if <code>matcher</code> is not a partial match
+            about <code>actual</code>. Accepts a wide range of input combinations.
+          </p>
+          <h4>String matcher</h4>
+          <p>
+            In its simplest form, <code>buster.assert.match</code> performs a case
+            insensitive substring match. When the matcher is a string,
+            the <code>actual</code> object is converted to a string, and the
+            assertion passes if <code>actual</code> is a case-insensitive
+            substring of <code>expected</code> as a string.
+          </p>
+          <pre><code>buster.assert.match("Give me something", "Give", "This will pass");
 buster.assert.match("Give me something", "sumptn", "This will fail");
 buster.assert.match("Yeah", { toString: function () { return "yeah!"; } }); // Passes
 buster.assert.match("Oh no", /[a-z]/); // Fails</code></pre>
-        <h4>Regular expression matcher</h4>
-        <p>
-          When the matcher is a regular expression, the assertion will pass if
-          <code>expected.test(actual)</code> is true. <code>assert.match</code>
-          is written in a generic way, so any object with a <code>test</code>
-          method will be used as a matcher this way.
-        </p>
-        <pre><code>buster.assert.match("Give me something", /^[a-z\s]$/i, "This will pass");
+          <h4>Regular expression matcher</h4>
+          <p>
+            When the matcher is a regular expression, the assertion will pass if
+            <code>expected.test(actual)</code> is true. <code>assert.match</code>
+            is written in a generic way, so any object with a <code>test</code>
+            method will be used as a matcher this way.
+          </p>
+          <pre><code>buster.assert.match("Give me something", /^[a-z\s]$/i, "This will pass");
 buster.assert.match("Give me something", /[0-9]/, "This will fail");
 buster.assert.match({ toString: function () { return "yeah!"; } }, /yeah/); // Passes
 buster.assert.match(234, /[a-z]/); // Fails</code></pre>
-        <h4>Number matcher</h4>
-        <p>
-          When the matcher is a number, the assertion will pass if <code>matcher
-          == actual</code>.
-        </p>
-        <pre><code>buster.assert.match("123", 123, "This will pass");
+          <h4>Number matcher</h4>
+          <p>
+            When the matcher is a number, the assertion will pass if <code>matcher
+              == actual</code>.
+          </p>
+          <pre><code>buster.assert.match("123", 123, "This will pass");
 buster.assert.match("Give me something", 425, "This will fail");
 buster.assert.match({ toString: function () { return "42"; } }, 42); // Passes
 buster.assert.match(234, 1234); // Fails</code></pre>
-        <h4>Function matcher</h4>
-        <p>
-          When the matcher is a function, it is called with <code>actual</code>
-          as its only argument. The assertion will pass if the function
-          returns <code>true</code>. A strict match is performed against the
-          return value, so a boolean <code>true</code> is required, truthy is
-          not enough.
-        </p>
-        <pre><code>buster.assert.match("123", function (exp) {
+          <h4>Function matcher</h4>
+          <p>
+            When the matcher is a function, it is called with <code>actual</code>
+            as its only argument. The assertion will pass if the function
+            returns <code>true</code>. A strict match is performed against the
+            return value, so a boolean <code>true</code> is required, truthy is
+            not enough.
+          </p>
+          <pre><code>buster.assert.match("123", function (exp) {
     return exp == "123";
 }, "This will pass");
 
@@ -672,16 +681,16 @@ buster.assert.match({
 }, function () { return true; }); // Passes
 
 buster.assert.match(234, function () {}); // Fails</code></pre>
-        <h4>Object matcher</h4>
-        <p>
-          As mentioned above, if an object matcher defines a <code>test</code>
-          method the assertion will pass if <code>matcher.test(actual</code>
-          returns truthy. If the object does not have a <code>test</code>
-          method, a recursive match is performed. If all properties
-          of <code>matcher</code> matches coresponding properties
-          in <code>actual</code>, the assertion passes.
-        </p>
-        <pre><code>buster.assert.match("123", {
+          <h4>Object matcher</h4>
+          <p>
+            As mentioned above, if an object matcher defines a <code>test</code>
+            method the assertion will pass if <code>matcher.test(actual</code>
+            returns truthy. If the object does not have a <code>test</code>
+            method, a recursive match is performed. If all properties
+            of <code>matcher</code> matches coresponding properties
+            in <code>actual</code>, the assertion passes.
+          </p>
+          <pre><code>buster.assert.match("123", {
     test: function (arg) {
         return arg == 123;
     }
@@ -699,70 +708,72 @@ buster.assert.match({
 buster.assert.match(234, {
     name: "Chris"
 }); // Fails</code></pre>
-        <div class="msg">
-          <h4>Messages</h4>
-          <p><code>buster.assert.match.msgException = "${0}${1}";</code></p>
+          <div class="msg">
+            <h4>Messages</h4>
+            <p><code>buster.assert.match.msgException = "${0}${1}";</code></p>
+            <p>
+              Used when the matcher function throws an exception. This happens if
+              the matcher is not any of the accepted types, for instance, a boolean.
+            </p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>
+                Message from exception thrown by matcher function.
+              </dd>
+            </dl>
+            <p><code>assert.match.msgFail = "${0}Expected ${1} to match ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual object</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+noMatch(actual, pattern[, msg])+"
+              id="<%= id('assert-noMatch') %>"><code>buster.assert.noMatch(actual, pattern[, message])</code></h3>
           <p>
-            Used when the matcher function throws an exception. This happens if
-            the matcher is not any of the accepted types, for instance, a boolean.
+            Fails in cases where <%= anchor("assert.match", "assert-match") %> passes.
           </p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>
-              Message from exception thrown by matcher function.
-            </dd>
-          </dl>
-          <p><code>assert.match.msgFail = "${0}Expected ${1} to match ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual object</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+noMatch(actual, pattern[, msg])+" id="assert-noMatch"><code>buster.assert.noMatch(actual, pattern[, message])</code></h3>
-        <p>
-          Fails in cases where <%= anchor("assert.match", "assert-match") %> passes.
-        </p>
-        <div class="msg">
-          <h4>Messages</h4>
-          <p><code>buster.assert.noMatch.msgException = "${0}${1}";</code></p>
+          <div class="msg">
+            <h4>Messages</h4>
+            <p><code>buster.assert.noMatch.msgException = "${0}${1}";</code></p>
+            <p>
+              Used when the matcher function throws an exception. This happens if
+              the matcher is not any of the accepted types, for instance, a boolean.
+            </p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>
+                Message from exception thrown by matcher function.
+              </dd>
+            </dl>
+            <p><code>buster.assert.noMatch.msgFail = "${0}Expected ${1} not to match ${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual objetc</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected object</dd>
+            </dl>
+          </div>
+          <h3 data-title="+exception(callback[, type[, msg]])+"
+              id="<%= id('assert-exception') %>"><code>buster.assert.exception(callback[, type[, message]])</code></h3>
           <p>
-            Used when the matcher function throws an exception. This happens if
-            the matcher is not any of the accepted types, for instance, a boolean.
+            Fails if <code>callback</code> does not throw an exception. If the
+            optional <code>type</code> is provided, the assertion fails if the
+            callback either does not throw an exception, <strong>or</strong> if
+            the exception is not of the given type (determined by its
+            <code>name</code> property).  The optional message is prepended to the
+            failure message if provided.
           </p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>
-              Message from exception thrown by matcher function.
-            </dd>
-          </dl>
-          <p><code>buster.assert.noMatch.msgFail = "${0}Expected ${1} not to match ${2}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual objetc</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected object</dd>
-          </dl>
-        </div>
-        <h3 data-title="+exception(callback[, type[, msg]])+" id="assert-exception"><code>buster.assert.exception(callback[, type[, message]])</code></h3>
-        <p>
-          Fails if <code>callback</code> does not throw an exception. If the
-          optional <code>type</code> is provided, the assertion fails if the
-          callback either does not throw an exception, <strong>or</strong> if
-          the exception is not of the given type (determined by its
-          <code>name</code> property).  The optional message is prepended to the
-          failure message if provided.
-        </p>
-        <pre><code>buster.assert.exception(function () {
+          <pre><code>buster.assert.exception(function () {
     throw new Error("Ooops!");
 }, null, "This will pass");
 
@@ -787,28 +798,29 @@ buster.assert.exception(function () {
 }, "Error"); // Passes
 
 buster.assert.exception(function () {}, "TypeError"); // Fails</code></pre>
-        <div class="msg">
-          <h4>Messages</h4>
+          <div class="msg">
+            <h4>Messages</h4>
+            <p>
+              <code>buster.assert.exception.msgTypeNoException = "${0}Expected ${1} but no exception was thrown";</code><br>
+              <code>buster.assert.exception.msgFail = "${0}Expected exception";</code><br>
+              <code>buster.assert.exception.msgTypeFail = "${0}Expected ${1} but threw ${2}";</code>
+            </p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected exception type (if provided)</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The type of exception thrown (if any)</dd>
+            </dl>
+          </div>
+          <h3 data-title="+noException(callback[, msg])+"
+              id="<%= id('assert-noException') %>"><code>buster.assert.noException(callback[, message])</code></h3>
           <p>
-            <code>buster.assert.exception.msgTypeNoException = "${0}Expected ${1} but no exception was thrown";</code><br>
-            <code>buster.assert.exception.msgFail = "${0}Expected exception";</code><br>
-            <code>buster.assert.exception.msgTypeFail = "${0}Expected ${1} but threw ${2}";</code>
+            Fails if <code>callback</code> throws an exception.  The optional
+            message is prepended to the failure message if provided.
           </p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The expected exception type (if provided)</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The type of exception thrown (if any)</dd>
-          </dl>
-        </div>
-        <h3 data-title="+noException(callback[, msg])+" id="assert-noException"><code>buster.assert.noException(callback[, message])</code></h3>
-        <p>
-          Fails if <code>callback</code> throws an exception.  The optional
-          message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.noException(function () {
+          <pre><code>buster.assert.noException(function () {
     // Exercise code...
 }, "This will pass");
 
@@ -823,137 +835,142 @@ buster.assert.noException(function () {
 buster.assert.noException(function () {
     throw new TypeError("Ooops!");
 }); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.noException.msgFail = "${0}Expected not to throw but threw ${1}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The type of exception thrown (if any)</dd>
-          </dl>
-        </div>
-        <h3 data-title="+inDelta(actual, expected, delta[, msg])+" id="assert-isDelta"><code>buster.assert.inDelta(actual, expected, delta[, message])</code></h3>
-        <p>
-          Compares numbers with a delta. Fails if the <code>actual</code> number
-          differs from the
-          <code>expected</code> number by more than +/- <code>delta</code>.
-        </p>
-        <pre><code>buster.assert.inDelta(3, 2.9, 0.1, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.noException.msgFail = "${0}Expected not to throw but threw ${1}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The type of exception thrown (if any)</dd>
+            </dl>
+          </div>
+          <h3 data-title="+inDelta(actual, expected, delta[, msg])+"
+              id="<%= id('assert-isDelta') %>"><code>buster.assert.inDelta(actual, expected, delta[, message])</code></h3>
+          <p>
+            Compares numbers with a delta. Fails if the <code>actual</code> number
+            differs from the
+            <code>expected</code> number by more than +/- <code>delta</code>.
+          </p>
+          <pre><code>buster.assert.inDelta(3, 2.9, 0.1, "This will pass");
 buster.assert.inDelta(3, 2.9, 0.01, "This will fail");
 buster.assert.inDelta(1, 1, 0); // Passes
 buster.assert.inDelta(1, 1.2, 0.1); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.inDelta.msgFail = "${0}Expected ${1} to be equal to ${2} +/- ${3}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual number</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected number</dd>
-            <dt><code>${3}</code></dt>
-            <dd>The delta</dd>
-          </dl>
-        </div>
-        <h3 data-title="+notInDelta(actual, expected, delta[, msg])+" id="assert-notInDelta"><code>buster.assert.notInDelta(actual, expected, delta[, message])</code></h3>
-        <p>
-          Compares numbers with a delta. Fails if the <code>actual</code> number
-          does not differ from the <code>expected</code> number by more
-          than +/- <code>delta</code>.
-        </p>
-        <pre><code>buster.assert.notInDelta(3, 2.5, 0.1, "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.inDelta.msgFail = "${0}Expected ${1} to be equal to ${2} +/- ${3}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual number</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected number</dd>
+              <dt><code>${3}</code></dt>
+              <dd>The delta</dd>
+            </dl>
+          </div>
+          <h3 data-title="+notInDelta(actual, expected, delta[, msg])+"
+              id="<%= id('assert-notInDelta') %>"><code>buster.assert.notInDelta(actual, expected, delta[, message])</code></h3>
+          <p>
+            Compares numbers with a delta. Fails if the <code>actual</code> number
+            does not differ from the <code>expected</code> number by more
+            than +/- <code>delta</code>.
+          </p>
+          <pre><code>buster.assert.notInDelta(3, 2.5, 0.1, "This will pass");
 buster.assert.notInDelta(3, 3, 0.01, "This will fail");
 buster.assert.notInDelta(1, 0.9, 0); // Passes
 buster.assert.notInDelta(1, 1.2, 0.2); // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.inDelta.msgFail = "${0}Expected ${1} not to be equal to ${2} +/- ${3}";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The actual number</dd>
-            <dt><code>${2}</code></dt>
-            <dd>The expected number</dd>
-            <dt><code>${3}</code></dt>
-            <dd>The delta</dd>
-          </dl>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.inDelta.msgFail = "${0}Expected ${1} not to be equal to ${2} +/- ${3}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The actual number</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The expected number</dd>
+              <dt><code>${3}</code></dt>
+              <dd>The delta</dd>
+            </dl>
+          </div>
         </div>
-      </div>
-      <div class="section">
-        <h2 id="dom-assertions">Browser/DOM-specific assertions</h2>
-        <h3 data-title="+tagName(element, tagName[, msg])+" id="assert-tagName"><code>buster.assert.tagName(element, tagName[, message])</code></h3>
-        <p>
-          Fails if the <code>element</code> either does not specify
-          a <code>tagName</code> property, or if its value is not a
-          case-insensitive match with the expected <code>tagName</code>. The
-          optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.tagName(document.createElement("p"), "p", "This will pass");
+        <div class="section">
+          <h2 id="<%= id('dom-assertions') %>">Browser/DOM-specific assertions</h2>
+          <h3 data-title="+tagName(element, tagName[, msg])+"
+              id="<%= id('assert-tagName') %>"><code>buster.assert.tagName(element, tagName[, message])</code></h3>
+          <p>
+            Fails if the <code>element</code> either does not specify
+            a <code>tagName</code> property, or if its value is not a
+            case-insensitive match with the expected <code>tagName</code>. The
+            optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.tagName(document.createElement("p"), "p", "This will pass");
 buster.assert.tagName(document.createElement("p"), "li", "This will fail");
 buster.assert.tagName(document.createElement("h2"), "H2"); // Passes
 buster.assert.tagName(document.createElement("p"), "li");  // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.tagName.msgNoTagName = "${0}Expected ${2} to have tagName property";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The expected <code>tagName</code></dd>
-            <dt><code>${2}</code></dt>
-            <dd>
-              If the object does not have a <code>tagName</code> property, this is
-              the object. Otherwise, it is the value
-              of <code>object.tagName</code>.
-            </dd>
-          </dl>
-        </div>
-        <h3 data-title="+notTagName(element, tagName[, msg])+" id="assert-notTagName"><code>buster.assert.notTagName(element, tagName[, message])</code></h3>
-        <p>
-          Fails if the <code>element</code> either does not specify
-          a <code>tagName</code> property, or if its value <strong>is</strong> a
-          case-insensitive match with the expected <code>tagName</code>.  The
-          optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>buster.assert.notTagName(document.createElement("p"), "LI", "This will pass");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.tagName.msgNoTagName = "${0}Expected ${2} to have tagName property";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected <code>tagName</code></dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                If the object does not have a <code>tagName</code> property, this is
+                the object. Otherwise, it is the value
+                of <code>object.tagName</code>.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+notTagName(element, tagName[, msg])+"
+              id="<%= id('assert-notTagName') %>"><code>buster.assert.notTagName(element, tagName[, message])</code></h3>
+          <p>
+            Fails if the <code>element</code> either does not specify
+            a <code>tagName</code> property, or if its value <strong>is</strong> a
+            case-insensitive match with the expected <code>tagName</code>.  The
+            optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>buster.assert.notTagName(document.createElement("p"), "LI", "This will pass");
 buster.assert.notTagName(document.createElement("p"), "p", "This will fail");
 buster.assert.notTagName(document.createElement("h2"), "H3"); // Passes
 buster.assert.notTagName(document.createElement("p"), "p");   // Fails</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.notTagName.msgNoTagName = "${0}Expected ${2} to have tagName property";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The expected <code>tagName</code></dd>
-            <dt><code>${2}</code></dt>
-            <dd>
-              If the object does not have a <code>tagName</code> property, this is
-              the object.
-            </dd>
-          </dl>
-        </div>
-        <h3 data-title="+className(element, tagName[, msg])+" id="assert-className"><code>buster.assert.className(element, tagName[, message])</code></h3>
-        <p>
-          Fails if the <code>element</code> either does not specify
-          a <code>className</code> property, or if its value is not a
-          space-separated list of all class names in <code>classNames</code>.
-        </p>
-        <p>
-          <code>classNames</code> can be either a space-delimited string or an
-          array of class names. Every class specified by <code>classNames</code>
-          must be found in the object's
-          <code>className</code> property for the assertion to pass, but order
-          does not matter.
-        </p>
-        <p>
-          The optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>var el = document.createElement("p");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.notTagName.msgNoTagName = "${0}Expected ${2} to have tagName property";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected <code>tagName</code></dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                If the object does not have a <code>tagName</code> property, this is
+                the object.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+className(element, tagName[, msg])+"
+              id="<%= id('assert-className') %>"><code>buster.assert.className(element, tagName[, message])</code></h3>
+          <p>
+            Fails if the <code>element</code> either does not specify
+            a <code>className</code> property, or if its value is not a
+            space-separated list of all class names in <code>classNames</code>.
+          </p>
+          <p>
+            <code>classNames</code> can be either a space-delimited string or an
+            array of class names. Every class specified by <code>classNames</code>
+            must be found in the object's
+            <code>className</code> property for the assertion to pass, but order
+            does not matter.
+          </p>
+          <p>
+            The optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>var el = document.createElement("p");
 el.className = "feed item blog-post";
 
 buster.assert.className(el, "item", "This will pass");
@@ -961,35 +978,36 @@ buster.assert.className(el, "news", "This will fail");
 buster.assert.className(el, "blog-post feed"); // Passes
 buster.assert.className(el, "feed items");     // Fails, "items" is not a match
 buster.assert.className(el, ["item", "feed"]); // Passes</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.className.msgNoClassName = "${0}Expected object to have className property";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The expected <code>classNames</code></dd>
-            <dt><code>${2}</code></dt>
-            <dd>The value of the object's <code>className</code> property, if any.</dd>
-          </dl>
-        </div>
-        <h3 data-title="+notClassName(element, className[, msg])+" id="assert-notClassName"><code>buster.assert.notClassName(element, className[, message])</code></h3>
-        <p>
-          Fails if the <code>element</code> either does not specify
-          a <code>className</code> property, or if its value <strong>is</strong>
-          a space-separated list of all class names in <code>classNames</code>.
-        </p>
-        <p>
-          <code>classNames</code> can be either a space-delimited string or an
-          array of class names. If any class specified
-          by <code>classNames</code> is not found in the object's
-          <code>className</code> property the assertion passes. Order does not
-          matter.
-        </p>
-        <p>
-          The optional message is prepended to the failure message if provided.
-        </p>
-        <pre><code>var el = document.createElement("p");
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.className.msgNoClassName = "${0}Expected object to have className property";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected <code>classNames</code></dd>
+              <dt><code>${2}</code></dt>
+              <dd>The value of the object's <code>className</code> property, if any.</dd>
+            </dl>
+          </div>
+          <h3 data-title="+notClassName(element, className[, msg])+"
+              id="<%= id('assert-notClassName') %>"><code>buster.assert.notClassName(element, className[, message])</code></h3>
+          <p>
+            Fails if the <code>element</code> either does not specify
+            a <code>className</code> property, or if its value <strong>is</strong>
+            a space-separated list of all class names in <code>classNames</code>.
+          </p>
+          <p>
+            <code>classNames</code> can be either a space-delimited string or an
+            array of class names. If any class specified
+            by <code>classNames</code> is not found in the object's
+            <code>className</code> property the assertion passes. Order does not
+            matter.
+          </p>
+          <p>
+            The optional message is prepended to the failure message if provided.
+          </p>
+          <pre><code>var el = document.createElement("p");
 el.className = "feed item blog-post";
 
 buster.assert.notClassName(el, "chicken", "This will pass");
@@ -997,39 +1015,74 @@ buster.assert.notClassName(el, "news", "This will fail");
 buster.assert.notClassName(el, "blog-post rss");  // Passes
 buster.assert.notClassName(el, "feed item");      // Fails
 buster.assert.notClassName(el, ["item", "feed"]); // Passes</code></pre>
-        <div class="msg">
-          <h4>Message</h4>
-          <p><code>buster.assert.notClassName.msgNoClassName = "${0}Expected object to have className property";</code></p>
-          <dl>
-            <dt><code>${0}</code></dt>
-            <dd>The custom message, if any</dd>
-            <dt><code>${1}</code></dt>
-            <dd>The expected <code>classNames</code></dd>
-            <dt><code>${2}</code></dt>
-            <dd>
-              The value of the object's <code>className</code> property, if
-              any. Otherwise, the object itself.
-            </dd>
-          </dl>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>buster.assert.notClassName.msgNoClassName = "${0}Expected object to have className property";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The custom message, if any</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected <code>classNames</code></dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                The value of the object's <code>className</code> property, if
+                any. Otherwise, the object itself.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div class="section">
+          <h2 id="<%= id('methods') %>">Methods</h2>
+          <h3 id="<%= id('fail') %>"><code>fail(message)</code></h3>
+          <p>
+            When an assertion fails, it calls <code>buster.assert.fail</code> with
+            the failure message as the only argument. The built-in
+            <code>fail</code> function both throws an <%=l "AssertionError" %> and
+            emits it to the <%=e "failure" %> event. The error can be caught and
+            handled by the test runner. If this behavior is not suitable for your
+            testing framework of choice, you can override
+            <code>buster.assert.fail</code> to make it do the right thing.
+          </p>
+          <p>
+            Example: To use <strong>buster-assert</strong> with JsTestDriver, you
+            can simply configure it as follows:
+          </p>
+          <pre><code>buster.assert.fail = function (message) {
+    fail(message);
+};</code></pre>
+          <p>
+            Where the global <code>fail</code> function is the one provided by
+            JsTestDriver.
+          </p>
+          <p>
+            It is possible to make the default <code>assert.fail</code> method
+            only emit an event and not throw an error. This may be suitable in
+            asynchronous test runners, where you might not be able to catch
+            exceptions. To silence exceptions, see the <%=l "throwOnFailure" %>
+            property.
+          </p>
+          <h3 id="<%= id('format') %>"><code>format(object)</code></h3>
+          <p>
+            Values inserted into assertion messages using the <code>${n}</code>
+            switches are formatted using <code>buster.assert.format(obj)</code>.
+            By default this method simply coerces the object to a string.
+          </p>
+          <p>
+            A more expressive option is to use <%=m "format" %>, which is a
+            generic function for formatting objects nicely as ascii. For nice
+            ascii formatting of objects (including DOM elements) do:
+          </p>
+          <pre><code>buster.assert.format = buster.format.ascii;</code></pre>
+        </div>
+        <div class="section">
+          <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+          <h3 id="<%= id('assertion-error') %>"><code>AssertionError</code></h3>
+          <p>
+            An exception (specifically, an <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error"><code>Error</code> object</a>) whose <code>name</code> property is <code>"AssertionError"</code>.
+          </p>
         </div>
       </div>
-      <div class="section">
-        <h2 id="methods">Methods</h2>
-        <h3 id="fail" data-title="+fail(message)+">fail(message)</h3>
-      </div>
-      <div class="section">
-        <h2 id="supporting-objects">Supporting objects</h2>
-        <h3 id="assertion-error"><code>AssertionError</code></h3>
-        <p>
-          An exception (specifically, an <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error"><code>Error</code> object</a>) whose <code>name</code> property is <code>"AssertionError"</code>.
-        </p>
-      </div>
-    </div>
-    <div class="aside">
-      <%= module_navigation %>
     </div>
     <%= partial :footer %>
-    <script type="text/javascript" src="<%= context_path %>/javascripts/hijs.js"></script>
-    <script type="text/javascript" src="<%= context_path %>/javascripts/nav.js"></script>
   </body>
 </html>

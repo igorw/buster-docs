@@ -11,6 +11,8 @@ module BusterDocsHelpers
   end
 
   def module_list(dir)
+    return "" if !File.directory?(dir)
+
     modules = Dir.entries(dir).entries.find_all do |d|
       /^\.\.?$/ !~ d
     end
@@ -19,18 +21,26 @@ module BusterDocsHelpers
 
     <<-HTML
       <ul class="nav">
-        #{modules.collect { |mod| module_link(File.expand_path(File.join(dir, mod))) }.join("\n        ")}
+        #{modules.collect { |mod| module_list_item(File.expand_path(File.join(dir, mod))) }.join("\n        ")}
       </ul>
     HTML
   end
 
-  def module_link(path)
-    mod = File.basename(path)
-    active = @path =~ /^\/#{mod}/
-    link = l(:module, path)
-    nav = File.directory?(path) ? module_list(path) : ""
+  def module_list_item(path)
+    <<-HTML
+      <li#{' class="active"' if active?(path)}>
+        <a href="#{module_url(path)}">#{module_title(path)}</a>
+        #{module_list(path)}
+      </li>
+    HTML
+  end
 
-    "<li#{' class="active"' if active}>#{link}#{nav}</li>"
+  def active?(mod)
+    path =~ /^\/#{File.basename(mod)}/
+  end
+
+  def module_url(path)
+    path.sub(/^#{docs_root}/, "").sub(/\.html\.erb$/, "").gsub(/^\/*|\/*$/, "/")
   end
 
   def module_title(path)
@@ -45,61 +55,73 @@ module BusterDocsHelpers
   end
 
   def event(name, arguments = {})
-    args = arguments.inject([]) do |sum, kv|
-      if kv[1].nil?
-        sum << kv[0]
-      elsif kv[1] =~ /^#/
-        sum << l(:bare, kv[0], "##{id_hash(kv[1][1..-1])}")
+    args = arguments.inject([]) do |args, kv|
+      if kv[1] =~ /^#/
+        args << anchor("<code>#{kv[0]}</code>", kv[1])
       else
-        sum << l(:bare, kv[0], kv[1])
+        args << m(kv[1], "<code>#{kv[0]}</code>")
       end
 
-      sum
+      args
     end
 
     <<-HTML
-        <h3 id="event-#{id_hash(name)}" data-title="+#{name}+">
+        <h3 id="#{id('event-' + name)}" data-title="+#{name}+">
           Event: <code>"#{name}", function (#{args.join(', ')}) {}</code>
         </h3>
     HTML
   end
 
   def property(name, default)
-    id = name.split(/([A-Z])/).inject("") do |str, item|
-      str += (item == item.upcase ? "-" : "") + item.downcase
-    end
-
     <<-HTML
-        <h3 id="#{id_hash(id)}" data-title="+#{name}+">
+        <h3 id="#{id(name)}" data-title="+#{name}+">
           <code>#{name}</code> (<code>#{default}</code>)
         </h3>
     HTML
   end
 
-  def l(type, name, url = nil)
-    url ||= name
-
-    if type == :event
-      "<a href=\"##{id_hash('event-' + url)}\"><code>\"#{name}\"</code></a>"
-    elsif type == :bare
-      "<a href=\"#{url}\">#{name}</a>"
-    elsif type == :module
-      url = url.sub(/^#{docs_root}/, "").sub(/\.html\.erb$/, "").gsub(/^\/?|\/?$/, "/")
-      "<a href=\"#{url}\">#{module_title(url)}</a>"
-    else
-      "<a href=\"##{id_hash(url)}\"><code>#{name}</code></a>"
+  def decamelize(name, sep = "-")
+    name.split(/([A-Z])/).inject("") do |str, item|
+      str += (item == item.upcase ? "#{sep}" : "") + item.downcase
     end
   end
 
-  def id_hash(name)
-    "#{id_prefix}#{name.to_s.gsub(/:/, '-')}".downcase
+  def id(name)
+    "#{id_prefix}#{name.to_s.sub(/^#/, '').gsub(/[:\.]/, '-')}"
   end
 
-  def hash(name)
-    "##{id_hash(name)}"
+  def ref(name)
+    "##{id(name)}"
   end
 
-  def anchor(text, id)
-    l(:bare, text, hash(id))
+  def anchor(text, target = nil)
+    target ||= text
+    "<a href=\"#{ref(target)}\">#{text}</a>"
+  end
+
+  # Link to a buster module
+  # +name+ should be like "eventEmitter", will be presented as
+  # "buster.eventEmitter"
+  def m(name, display_name = nil)
+    display_name ||= "<code>buster.#{name}</code>"
+    url = module_url("buster-#{decamelize(name)}")
+
+    if name =~ /.+#/
+      pieces = name.split("#")
+      url = module_url("buster-#{decamelize(pieces[0])}") + "##{pieces[1]}"
+    end
+
+    "<a href=\"#{url}\">#{display_name}</a>"
+  end
+
+  # Link to a ref
+  def l(name)
+    anchor("<code>#{name}</code>", name)
+  end
+
+  # Link to an event
+  def e(name, display_name = nil)
+    display_name ||= "<code>\"#{name}\"</code>"
+    anchor(display_name, "event-#{name}")
   end
 end

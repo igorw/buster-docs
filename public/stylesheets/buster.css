@@ -170,7 +170,6 @@ code {
 
 p code,
 li code {
-    /*background: #f6f9fc;*/
     border-radius: 6px;
     padding: 2px;
     white-space: nowrap;
@@ -245,14 +244,17 @@ pre code {
 }
 
 .wrapper {
-    max-width: 1164px;
+    max-width: 1170px;
 }
 
 /* Main content */
 .content {
-    float: left;
-    padding: 1em;
+    padding: 16px;
     max-width: 800px;
+}
+
+* html .content {
+    width: 800px;
 }
 
 .content p {
@@ -268,10 +270,21 @@ pre code {
 
 .section pre,
 .section dl,
-.section ol,
 .section p,
 .section h4 {
     margin-left: 2em;
+}
+
+.section ol {
+    margin-left: 4em;
+}
+
+.intro pre,
+.intro dl,
+.intro ol,
+.intro p,
+.intro h4 {
+    margin-left: 0;
 }
 
 .msg p {
@@ -288,15 +301,35 @@ pre code {
 
 /* Aside */
 .aside {
-    float: left;
-    padding: 2.7em 0 2em 2em;
-    width: 320px;
+    padding: 2.7em 0 0 16px;
 }
 
 .aside h2 {
     border: none;
     font-family: "Droid Sans", Sans, Helvetica, Arial, sans-serif;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0 0 0.5em;
+}
+
+.aside ul {
+    margin-bottom: 2em;
+}
+
+.aside .nav ul {
+    margin: 0 0 0 15px;
+}
+
+@media all and (min-width: 1000px) {
+.aside {
+    background: #fff;
+    float: right;
+    width: 320px;
+}
+
+.aside h2 {
     font-size: 1.5em;
+    font-weight: normal;
     margin: 0;
 }
 
@@ -362,6 +395,7 @@ pre code {
 
 .aside .nav ul code {
     font-size: 12px;
+}
 }
 
 /* Footer */

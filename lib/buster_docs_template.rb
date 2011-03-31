@@ -3,7 +3,7 @@ require "buster_docs_helpers"
 
 class BusterDocsTemplate
   include BusterDocsHelpers
-  attr_reader :context_path, :docs_root, :id_prefix
+  attr_reader :context_path, :docs_root, :id_prefix, :path
 
   def initialize(path, views_root)
     @context_path = ""
@@ -17,12 +17,14 @@ class BusterDocsTemplate
     render_template(File.join(@docs_root, @path))
   end
 
-  def partial(file)
-    render_template(File.join(@views_root, "partials", "#{file}.erb.html"))
+  def partial(file, opt = {})
+    render_template(File.join(@views_root, "partials", "#{file}.html.erb"), opt)
   end
 
   private
-  def render_template(file)
-    Erubis::Eruby.new(File.read(file)).result(binding)
+  def render_template(file, opt = {})
+    ctx = binding
+    opt.each { |k, v| ctx.eval("#{k} = #{v.inspect}") }
+    Erubis::Eruby.new(File.read(file)).result(ctx)
   end
 end
