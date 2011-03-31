@@ -120,41 +120,6 @@ runner.<%=anchor "runSuite" %>([<%=m "test/test-context", "testContext" %>, test
           </p>
         </div>
         <div class="section">
-          <h2 id="<%=id 'properties' %>">Properties</h2>
-          <p>
-            Test runner properties can be set when creating an instance, or simply
-            by assigning to the property on an existing runner.
-          </p>
-          <pre><code>var runner = buster.testRunner.create({
-    timeout: 500
-});
-
-// Or:
-
-var runner = buster.testRunner.create();
-runner.timeout = 500;</code></pre>
-          <%= property("failOnNoAssertions", "true") %>
-          <p>
-            When <code>true</code>, a test with no assertions is considered a
-            failure. The number of assertions are measured with
-            <%=l "assertionCount" %>.
-          </p>
-          <%= property("timeout", "250") %>
-          <p>
-            When an asynchronous test runs for more than <code>timeout</code> ms, the
-            runner will abort it and emit a <%=e "test:timeout" %> event.
-          </p>
-          <%= property("handleUncaughtExceptions", "true") %>
-          <p>
-            When <code>true</code>, the runner will attempt to
-            handle <%= e("uncaughtException", "uncaught exceptions") %>, by
-            registering a listener on <code>process</code> for
-            <a href="http://nodejs.org/docs/v0.4.0/api/process.html#event_uncaughtException_"><code>"uncaughtException"</code></a>
-            (node.js) and assigning a callback to
-            <a href="https://developer.mozilla.org/en/DOM/window.onerror"><code>window.onerror</code></a> (browsers).
-          </p>
-        </div>
-        <div class="section">
           <h2 id="<%= id('methods') %>">Methods</h2>
           <h3 id="<%= id('create') %>" data-title="+create([opts])+"><code>var runner = buster.testRunner.create([<%= anchor("opts", "properties") %>]);</code></h3>
           <p>
@@ -211,6 +176,41 @@ buster.testRunner.assertionCount = function () {
             on assertion failure. For assertion failures to be picked up no matter
             what in asynchronous tests, this method needs to be called, as some
             exceptions are not possible for the runner to catch.
+          </p>
+        </div>
+        <div class="section">
+          <h2 id="<%=id 'properties' %>">Properties</h2>
+          <p>
+            Test runner properties can be set when creating an instance, or simply
+            by assigning to the property on an existing runner.
+          </p>
+          <pre><code>var runner = buster.testRunner.create({
+    timeout: 500
+});
+
+// Or:
+
+var runner = buster.testRunner.create();
+runner.timeout = 500;</code></pre>
+          <%= property("failOnNoAssertions", "true") %>
+          <p>
+            When <code>true</code>, a test with no assertions is considered a
+            failure. The number of assertions are measured with
+            <%=l "assertionCount" %>.
+          </p>
+          <%= property("timeout", "250") %>
+          <p>
+            When an asynchronous test runs for more than <code>timeout</code> ms, the
+            runner will abort it and emit a <%=e "test:timeout" %> event.
+          </p>
+          <%= property("handleUncaughtExceptions", "true") %>
+          <p>
+            When <code>true</code>, the runner will attempt to
+            handle <%= e("uncaughtException", "uncaught exceptions") %>, by
+            registering a listener on <code>process</code> for
+            <a href="http://nodejs.org/docs/v0.4.0/api/process.html#event_uncaughtException_"><code>"uncaughtException"</code></a>
+            (node.js) and assigning a callback to
+            <a href="https://developer.mozilla.org/en/DOM/window.onerror"><code>window.onerror</code></a> (browsers).
           </p>
         </div>
         <div class="section">

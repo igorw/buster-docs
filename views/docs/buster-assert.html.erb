@@ -70,23 +70,6 @@ try {
           </p>
         </div>
         <div class="section">
-          <h2 id="<%= id('properties') %>">Properties</h2>
-          <%= property("count", "0") %>
-          <p>
-            <code>buster.assert.count</code> is incremented anytime an assertion
-            is called. The assertion counter can be reset to any number at your
-            convenience.
-          </p>
-          <%= property("throwOnFailure", "true") %>
-          <p>
-            When using the <%= anchor("default <code>fail</code>", "fail") %>
-            implementation, this property can be set to <code>false</code> to make
-            assertion failures <strong>not</strong> throw exceptions (i.e. only
-            emit events). This may be suitable in asynchronous test runners, where
-            you might not be able to catch exceptions.
-          </p>
-        </div>
-        <div class="section">
           <h2 id="<%= id('assertions') %>">Assertions</h2>
           <h3 id="<%= id('assert') %>" data-title="+assert(actual[, msg])+"><code>buster.assert(actual[, message]);</code></h3>
           <p>
@@ -1073,6 +1056,23 @@ buster.assert.notClassName(el, ["item", "feed"]); // Passes</code></pre>
             ascii formatting of objects (including DOM elements) do:
           </p>
           <pre><code>buster.assert.format = buster.format.ascii;</code></pre>
+        </div>
+        <div class="section">
+          <h2 id="<%= id('properties') %>">Properties</h2>
+          <%= property("count", "0") %>
+          <p>
+            <code>buster.assert.count</code> is incremented anytime an assertion
+            is called. The assertion counter can be reset to any number at your
+            convenience.
+          </p>
+          <%= property("throwOnFailure", "true") %>
+          <p>
+            When using the <%= anchor("default <code>fail</code>", "fail") %>
+            implementation, this property can be set to <code>false</code> to make
+            assertion failures <strong>not</strong> throw exceptions (i.e. only
+            emit events). This may be suitable in asynchronous test runners, where
+            you might not be able to catch exceptions.
+          </p>
         </div>
         <div class="section">
           <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
