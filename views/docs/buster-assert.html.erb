@@ -1,13 +1,4 @@
 <%= partial(:head, :title => "buster.assert") %>
-  <body>
-    <div id="<%= id('masthead') %>">
-      <p><a href="/">Buster.<span>JS</span></a> API Reference</p>
-    </div>
-    <div class="wrapper">
-      <div class="aside">
-        <%= module_navigation %>
-      </div>
-      <div class="content">
         <h1><code>buster.assert</code></h1>
         <dl>
           <dt>Version</dt>
@@ -1081,8 +1072,4 @@ buster.assert.notClassName(el, ["item", "feed"]); // Passes</code></pre>
             An exception (specifically, an <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error"><code>Error</code> object</a>) whose <code>name</code> property is <code>"AssertionError"</code>.
           </p>
         </div>
-      </div>
-    </div>
-    <%= partial :footer %>
-  </body>
-</html>
+        <%= partial :footer %>
