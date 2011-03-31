@@ -1,0 +1,120 @@
+<%= partial(:head, :title => "buster.promise") %>
+<h1><code>buster.promise</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.2.1 <span class="date">(2011-03-14)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-promise");</code></dd>
+  <dt>In browsers</dt>
+  <dd><code>buster.promise;</code></dd>
+</dl>
+<p>
+  A promise represents the eventual value returned from the single completion of
+  an operation. It is used to simplify asynchronous control flow in several
+  Buster modules. This particular implementation is a simple one, and loosely
+  based on the <a href="http://wiki.commonjs.org/wiki/Promises/A">CommonJS "A" proposal by Kris Zyp</a>.
+</p>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('create') %>"><code>create([func])</code></h3>
+  <p>
+    Creates a new promise. The optional function argument will be immediately
+    invoked and receives the newly created promise as its only argument.
+  </p>
+  <pre><code>var promise = buster.promise.create();
+
+var promise2 = buster.promise.create(function (p) {
+    require("child_process").exec("ls -l", function (err, out) {
+        if (err) {
+            promise2.reject(err);
+        } else {
+            promise2.resolve(out);
+        }
+    });
+});</code></pre>
+  <h3 id="<%= id('then') %>"><code>then(fulfilledHandler, errorHandler)</code></h3>
+  <p>
+    Register callbacks to handle the promise once it fulfills.
+    <code>fulfilledHandler</code> is called when <%=l "resolve" %> is called and
+    <code>errorHandler</code> is called when <%=l "reject" %> is called.
+    Arguments passed to <code>resolve</code>/<code>reject</code> are passed as
+    is to the respective handlers.
+  </p>
+  <p>
+    The handlers are also called in the event that the promise is already
+    fulfilled when <code>then</code> is called.
+  </p>
+  <pre><code>var promise = buster.promise.create();
+
+promise.then(function (str) {
+    console.log(str);
+}, function (err) {
+    console.log(err.message);
+});
+
+promise.resolve("Hey there"); // then-listener prints "Hey there"
+
+// or:
+promise.reject(new Error("Oops!")); // then-listener prints "Oops!"</code></pre>
+  <h3 id="<%= id('resolve') %>"><code>resolve([arg1, arg2, ...])</code></h3>
+  <p>
+    Resolves the promise. If either <code>resolve</code> or <%=l "reject" %> has
+    already been called, the method will throw an error.
+  </p>
+  <h3 id="<%= id('reject') %>"><code>reject([arg1, arg2, ...])</code></h3>
+  <p>
+    Rejects the promise. If either <code>reject</code> or <%=l "resolve" %> has
+    already been called, the method will throw an error.
+  </p>
+  <h3 id="<%= id('thenable') %>"><code>thenable(value)</code></h3>
+  <p>
+    Utility function that accepts an object - possibly a promise - and returns a
+    promise. If <code>value</code> is a promise, it is returned as is. For any
+    other values, a new promise is returned, that resolves with the value.
+  </p>
+  <pre><code>var promise = buster.promise.thenable(32);
+
+promise.then(function (val) {
+    console.log(val);
+});
+
+// Prints 32</code></pre>
+  <h3 id="<%= id('sequential') %>"><code>sequential(funcs[, opt])</code></h3>
+  <p>
+    Calls a series of asynchronous functions in sequence - i.e., the second
+    function is called when the first function fully completes and so on. If a
+    function returns a promise, the next function is called when the promise
+    resolves. Otherwise, the next function is passed to
+    <%= m("core#nextTick", "<code>buster.nextTick</code>") %>.
+  </p>
+  <p>
+    The options object may be used to provide a <code>thisObject</code> to call
+    functions on and an error handler. The error handler is used whenever a
+    function throws an exception. If an exception is thrown and an error handler
+    is not specified, the execution is aborted and the promise returned
+    from <code>sequential</code> is rejected with the exception object.
+  </p>
+  <pre><code>var myLib = { /* ... */ };
+
+buster.promise.sequential([myLib.asyncFunc1, myLib.asyncFunc2], {
+    thisObject: thisObject
+}).then(function () {
+    console.log("Called when asyncFunc1 and asyncFunc2 have resolved");
+});</code></pre>
+  <h3 id="<%= id('all') %>"><code>all([promise1, promise2, ...])</code></h3>
+  <p>Returns a promise that resolves when all arguments have resolved.</p>
+  <pre><code>var all = require("buster-promise").all;
+
+fs.readdir(fpath, function (err, files) {
+    var promises = [];
+
+    (files || []).forEach(function (file) {
+        promises.push(processFileAsynchronously(file));
+    });
+
+    all.apply(null, promises).then(function () {
+        console.log("Done asynchronously processing files")
+    });
+});</code></pre>
+</div>
+<%= partial :footer %>
