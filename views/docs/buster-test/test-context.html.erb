@@ -1,0 +1,40 @@
+<%= partial(:head, :title => "Test contexts") %>
+<h1>Test contexts</h1>
+<dl>
+  <dt>Version</dt>
+  <dd>See <%=m "test/test-runner" %></dd>
+</dl>
+<p>
+  A test context is Buster's internal test case/specification data
+  format. Specifically, a test context is the kind of object that the
+  <%=m "test/test-runner" %> knows how to run. This document describes the data
+  format in detail - what features it and the runner supports as well as how to
+  create test contexts from external front-ends.
+</p>
+<p>
+  The idea behind test contexts is to separate the syntax you use to write a
+  test case/specification (<em>the front-end</em>) from the tools that run and
+  visualize results of these tests. Test contexts have enabled Buster to ship
+  with two rather different ways of writing tests for the same runner;
+  <%=m "test/test-case", "<code>buster.testCase</code>" %> and <%=m "test/spec",
+  "<code>buster.spec</code>" %>. They also enable us to provide adapters for
+  other test frameworks, such as in <%=m "jstestdriver", "buster-jstestdriver"
+  %>.
+</p>
+<p>
+  If you are looking to run tests written for another testing library with
+  Buster, you have come to the right place. Supporting other test frameworks
+  front-ends is a simple matter of converting the objects/functions created by
+  the library to a test context object, as described on this page. For
+  inspiration, see the implementation of the aforementioned
+  <%=m "test/test-case", "<code>buster.testCase</code>" %>, <%=m "test/spec",
+  "<code>buster.spec</code>" %> and <%=m "jstestdriver", "buster-jstestdriver" %>.
+</p>
+<div class="section">
+  <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+  <h3 id="<%= id('test') %>"><code>test</code></h3>
+  <p>
+
+  </p>
+</div>
+<%= partial :footer %>
