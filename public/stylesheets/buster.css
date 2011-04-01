@@ -305,8 +305,14 @@ pre code {
     width: auto;
 }
 
+.properties dt {
+    border-bottom: 1px solid #eee;
+    display: inline-block;
+    margin: 0 0 0.25em;
+}
+
 .properties dd {
-    margin: 0 0 0.5em;
+    margin: 0 0 0.75em 2em;
 }
 
 p + .properties {

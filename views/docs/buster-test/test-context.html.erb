@@ -7,9 +7,9 @@
 <p>
   A test context is Buster's internal test case/specification data
   format. Specifically, a test context is the kind of object that the
-  <%=m "test/test-runner" %> knows how to run. This document describes the data
-  format in detail - what features it and the runner supports as well as how to
-  create test contexts from external front-ends.
+  <%=m "test/test-runner", "test runner" %> knows how to run. This document
+  describes the data format in detail - what features it and the runner supports
+  as well as how to create test contexts from external front-ends.
 </p>
 <p>
   The idea behind test contexts is to separate the syntax you use to write a
@@ -25,58 +25,294 @@
   If you are looking to run tests written for another testing library with
   Buster, you have come to the right place. Supporting other test frameworks
   front-ends is a simple matter of converting the objects/functions created by
-  the library to a test context object, as described on this page. For
+  the library to a <%=anchor "test context object", "testContext" %>. For
   inspiration, see the implementation of the aforementioned
   <%=m "test/test-case", "<code>buster.testCase</code>" %>, <%=m "test/spec",
   "<code>buster.spec</code>" %> and <%=m "jstestdriver", "buster-jstestdriver" %>.
 </p>
-<div class="section">
-  <h2 id="<%= id('objects') %>">Objects</h2>
-  <h3 id="<%= id('testContext') %>"><code>testContext</code></h3>
-  <dl class="properties">
-    <dt><code>name</code></dt>
-    <dd>The test context name/description as a string</dd>
-    <dt><code>setUp</code></dt>
-    <dd>
-      <strong>Optional</strong>. A function that will run before each test. If
-      using nested contexts, the setup function will also be executed before
-      each test (and their local setup, if any) in nested contexts. 
-    </dd>
-    <dt><code>tearDown</code></dt>
-    <dd>
-      <strong>Optional</strong>. A function that will run after each test. If
-      using nested contexts, the teardown function will also be executed after
-      each test (and their local teardown, if any) in nested contexts. 
-    </dd>
-    <dt><code>tests</code></dt>
-    <dd>
-      An array of <%=l "test" %> objects.
-    </dd>
-    <dt><code>contexts</code></dt>
-    <dd>
-      An array of <%=l "testContext" %> objects. In other words, the test
-      context data format (and thus, the <%=m "test/test-runner", "test runner" %>)
-      supports arbitrarily nested contexts.
-    </dd>
-    <dt><code>parent</code></dt>
-    <dd>
-      The parent <%=l "testContext" %>, if any.
-    </dd>
-    <dt><code>testCase</code></dt>
-    <dd>
-      <strong>Optional</strong>.  Prototype object used for <code>this</code>
-      when running tests. This object may define helper methods and properties
-      to use in tests. The test runner creates a new instance from this object
-      with <%=m "core#create", "<code>buster.create</code>" %> for each
-      test. The created object is shared as <code>this</code> in all setup and
-      teardown methods as well as in the test. If this object is not provided,
-      an "empty" object is created and used as <code>this</code> when running
-      tests.
-    </dd>
-  </dl>
-  <h3 id="<%= id('test') %>"><code>test</code></h3>
-  <p>
-    The test object 
-  </p>
-</div>
+<p>
+  <strong>NB!</strong> Test contexts are not intended to be hand-written, rather
+  they represent the data test specification DSLs should produce in order to use
+  the Buster test runner.
+</p>
+<h2 id="<%= id('testContext') %>"><code>testContext</code></h2>
+<p>
+  Represents a test case (xUnit terminology) or a specification (BDD
+  terminology). Contains a set of tests to run, optional setup and teardown
+  methods as well as optional nested contexts. Refer to
+  <%= anchor "the example", "example" %> for more information on how this can be
+  used in practice.
+</p>
+<p>
+  Setup and teardown methods can be asynchronous, see
+  <%= anchor "the section on asynchronous tests", "async" %>.
+</p>
+<dl class="properties">
+  <dt><code>name</code></dt>
+  <dd>The test context name/description as a string</dd>
+  <dt><code>setUp</code></dt>
+  <dd>
+    <strong>Optional</strong>. A function that will run before each test. If
+    using nested contexts, the setup function will also be executed before
+    each test (and their local setup, if any) in nested contexts. 
+  </dd>
+  <dt><code>tearDown</code></dt>
+  <dd>
+    <strong>Optional</strong>. A function that will run after each test. If
+    using nested contexts, the teardown function will also be executed after
+    each test (and their local teardown, if any) in nested contexts. 
+  </dd>
+  <dt><code>tests</code></dt>
+  <dd>
+    An array of <%=l "test" %> objects.
+  </dd>
+  <dt><code>contexts</code></dt>
+  <dd>
+    An array of <%=l "testContext" %> objects. In other words, the test
+    context data format (and thus, the <%=m "test/test-runner", "test runner" %>)
+    supports arbitrarily nested contexts.
+  </dd>
+  <dt><code>parent</code></dt>
+  <dd>
+    The parent <%=l "testContext" %>, if any.
+  </dd>
+  <dt><code>testCase</code></dt>
+  <dd>
+    <strong>Optional</strong>.  Prototype object used for <code>this</code>
+    when running tests. This object may define helper methods and properties
+    to use in tests. The test runner creates a new instance from this object
+    with <%=m "core#create", "<code>buster.create</code>" %> for each
+    test. The created object is shared as <code>this</code> in all setup and
+    teardown methods as well as in the test. If this object is not provided,
+    an "empty" object is created and used as <code>this</code> when running
+    tests.
+  </dd>
+</dl>
+<h2 id="<%= id('test') %>"><code>test</code></h2>
+<p>
+  Represents a test function.
+</p>
+<dl class="properties">
+  <dt><code>name</code></dt>
+  <dd>The test function name, as a string.</dd>
+  <dt><code>func</code></dt>
+  <dd>
+    The test function. See <%= anchor "the section on asynchronous tests",
+    "async" %> for how to mark it as - well, asynchronous.
+  </dd>
+  <dt><code>context</code></dt>
+  <dd><strong>Optional</strong>. The context to which the test belongs.</dd>
+  <dt><code>deferred</code></dt>
+  <dd>
+    <strong>Optional</strong>. If this property is set to <code>true</code>, the
+    test will not be run, but the test runner will emit an event for it,
+    allowing reporters to communicate tests that should eventually run (and
+    hopefully pass).
+  </dd>
+</dl>
+<h2 id="<%= id('async') %>">Asynchronous tests</h2>
+<p>
+  There is no flag to mark tests as asynchronous even though the
+  <%=m "test/test-runner", "test runner" %> supports both synchronous and
+  asynchronous tests. The reason is that it cannot be determined up-front if a
+  test is asynchronous or not.
+</p>
+<p>
+  To create asynchronous tests (i.e. ones that the runner will wait for), the
+  test function can either explicitly accept a single argument, which is a
+  function, <strong>or</strong> return a <%=m "promise", "thenable promise" %>.
+</p>
+<p>
+  The argument passed to the test is a function. When the function is called,
+  the asynchronous test is deemed done. The idiomatic way of creating
+  asynchronous tests using this arguments looks like the following:
+</p>
+<pre><code>function someAsyncTestFunction(done) {
+    setTimeout(function () {
+        buster.assert(true);
+        done();
+    }, 100);
+}</code></pre>
+<p>
+  This assumes that the assertion framework can fail without throwing an error
+  (as an error would be intercepted as uncaught in the above example, if
+  intercepted at all). If this is not the case, you can make your assertions in
+  a callback to the <code>done</code> function:
+</p>
+<pre><code>function someAsyncTestFunction(done) {
+    setTimeout(function () {
+        done(function () {
+            buster.assert(true);
+        });
+    }, 100);
+}</code></pre>
+<p>
+  Tests can also be made asynchronous by way of returning a promise. The test
+  runner considers any object with a <code>then</code> method a promise:
+</p>
+<pre><code>function someAsyncTestFunction() {
+    var promise = {
+        then: function (callback) {
+            this.callbacks = this.callbacks || [];
+            this.callbacks.push(callback);
+        }
+    };
+
+    setTimeout(function () {
+        buster.assert(true);
+        var callbacks = promise.callbacks || [];
+
+        for (var i = 0, l = callbacks.length; i < l; ++i) {
+            callbacks[i]();
+        }
+    }, 100);
+
+    return promise;
+}</code></pre>
+<p>
+  Note that this does not work entirely as expected unless your assertion
+  framework of choice is able to notify the runner of failure without throwing
+  an exception. If the assertion fails (and throws an exception), the promise
+  will never be resolved, thus the runner will fail the test with a
+  timeout, <strong>not</strong> an assertion error.
+</p>
+<p>
+  The above example is very verbose, simply to illustrate the duck-typed nature
+  of promises. You can do better by using e.g. <%=m "promise" %>:
+</p>
+<pre><code>function someAsyncTestFunction() {
+    var promise = buster.promise.create();
+
+    setTimeout(function () {
+        buster.assert(true);
+        promise.resolve();
+    }, 100);
+
+    return promise;
+}</code></pre>
+<p>
+  Setup and teardown functions can use the same mechanism to be asynchronous.
+</p>
+<h2 id="<%= id('example') %>">Example</h2>
+<p>
+  Say you have a test case like the following (warning: fictional front-end,
+  this is just to explain what goes where in the generated context):
+</p>
+<pre><code>testCase("Circle tests", {
+    createCircle: function (radius) {
+        return {
+            diameter: function () {
+                return radius * 2;
+            }
+        };
+    },
+
+    "test diameter should equal twice the radius": function () {
+        var circle = this.createCircle(6);
+
+        buster.assert.equals(circle.diameter(), 12);
+    }
+});</code></pre>
+<p>
+  The test case has a single test and a helper method defined on the same object
+  (thus accessed through <code>this</code> in the test). This simple test case
+  can be represented as a Buster runnable context the following way:
+</p>
+<pre><code>var simpleContext = {
+    name: "Circle tests",
+
+    testCase: {
+        createCircle: function (radius) {
+            return {
+                diameter: function () {
+                    return radius * 2;
+                }
+            };
+        }
+    },
+
+    tests: [{
+        name: "test diameter should equal twice the radius",
+        func: function () {
+            var circle = this.createCircle(6);
+
+            buster.assert.equals(circle.diameter(), 12);
+        }
+    }]
+};</code></pre>
+<p>
+  The following example is reproduced from the
+  <a href="http://docs.jquery.com/Qunit">official QUnit docs</a> and shows a
+  fairly typical QUnit test.
+</p>
+<pre><code>test("a basic test example", function () {
+    ok(true, "this test is fine");
+    var value = "hello";
+    equals("hello", value, "We expect value to be hello");
+});
+
+module("Module A");
+
+test("first test within module", function () {
+    ok(true, "all pass");
+});
+
+test("second test within module", function () {
+    ok(true, "all pass");
+});
+
+module("Module B");
+
+test("some other test", function() {
+    expect(2);
+    equals(true, false, "failing test");
+    equals(true, true, "passing test");
+});</code></pre>
+<p>
+  The corresponding test context would look like:
+</p>
+<pre><code>var qunitContext = {
+    name: "" // Top level module was nameless
+
+    tests: [{
+        name: "a basic test example",
+        func: function () {
+            ok(true, "this test is fine");
+            var value = "hello";
+            equals("hello", value, "We expect value to be hello");
+        }
+    }],
+
+    contexts: [{
+        name: "Module A",
+
+        tests: [{
+            name: "first test within module",
+            func: function () {
+                ok(true, "all pass");
+            }
+        }, {
+            name: "second test within module",
+            func: function () {
+                ok(true, "all pass");
+            }
+        }]
+    }, {
+        name: "Module B",
+
+        tests: [{
+            name: "some other test",
+            func: function() {
+                expect(2);
+                equals(true, false, "failing test");
+                equals(true, true, "passing test");
+            }
+        }]
+    }]
+};</code></pre>
+<p>
+  <strong>NB!</strong> Test contexts are not intended to be hand-written, rather
+  they represent the data test specification DSLs should produce in order to use
+  the Buster test runner.
+</p>
 <%= partial :footer %>
