@@ -390,9 +390,9 @@ p + .properties {
     text-decoration: underline;
 }
 
-.aside .nav .active a,
-.aside .nav .active a:visited,
-.aside .nav .active a:hover {
+.aside .nav .active > a,
+.aside .nav .active > a:visited,
+.aside .nav .active > a:hover {
     background: #fff;
     color: #000;
     font-weight: bold;

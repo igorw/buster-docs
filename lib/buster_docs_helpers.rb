@@ -32,7 +32,7 @@ module BusterDocsHelpers
   end
 
   def active?(mod)
-    path =~ /^\/#{File.basename(mod)}/
+    path =~ /\/#{File.basename(mod.sub(/\.html\.erb/, ''))}/
   end
 
   def module_url(path)
