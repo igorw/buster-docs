@@ -2,7 +2,7 @@
 <h1>Test contexts</h1>
 <dl>
   <dt>Version</dt>
-  <dd>See <%=m "test/test-runner" %></dd>
+  <dd>See <%=m "test/test-runner", "<code>buster.testRunner</code>" %></dd>
 </dl>
 <p>
   A test context is Buster's internal test case/specification data
@@ -31,10 +31,52 @@
   "<code>buster.spec</code>" %> and <%=m "jstestdriver", "buster-jstestdriver" %>.
 </p>
 <div class="section">
-  <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+  <h2 id="<%= id('objects') %>">Objects</h2>
+  <h3 id="<%= id('testContext') %>"><code>testContext</code></h3>
+  <dl class="properties">
+    <dt><code>name</code></dt>
+    <dd>The test context name/description as a string</dd>
+    <dt><code>setUp</code></dt>
+    <dd>
+      <strong>Optional</strong>. A function that will run before each test. If
+      using nested contexts, the setup function will also be executed before
+      each test (and their local setup, if any) in nested contexts. 
+    </dd>
+    <dt><code>tearDown</code></dt>
+    <dd>
+      <strong>Optional</strong>. A function that will run after each test. If
+      using nested contexts, the teardown function will also be executed after
+      each test (and their local teardown, if any) in nested contexts. 
+    </dd>
+    <dt><code>tests</code></dt>
+    <dd>
+      An array of <%=l "test" %> objects.
+    </dd>
+    <dt><code>contexts</code></dt>
+    <dd>
+      An array of <%=l "testContext" %> objects. In other words, the test
+      context data format (and thus, the <%=m "test/test-runner", "test runner" %>)
+      supports arbitrarily nested contexts.
+    </dd>
+    <dt><code>parent</code></dt>
+    <dd>
+      The parent <%=l "testContext" %>, if any.
+    </dd>
+    <dt><code>testCase</code></dt>
+    <dd>
+      <strong>Optional</strong>.  Prototype object used for <code>this</code>
+      when running tests. This object may define helper methods and properties
+      to use in tests. The test runner creates a new instance from this object
+      with <%=m "core#create", "<code>buster.create</code>" %> for each
+      test. The created object is shared as <code>this</code> in all setup and
+      teardown methods as well as in the test. If this object is not provided,
+      an "empty" object is created and used as <code>this</code> when running
+      tests.
+    </dd>
+  </dl>
   <h3 id="<%= id('test') %>"><code>test</code></h3>
   <p>
-
+    The test object 
   </p>
 </div>
 <%= partial :footer %>
