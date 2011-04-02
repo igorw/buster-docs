@@ -17,6 +17,14 @@ buster.byClass = function (className) {
     return results;
 };
 
+buster.addHoverAnchor = function (element) {
+    var hoverAnchor = document.createElement("a");
+    hoverAnchor.innerHTML = "\u00B6";
+    hoverAnchor.href = "#" + element.id;
+    hoverAnchor.className = "pilcrow_anchor";
+    element.appendChild(hoverAnchor);
+}
+
 function sectionNav(element, tagName, callback) {
     var elements = element.getElementsByTagName(tagName);
     var ul = document.createElement("ul"), li, attr;
@@ -37,6 +45,8 @@ function sectionNav(element, tagName, callback) {
         }
 
         ul.appendChild(li);
+
+        buster.addHoverAnchor(elements[i]);
     }
 
     return ul;
