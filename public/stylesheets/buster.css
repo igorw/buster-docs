@@ -62,6 +62,19 @@ h4 {
     margin: 0 0 0.25em;
 }
 
+h2 .pilcrow_anchor,
+h3 .pilcrow_anchor {
+    display: none;
+    color: #666;
+    text-decoration: none;
+    padding-left: .2em;
+}
+
+h2:hover .pilcrow_anchor,
+h3:hover .pilcrow_anchor {
+    display: inline;
+}
+
 dl {
     margin: 0 0 1.5em;
     overflow: auto;
