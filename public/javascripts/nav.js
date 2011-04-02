@@ -17,20 +17,24 @@ buster.byClass = function (className) {
     return results;
 };
 
+function sectionTitle(section) {
+    var attr = section.getAttribute("data-title");
+
+    if (attr && /^\+/.test(attr) && /\+$/.test(attr)) {
+        attr = "<code>" + attr.substring(1, attr.length - 1) + "</code>";
+    }
+
+    return attr || section.innerHTML;
+}
+
 function sectionNav(element, tagName, callback) {
     var elements = element.getElementsByTagName(tagName);
-    var ul = document.createElement("ul"), li, attr;
+    var ul = document.createElement("ul"), li;
 
     for (var i = 0, l = elements.length; i < l; ++i) {
-        attr = elements[i].getAttribute("data-title");
-
-        if (attr && /^\+/.test(attr) && /\+$/.test(attr)) {
-            attr = "<code>" + attr.substring(1, attr.length - 1) + "</code>";
-        }
-
         li = document.createElement("li");
         li.innerHTML = "<a href=\"#" + elements[i].id + "\">" +
-            (attr || elements[i].innerHTML) + "</a>";
+            sectionTitle(elements[i]) + "</a>";
 
         if (typeof callback == "function") {
             li.appendChild(callback(elements[i]));
