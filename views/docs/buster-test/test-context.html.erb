@@ -2,7 +2,7 @@
 <h1>Test contexts</h1>
 <dl>
   <dt>Version</dt>
-  <dd>See <%=m "test/test-runner", "<code>buster.testRunner</code>" %></dd>
+  <dd>See <%=m "test", "buster-test" %></dd>
 </dl>
 <p>
   A test context is Buster's internal test case/specification data
@@ -162,7 +162,7 @@
         buster.assert(true);
         var callbacks = promise.callbacks || [];
 
-        for (var i = 0, l = callbacks.length; i < l; ++i) {
+        for (var i = 0, l = callbacks.length; i &lt; l; ++i) {
             callbacks[i]();
         }
     }, 100);

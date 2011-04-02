@@ -8,16 +8,15 @@ module BusterDocsHelpers
 
   def module_list(dir)
     return "" if !File.directory?(dir)
-
-    modules = Dir.entries(dir).entries.find_all do |d|
-      /^\.\.?$/ !~ d
-    end
+    modules = (Dir.entries(dir).entries.find_all { |d| /^\.\.?$/ !~ d }.collect do |m|
+      m.sub(/\.html\.erb$/, "")
+    end).uniq.sort
 
     return "" if modules.length == 0
 
     <<-HTML
       <ul class="nav">
-        #{modules.sort.collect { |mod| module_list_item(File.expand_path(File.join(dir, mod))) }.join("\n        ")}
+        #{modules.collect { |mod| module_list_item(File.expand_path(File.join(dir, mod))) }.join("\n        ")}
       </ul>
     HTML
   end

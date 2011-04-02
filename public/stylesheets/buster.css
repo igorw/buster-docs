@@ -417,6 +417,12 @@ p + .properties {
     font-weight: bold;
 }
 
+.aside .nav ul .active > a,
+.aside .nav ul .active > a:visited,
+.aside .nav ul .active > a:hover {
+    background: #fafafa;
+}
+
 .aside .nav ul a {
     padding-left: 36px;
 }

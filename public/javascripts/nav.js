@@ -48,9 +48,8 @@ function sectionNav(element, tagName, callback) {
             li.appendChild(callback(elements[i]));
         }
 
-        ul.appendChild(li);
-
         buster.addHoverAnchor(elements[i]);
+        ul.appendChild(li);
     }
 
     return ul;
