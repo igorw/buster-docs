@@ -100,6 +100,20 @@ ol li {
     margin: 0 0 0.5em;
 }
 
+table {
+    border-collapse: collapse;
+    margin: 0 0 1.5em;
+}
+
+td,
+th {
+    border: none;
+}
+
+th {
+    padding: 0 12px 0 0;
+}
+
 .nav {
     margin: 0;
 }
@@ -323,7 +337,8 @@ pre code {
 .section dl,
 .section p,
 .section h4,
-.section .side-by-side {
+.section .side-by-side,
+.section table {
     margin-left: 2em;
 }
 

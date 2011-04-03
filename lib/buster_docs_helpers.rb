@@ -8,7 +8,7 @@ module BusterDocsHelpers
 
   def module_list(dir)
     return "" if !File.directory?(dir)
-    modules = (Dir.entries(dir).entries.find_all { |d| /^\.\.?$/ !~ d }.collect do |m|
+    modules = (Dir.entries(dir).entries.find_all { |d| /^(\.|\#)/ !~ d }.collect do |m|
       m.sub(/\.html\.erb$/, "")
     end).uniq.sort
 
@@ -118,5 +118,9 @@ module BusterDocsHelpers
   def e(name, display_name = nil)
     display_name ||= "<code>\"#{name}\"</code>"
     anchor(display_name, "event-#{name}")
+  end
+
+  def img(src, attr = {})
+    "<img src=\"/images/#{src}\" #{attr.collect { |kv| "#{kv[0]}=\"#{kv[1]}\"" }.join(' ')}>"
   end
 end

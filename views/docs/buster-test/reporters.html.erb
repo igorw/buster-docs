@@ -8,5 +8,289 @@
   <dt>In browsers</dt>
   <dd><code>buster.reporters;</code></dd>
 </dl>
+<p>
+  Reporters listen to <%=m "test/test-runner", "test runner" %> events and
+  visualize progress and results of test runs. Buster ships with several
+  alternatives, and it is easy to <%= anchor "make your own", "implement" %>.
+</p>
+<div class="section">
+  <h2 id="<%= id('xunit-console') %>"><code>xUnitConsole</code></h2>
+  <p>
+    Prints a single character for each test as the tests are running. When the
+    test run completes, it prints a list of errors and a summary. The characters
+    printed while running are:
+  </p>
+  <table>
+    <tr>
+      <th>.</th><td>Test passed (green)</td>
+    </tr>
+    <tr>
+      <th>F</th><td>Test failed (red)</td>
+    </tr>
+    <tr>
+      <th>E</th><td>Uncaught error (yellow)</td>
+    </tr>
+    <tr>
+      <th>A</th><td>Asynchronous test (purple)</td>
+    </tr>
+    <tr>
+      <th>T</th><td>Timeout (red)</td>
+    </tr>
+  </table>
+  <p>
+    The <strong>A</strong> indicating an asynchronous test is replaced by one
+    of the others when the test completes, or a <strong>T</strong> if it times
+    out (using <a href="en.wikipedia.org/wiki/ANSI_escape_code">ANSI escape characters</a>).
+  </p>
+  <h3 id="<%= id('xunit-console-reporter-create') %>" data-title="create(options)">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('xunit-console-reporter-listen') %>" data-title="listen(testRunner)">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var xUnitConsoleReporter = require("buster-test").reporters.xUnitConsole;
 
+var reporter = xUnitConsoleReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('xunit-console-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/xunit-console-reporter.png",
+         :width => "661", :height => "698" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('bdd-console') %>"><code>bddConsole</code></h2>
+  <p>
+    Reporter inspired by those found in
+    <a href="http://vowsjs.org/">vows.js</a>,
+    <a href="https://github.com/caolan/nodeunit">nodeunit</a>
+    and others. The reporter gives you all information it has as soon as it
+    can. With longer-running test cases, this reporter will give you the meat of
+    your errors faster.
+  </p>
+  <h3 id="<%= id('bdd-console-reporter-create') %>" data-title="create(options)">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('bdd-console-reporter-listen') %>" data-title="listen(testRunner)">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var bddConsoleReporter = require("buster-test").reporters.bddConsole;
+
+var reporter = bddConsoleReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('bdd-console-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/bdd-console-reporter.png",
+         :width => "685", :height => "681" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('quiet-console') %>"><code>quietConsole</code></h2>
+  <p>
+    The quiet console reporter simply prints the ending stats only.
+  </p>
+  <h3 id="<%= id('quiet-console-reporter-create') %>" data-title="create(options)">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('quiet-console-reporter-listen') %>" data-title="listen(testRunner)">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var quietConsoleReporter = require("buster-test").reporters.quietConsole;
+
+var reporter = quietConsoleReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('quiet-console-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/quiet-console-reporter.png",
+         :width => "661", :height => "34" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('xml') %>"><code>xml</code></h2>
+  <p>
+    Generates JUnit/Ant compatible XML output for use in continuous integration
+    servers. The reporter prints XML to stdout, so you have to pipe it to a file
+    manually if needed. The XML output is compatible with CI servers such as
+    <a href="http://jenkins-ci.org/">Jenkins</a> (formerly Hudson).
+  </p>
+  <h3 id="<%= id('xml-reporter-create') %>" data-title="create(options)">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('xml-reporter-listen') %>" data-title="listen(testRunner)">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var xmlReporter = require("buster-test").reporters.xml;
+
+var reporter = xmlReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('xml-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/xml-reporter.png",
+         :width => "780", :height => "837" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('html') %>"><code>html</code></h2>
+  <p>
+    For use in browsers. The reporter mimics the
+    <%= anchor "bddConsoleReporter", "bdd-console" %>. It can use an entire web
+    page to render a nice test report, or embed itself as a console, making it
+    useful for in-app integration testing.
+  </p>
+  <h3 id="<%= id('html-reporter-create') %>" data-title="create(options)">
+    <code>create(<%= anchor "htmlOptions", "htmlOptions" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('html-reporter-listen') %>" data-title="listen(testRunner)">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var reporter = buster.reporters.html.create({
+    root: document.body // Full webpage mode
+});
+
+var runner = buster.testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('html-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/html-reporter.png",
+         :width => "604", :height => "810" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('json-proxy') %>"><code>jsonProxy</code></h2>
+  <p>
+    Not intended for human consumption. The jsonProxy reporter proxies all
+    events from the <%=m "test/test-runner", "test runner" %>, but strips any
+    non-JSON safe value (such as functions). Buster uses this when emitting test
+    results from a browser to the server.
+  </p>
+  <p>
+    The jsonProxy reporter is to be used in place of the test runner when using
+    a reporter that needs pure JSON-friendly objects. The example below uses the
+    XML reporter - it works fine directly with the test runner as well, it is
+    only used to illustrate how jsonProxy works.
+  </p>
+  <pre><code>var proxy = buster.reporters.jsonProxy.create();
+var runner = buster.testRunner.create();
+proxy.listen(runner);
+
+var reporter = buster.reporters.xml.create();
+reporter.listen(proxy);</code></pre>
+  <h3 id="<%= id('') %>">create([<%=m "event-emitter", "emitter" %>])</h3>
+  <p>
+    Create an instance. You can optionally provide an event emitter to emit
+    events with. Buster uses this option to provide a messaging client that will
+    emit events directly over the wire. 
+  </p>
+  <h3 id="<%= id('json-proxy-listen') %>" data-title="listen(testRunner)">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+</div>
+<div class="section">
+  <h2 id="<%= id('implement') %>">Implementing a reporter</h2>
+  <p>
+    Implementing a custom reporter is a simple matter of listening to events
+    from <%= m "test/test-runner", "<code>buster.testRunner</code>" %>. However,
+    if you want the reporter to be usable with Buster's auto-wiring mechanism,
+    you'll need to follow a few conventions. The auto-wiring mechanism is what
+    is in use when you have not instantiated a runner on your own and you do
+    this:
+  </p>
+  <pre><code>$ BUSTER_REPORTER=myReporter node mytest.js</code></pre>
+  <h4>Include the reporter in <code>buster.reporters</code></h4>
+  <p>
+    In browsers, this can be achieved by simply adding an object;
+    <code>buster.reporters.myReporter = { /*...*/ };</code>. On node, you
+    need to make sure you are adding your reporter to the correct object:
+  </p>
+  <pre><code>require("buster-test").reporters.myReporter = {
+    /* ... */
+};</code></pre>
+  <h4>Implement <code>create(options)</code></h4>
+  <p>
+    This method should return a new instance. It will be passed an
+    <%= l "options" %> object.
+  </p>
+  <h4>Implement <code>listen(testRunner)</code></h4>
+  <p>
+    This method allows you to listen to events of interest on the test
+    runner. The built-in reporters typically use the <%= m "event-emitter#bind",
+    "<code>bind</code>" %>, but you are completely free to implement this the
+    way you feel best.
+  </p>
+  <h4>Include your reporter on the load path</h4>
+  <p>
+    In browsers, this means add a script tag loading your
+    reporter <em>after</em> loading Buster and <em>before</em> loading your
+    tests. On node, you can either require the reporter directly from the test,
+    or create a test helper module that loads it (so changing reporters is as
+    easy as updating a single file).
+  </p>
+  <h4>Run it</h4>
+  <pre><code>$ BUSTER_REPORTER=myReporter node mytest.js</code></pre>
+</div>
+<div class="section">
+  <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+  <h3 id="<%= id('options') %>"><code>options</code></h3>
+  <p>
+    Options when creating console reporters. The <code>io</code> property is
+    optional, and allows you to inject an IO mechanism for the reporter to print
+    to. The default value of this property is <code>require("sys")</code>.
+  </p>
+  <pre><code>{
+    color: true,
+    bright: true,
+    cwd: null,
+    io: {
+        print: function () {},
+        puts: function () {}
+    }
+}</code></pre>
+  <h3 id="<%= id('html-options') %>"><code>htmlOptions</code></h3>
+  <p>
+    Options when creating HTML reporters. This object has one
+    property, <code>root</code>, which names the DOM element in which to render
+    the test report.
+  </p>
+</div>
 <%= partial :footer %>
