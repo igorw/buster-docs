@@ -197,18 +197,56 @@ code .keyword { font-weight: bold; }
 code .string, code .regexp { color: red; }
 code .class, code .special { font-weight: bold; }
 code .number { font-weight: bold; }
-code .comment { color: grey }
+code .comment { color: grey; }
 
-pre code {
+pre code,
+.side-by-side {
     background: #f6f9fc;
     border: 1px solid #ddd;
     border-radius: 6px;
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     display: block;
-    font-size: 14px;
     margin: 0 0 1.5em;
     padding: 12px;
+}
+
+pre code {
+    font-size: 14px;
+}
+
+/* Side-by-side code views */
+.side-by-side {
+    overflow: hidden;
+}
+
+.side-by-side code {
+    border: none;
+    padding: 0;
+}
+
+.side-by-side .sample code {
+    margin: 0;
+}
+
+.side-by-side .sample {
+    border-right: 1px solid #ddd;
+    float: left;
+    padding: 0 24px 0 0;
+}
+
+.side-by-side .sample + .sample {
+    border-left: 1px solid #ddd;
+    border-right: none;
+    margin-left: -1px;
+    padding: 0 0 0 24px;
+}
+
+.side-by-side h4,
+.side-by-side pre,
+.section .side-by-side h4,
+.section .side-by-side pre {
+    margin-left: 0;
 }
 
 .highlight {
@@ -284,7 +322,8 @@ pre code {
 .section pre,
 .section dl,
 .section p,
-.section h4 {
+.section h4,
+.section .side-by-side {
     margin-left: 2em;
 }
 

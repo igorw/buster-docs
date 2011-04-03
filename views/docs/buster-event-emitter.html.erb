@@ -18,10 +18,17 @@
   <p>
     Creates and returns a new "blank" event emitter.
   </p>
-  <pre><code>var myObj = buster.eventEmitter.create();
-
-// Equivalent to doing
-var myObj2 = Object.create(buster.eventEmitter);</code></pre>
+  <div class="side-by-side">
+    <div class="sample">
+      <pre><code>// Using create
+var obj = buster.eventEmitter.create();</code></pre>
+    </div>
+    <div class="sample">
+      <pre><code>// Same thing
+var obj2 = Object.create(
+               buster.eventEmitter);</code></pre>
+    </div>
+  </div>
   <h4>Creating event emitter APIs</h4>
   <p>
     <strong>buster-event-emitter</strong> is designed to power your custom event
@@ -151,48 +158,66 @@ emitter.emit("some-event", 2, 3, 4, 5); // Listener prints "2, 3, 4, 5"</code></
     If no <code>events</code> is passed, all the object's methods will be bound
     to events with the same name:
   </p>
-  <pre><code>var obj = {
+  <div class="side-by-side">
+    <pre><code>var obj = {
     message: function () {},
     connection: function () {},
     disconnect: function () {}
-};
-
-emitter.bind(obj);
-
-// Equivalent to:
-// emitter.on("message", obj.message, obj);
-// emitter.on("connection", obj.connection, obj);
-// emitter.on("disconnect", obj.disconnect, obj);</code></pre>
+};</code></pre>
+    <div class="sample">
+      <pre><code>// Using bind
+emitter.bind(obj);</code></pre>
+    </div>
+    <div class="sample">
+      <pre><code>// emitter.on equivalent
+emitter.on("message", obj.message, obj);
+emitter.on("connection", obj.connection, obj);
+emitter.on("disconnect", obj.disconnect, obj);</code></pre>
+    </div>
+  </div>
   <p>
     If <code>events</code> is an array of strings, only those methods will be
     bound to their corresponding events:
   </p>
-  <pre><code>var obj = {
+  <div class="side-by-side">
+    <pre><code>var o = {
     message: function () {},
-    connection: function () {},
+    connect: function () {},
     disconnect: function () {}
-};
-
-emitter.bind(obj, ["message", "disconnect"]);
-
-// Equivalent to:
-// emitter.on("message", obj.message, obj);
-// emitter.on("disconnect", obj.disconnect, obj);</code></pre>
+};</code></pre>
+    <div class="sample">
+      <pre><code>// Using bind
+emitter.bind(o, ["message", "connect"]);</code></pre>
+    </div>
+    <div class="sample">
+      <pre><code>// emitter.on equivalent
+emitter.on("message", o.message, o);
+emitter.on("connect", o.connect, o);</code></pre>
+    </div>
+  </div>
   <p>
     If <code>events</code> is an object, the keys will be used as events and
     their string values method names. This way you can bind methods as event
     listeners and name methods differently from events:
   </p>
-  <pre><code>var obj = {
+  <div class="side-by-side">
+    <pre><code>var o = {
     onMessage: function () {},
     onConnection: function () {},
     onDisconnect: function () {}
-};
-
-emitter.bind(obj, { "message": "onMessage", "connection": "onConnection" });
-
-// Equivalent to:
-// emitter.on("message", obj.onMessage, obj);
-// emitter.on("connection", obj.onConnection, obj);</code></pre>
+};</code></pre>
+    <div class="sample">
+      <pre><code>// Using bind
+emitter.bind(o, {
+    "message": "onMessage",
+    "connection": "onConnection"
+});</code></pre>
+    </div>
+    <div class="sample">
+      <pre><code>// emitter.on equivalent
+emitter.on("message", o.onMessage, o);
+emitter.on("connection", o.onConnection, o);</code></pre>
+    </div>
+  </div>
 </div>
 <%= partial :footer %>
