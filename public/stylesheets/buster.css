@@ -229,6 +229,10 @@ pre code {
     font-size: 14px;
 }
 
+.long-lines code {
+    font-size: 11px;
+}
+
 /* Side-by-side code views */
 .side-by-side {
     overflow: hidden;

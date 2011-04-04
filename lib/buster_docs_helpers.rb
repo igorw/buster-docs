@@ -67,10 +67,12 @@ module BusterDocsHelpers
     HTML
   end
 
-  def property(name, default)
+  def property(name, default = nil)
+    default = default.nil? ? "" : " (<code>#{default}</code>)"
+
     <<-HTML
         <h3 id="#{id(name)}" data-title="+#{name}+">
-          <code>#{name}</code> (<code>#{default}</code>)
+          <code>#{name}</code>#{default}
         </h3>
     HTML
   end
