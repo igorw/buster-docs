@@ -330,11 +330,12 @@ pre code {
     margin: 0 0 1.5em;
 }
 
+.section div + h3,
 .section pre + h3,
 .section dl + h3,
 .section ol + h3,
 .section p + h3 {
-    margin-top: 1em;
+    margin-top: 2em;
 }
 
 .section pre,
