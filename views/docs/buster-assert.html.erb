@@ -21,7 +21,7 @@
           to-the-point failure messages even if you don't specify custom assertion
           messages.
         </p>
-        <h3>Assertion messages</h3>
+        <h3>Overriding assertion messages</h3>
         <p>
           The default assertion messages can be overridden per assertion. The
           properties to overwrite are listed with each assertion along with the
@@ -658,10 +658,10 @@ buster.assert.match(234, function () {}); // Fails</code></pre>
           <h4>Object matcher</h4>
           <p>
             As mentioned above, if an object matcher defines a <code>test</code>
-            method the assertion will pass if <code>matcher.test(actual</code>
+            method the assertion will pass if <code>matcher.test(actual)</code>
             returns truthy. If the object does not have a <code>test</code>
             method, a recursive match is performed. If all properties
-            of <code>matcher</code> matches coresponding properties
+            of <code>matcher</code> matches corresponding properties
             in <code>actual</code>, the assertion passes.
           </p>
           <pre><code>buster.assert.match("123", {
@@ -682,6 +682,19 @@ buster.assert.match({
 buster.assert.match(234, {
     name: "Chris"
 }); // Fails</code></pre>
+          <h4>DOM elements</h4>
+          <p>
+            <code>assert.match</code> can be very helpful when asserting on DOM
+            elements, because it allows you to compare several properties with
+            one assertion:
+          </p>
+          <pre><code>var el = document.getElementById("myEl");
+
+buster.assert.match(el, {
+    tagName: "h2",
+    className: "item",
+    innerHTML: "Howdy"
+});</code></pre>
           <div class="msg">
             <h4>Messages</h4>
             <p><code>buster.assert.match.msgException = "${0}${1}";</code></p>
