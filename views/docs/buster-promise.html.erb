@@ -101,8 +101,12 @@ buster.promise.sequential([myLib.asyncFunc1, myLib.asyncFunc2], {
 }).then(function () {
     console.log("Called when asyncFunc1 and asyncFunc2 have resolved");
 });</code></pre>
-  <h3 id="<%= id('all') %>"><code>all([promise1, promise2, ...])</code></h3>
-  <p>Returns a promise that resolves when all arguments have resolved.</p>
+  <h3 id="<%= id('all') %>"><code>all(promise1, promise2, ...)</code></h3>
+  <p>
+    Returns a promise that resolves when all arguments have resolved. Arguments
+    can either be several promises as separate arguments or a single array of
+    promises.
+  </p>
   <pre><code>var all = require("buster-promise").all;
 
 fs.readdir(fpath, function (err, files) {
@@ -113,6 +117,20 @@ fs.readdir(fpath, function (err, files) {
     });
 
     all.apply(null, promises).then(function () {
+        console.log("Done asynchronously processing files")
+    });
+});</code></pre>
+  <h4>With array of promises</h4>
+  <pre><code>var all = require("buster-promise").all;
+
+fs.readdir(fpath, function (err, files) {
+    var promises = [];
+
+    (files || []).forEach(function (file) {
+        promises.push(processFileAsynchronously(file));
+    });
+
+    all(promises).then(function () {
         console.log("Done asynchronously processing files")
     });
 });</code></pre>
