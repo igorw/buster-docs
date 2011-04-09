@@ -32,7 +32,7 @@ var promise2 = buster.promise.create(function (p) {
         }
     });
 });</code></pre>
-  <h3 id="<%= id('then') %>"><code>then(fulfilledHandler, errorHandler)</code></h3>
+  <h3 id="<%= id('then') %>" data-title="+then(fulfilled, error)+"><code>var promise = then(fulfilledHandler, errorHandler)</code></h3>
   <p>
     Register callbacks to handle the promise once it fulfills.
     <code>fulfilledHandler</code> is called when <%=l "resolve" %> is called and
@@ -44,6 +44,7 @@ var promise2 = buster.promise.create(function (p) {
     The handlers are also called in the event that the promise is already
     fulfilled when <code>then</code> is called.
   </p>
+  <p><code>then</code> returns the promise itself for chainable thens.</p>
   <pre><code>var promise = buster.promise.create();
 
 promise.then(function (str) {
