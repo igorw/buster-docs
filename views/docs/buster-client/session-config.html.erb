@@ -6,7 +6,7 @@
   <dt>Module</dt>
   <dd><code>require("buster-client").sessionConfig;</code></dd>
   <dt>In browsers</dt>
-  <dd><code>buster.sessionConfig;</code></dd>
+  <dd>N/A</dd>
 </dl>
 <p>
   Configures a session to run in <%=m "buster-server",
@@ -14,7 +14,7 @@
   "<code>buster.client</code>" %>. The session configuration contains resources
   and various backends that should be available for a given task.
 </p>
-<h3>Typical usage</h3>
+<h3>Sample usage</h3>
 <pre><code>var buster = require("buster-client");
 
 var config = buster.sessionConfig.create();
@@ -87,8 +87,9 @@ config.addResource("rest/", {
     rejected.
   </p>
   <p>
-    The file is read with utf-8 encoding. If this is not suitable for your
-    resource, consider reading the file manually and use <%=l "addResource" %>.
+    The file is read as utf-8 text. If this is not suitable for your resource,
+    consider reading the file manually and use <%=l "addResource" %>. Binary
+    resources are currently not supported.
   </p>
   <h3 id="<%= id('load') %>" data-title="+load(path[, resource])+"><code>load(path[, <%= anchor("resource", "resource") %>]);</code></h3>
   <p>
@@ -108,15 +109,9 @@ config.load(path);</code></pre>
   <h3 id="<%= id('configure') %>"><code>configure(callback);</code></h3>
   <p>
     Calls the callback when all currently loading files are fully loaded and
-    added as resources. The callback receives a formatted session configuration
-    with two properties:
+    added as resources. The callback receives a
+    <%= anchor "formatted session configuration", "formatted-session-config" %>.
   </p>
-  <dl class="properties">
-    <dt><code>resources</code></dt>
-    <dd>An object of resources with paths as keys</dd>
-    <dt><code>load</code></dt>
-    <dd>An array of resource paths to load on session load</dd>
-  </dl>
   <pre><code>var buster = require("buster-client");
 
 var config = buster.sessionConfig.create();
@@ -159,7 +154,8 @@ client.createSession(config, function (configuration) {
   </p>
   <p>
     The resource must be <strong>either</strong> a file-ish resource
-    (with <code>content</code>) <strong>or</strong> a proxy (i.e. using
+    (with <code>content</code>, <code>etag</code>
+    or <code>combine</code>) <strong>or</strong> a proxy (i.e. using
     <code>backend</code>). Attempting to provide both for a single resource will
     result in an error.
   </p>
@@ -167,6 +163,25 @@ client.createSession(config, function (configuration) {
     <dt><code>content</code></dt>
     <dd>
       The content of the resource, as a string.
+    </dd>
+    <dt>etag</dt>
+    <dd>
+      A unique string for this version of the resource. If not provided
+      manually, <%= l "addResource" %> will generate a SHA256 hash of the
+      resource contents to use for etag. If <code>etag</code> is provided
+      without <code>content</code>, the server is instructed to use the cached
+      resource at the same path with that etag.
+    </dd>
+    <dt><code>combine</code></dt>
+    <dd>
+      Used in place of <code>content</code> to indicate to the server that the
+      resource is a combination of several other resources. Should be an array
+      of (existing) resource paths. Naming resources in <code>combine</code>
+      that are not added to the configuration will cause an error. A combined
+      resource can be served with custom headers. Etags is not supported for
+      combined resources, as it has no "own content" - i.e., whether this
+      resource is cached on the server or not is determined by the individual
+      resources this one combines.
     </dd>
     <dt><code>backend</code></dt>
     <dd>
@@ -187,6 +202,20 @@ client.createSession(config, function (configuration) {
       desired path on the server does not match the file name of the exposed
       resource.
     </dd>
+    <dt><code>cacheable</code></dt>
+    <dd>
+      Set to <code>false</code> to always disable caching between the client and
+      the server of this resource. Default is <code>true</code> (i.e., don't
+      resend resource to server if a resource at the same path with the same
+      <code>etag</code> already exists).
+    </dd>
+  </dl>
+  <h3 id="<%= id('formatted-session-config') %>"><code>formattedSessionConfig</code></h3>
+  <dl class="properties">
+    <dt><code>resources</code></dt>
+    <dd>An object of resources with paths as keys</dd>
+    <dt><code>load</code></dt>
+    <dd>An array of resource paths to load on session load</dd>
   </dl>
 </div>
-<%= partial(:footer) %>
+<%= partial :footer %>

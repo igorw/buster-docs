@@ -2,9 +2,62 @@
 <h1><code>buster-assert</code></h1>
 <dl>
   <dt>Version</dt>
-  <dd>0.0.1 <span class="date">(2011-04-06)</span></dd>
+  <dd>0.1.0 <span class="date">(2011-04-10)</span></dd>
   <dt>Module</dt>
   <dd><code>require("buster-client");</code></dd>
   <dt>In browsers</dt>
-  <dd><code>buster.client;</code></dd>
+  <dd>N/A (pure node.js API)</dd>
 </dl>
+<p>
+  Client library that implements the <%=m "server" %> API. The client library
+  allows for configuring a browser automation program, and to automate/run tasks
+  in multiple browsers simultaneously in a pure JavaScript API.
+</p>
+<h2>Sample usage</h2>
+<p>
+  The following example shows how you can use the client library to read
+  <code>buster.json</code> (a <%=m "client/session-config", "session
+  configuration" %> file) and start a <%=m "server#session", "session" %>,
+  trigger interaction in multiple browsers and finally close the session.
+</p>
+<h4><code>buster.json</code> (configuration file)</h4>
+<pre><code>{
+    "server": "http://localhost:1111",
+    "load": ["src/1.js", "src/2.js"],
+
+    "resources": [{
+        "path": "src/1.js",
+        "content": "var meaningOfLife = 42;"
+    }]
+}</code></pre>
+<h4><code>src/2.js</code></h4>
+<pre><code>buster.client.on("question:ultimate", function (msg) {
+    alert(msg.data);
+    buster.client.emit("answer", "The meaning of life is " + meaningOfLife);
+});</code></pre>
+<pre><code>var buster = require("buster-client");
+
+var config = <%=m "client/config-builder", "buster.configBuilder" %>.create();
+config.<%=m "client/config-builder#loadFile", "loadFile" %>("buster.json");
+
+config.<%=m "client/config-builder#configure", "configure" %>().then(function (<%=m "client/config-builder#config", "cfg" %>) {
+    var client = <%=m "client/client", "buster.client" %>.<%=m "client/client#create", "create" %>(
+                     cfg.server.port, cfg.server.host, cfg.server.path);
+
+    client.<%=m "client/client#createSession", "createSession" %>(config.sessionConfig).then(function (<%=m "client/session", "session" %>) {
+        session.on("answer", function (msg) {
+            console.log(msg.data);
+        });
+
+        session.emit("question:ultimate", "What is the meaning of life?");
+    });
+});</code></pre>
+<p>
+  This is how it works: Assume that <%=m "server" %> is running locally on
+  <code>http://localhost:1111/</code> and a few browsers have been
+  captured. When the above code is run, an alert with the text "What is the
+  meaning of life?" will pop up in all browsers. Once dismissed, the answer,
+  "The meaning of life is 42" will be printed on the console (where the above
+  client is running) once for each browser.
+</p>
+<%= partial :footer %>

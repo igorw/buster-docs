@@ -1,0 +1,85 @@
+<%= partial(:head, :title => "buster.client") %>
+<h1><code>buster.client</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>See <%=m "client", "buster-client" %></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-client").client;</code></dd>
+  <dt>In browsers</dt>
+  <dd>N/A</dd>
+</dl>
+<p>
+  The client uses a <%=m "client/session-config", "session configuration" %> to
+  create a <%=m "client/session", "session" %>.
+</p>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('create') %>" data-title="+create(port, host, path);+"><code>var client = buster.client.create(port, host, path);</code></h3>
+  <p>
+    Create a new client. Arguments are strings and describes where to find a
+    running <%=m "server" %>.
+  </p>
+  <h3 id="<%= id('createSession') %>" data-title="+createSession(sessionConfig);+">
+    <code>var <%=m "promise", "promise" %> = client.createSession(<%=m "client/session-config", "sessionConfig" %>);</code>
+  </h3>
+  <p>
+    Creates and runs a new session on the server. The provided session config
+    determines what resources to make available, and which to load by
+    default. If <%=l "useCache" %> is <code>true</code> (default), cached
+    resources will be used when possible.
+  </p>
+  <p>
+    The returned promise is resolved with a <%=m "client/session" %> object when
+    the session is ready.
+  </p>
+  <pre><code>var buster = require("buster-client");
+
+var sessionConfig = buster.sessionConfig.create();
+sessionConfig.addResource("/src/1.js", {
+    content: "alert('Hello world');"
+});
+
+sessionConfig.load("/src/1.js");
+
+var client = buster.client.create(1111, "localhost");
+client.createSession(sessionConfig).then(function (<%=m "client/session", "session" %>) {
+    // Use session
+});</code></pre>
+  <h3 id="<%= id('getCachedResources') %>" data-title="+getCachedResources();+">
+    <code>var <%=m "promise", "promise" %> = client.getCachedResources();</code>
+  </h3>
+  <p>
+    Fetches a list of resources cached on the server. These can optionally be
+    reused if their content has not changed. The returned promise is resolved
+    with a <%=l "cachedResources" %> object when ready.
+  </p>
+  <h3 id="<%= id('useCachedResources') %>" data-title="+useCachedResources(config);+"><code>var <%=m "promise", "promise" %> = client.useCachedResources(<%=m "client/session-config#formatted-session-config", "config" %>);</code></h3>
+  <p>
+    Tweak the session configuration to use cached resources where possible.
+  </p>
+</div>
+<div class="section">
+  <h2 id="<%= id('properties') %>">Properties</h2>
+  <%= property("useCache", "true") %>
+  <p>
+    If <code>true</code> (default), <code>createSession</code> will exclude
+    cached resources from the session configuration prior to contacting the
+    server. Potentially allows for huge performance wins.
+  </p>
+</div>
+<div class="section">
+  <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+  <h3 id="cachedResources"><code>cachedResources</code></h3>
+  <p>
+    An object describing what resources are available on the server, and in what
+    versions. The server may cache resources at the same path several times with
+    different etags. The object has pathnames for keys, and each value is an
+    array of available etags as strings.
+  </p>
+  <h4>Example</h4>
+  <pre><code>{
+    "/src/1.js": ["c141b24", "8761944"],
+    "/src/2.js": ["bac985c"]
+}</code></pre>
+</div>
+<%= partial :footer %>
