@@ -790,7 +790,7 @@ buster.assert.exception(function () {}, "TypeError"); // Fails</code></pre>
             <p>
               <code>buster.assert.exception.msgTypeNoException = "${0}Expected ${1} but no exception was thrown";</code><br>
               <code>buster.assert.exception.msgFail = "${0}Expected exception";</code><br>
-              <code>buster.assert.exception.msgTypeFail = "${0}Expected ${1} but threw ${2}";</code>
+              <code>buster.assert.exception.msgTypeFail = "${0}Expected ${1} but threw ${2}, (\"${3}\")";</code>
             </p>
             <dl>
               <dt><code>${0}</code></dt>
@@ -799,6 +799,8 @@ buster.assert.exception(function () {}, "TypeError"); // Fails</code></pre>
               <dd>The expected exception type (if provided)</dd>
               <dt><code>${2}</code></dt>
               <dd>The type of exception thrown (if any)</dd>
+              <dt><code>${3}</code></dt>
+              <dd>The exception message</dd>
             </dl>
           </div>
           <h3 data-title="+noException(callback[, msg])+"
@@ -824,12 +826,14 @@ buster.assert.noException(function () {
 }); // Fails</code></pre>
           <div class="msg">
             <h4>Message</h4>
-            <p><code>buster.assert.noException.msgFail = "${0}Expected not to throw but threw ${1}";</code></p>
+            <p><code>buster.assert.noException.msgFail = "${0}Expected not to throw but threw ${1}, (\"${2}\")";</code></p>
             <dl>
               <dt><code>${0}</code></dt>
               <dd>The custom message, if any</dd>
               <dt><code>${1}</code></dt>
               <dd>The type of exception thrown (if any)</dd>
+              <dt><code>${2}</code></dt>
+              <dd>The exception message</dd>
             </dl>
           </div>
           <h3 data-title="+inDelta(actual, expected, delta[, msg])+"
