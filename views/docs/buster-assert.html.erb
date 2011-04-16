@@ -608,6 +608,11 @@ buster.assert.isNotArrayLike([1, 2, 3]); // Fails</code></pre>
             assertion passes if <code>actual</code> is a case-insensitive
             substring of <code>expected</code> as a string.
           </p>
+          <h4>Boolean matcher</h4>
+          <p>
+            Performs a strict (i.e. <code>===</code>) match with the
+            object.
+          </p>
           <pre><code>buster.assert.match("Give me something", "Give", "This will pass");
 buster.assert.match("Give me something", "sumptn", "This will fail");
 buster.assert.match("Yeah", { toString: function () { return "yeah!"; } }); // Passes
