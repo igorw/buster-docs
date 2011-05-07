@@ -5,8 +5,8 @@ class BusterDocsTemplate
   include BusterDocsHelpers
   attr_reader :context_path, :docs_root, :id_prefix, :path
 
-  def initialize(path, views_root)
-    @context_path = ""
+  def initialize(path, views_root, context_path)
+    @context_path = context_path
     @id_prefix = ""
     @views_root = File.expand_path(views_root)
     @docs_root = File.join(@views_root, "docs")
