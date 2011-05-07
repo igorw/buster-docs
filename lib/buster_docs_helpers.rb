@@ -35,7 +35,7 @@ module BusterDocsHelpers
   end
 
   def module_url(path)
-    path.sub(/^#{docs_root}/, "").sub(/\.html\.erb$/, "").gsub(/^\/*|\/*$/, "/")
+    context_path + path.sub(/^#{docs_root}/, "").sub(/\.html\.erb$/, "").gsub(/^\/*|\/*$/, "/")
   end
 
   def module_title(path)
