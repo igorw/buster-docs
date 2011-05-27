@@ -1,0 +1,48 @@
+<%= partial(:head, :title => "buster.args") %>
+
+<h1><code>buster.args</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.1.0 <span class="date">(2011-05-27)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-args");</code></dd>
+</dl>
+
+<p>An unobtrusive ambiguity aware parser for command line interfaces (CLIs). It's <strong>unobtrusive</strong> because it doesn't mandate a specific way of printing error messages, help messages and other output, and because it has no control flow wrapper DSL. It's <strong>ambiguity aware</strong> because it allows you to handle corner cases such as <kbd>-bar</kbd>, which can mean both <kbd>-b -a -r</kbd> and <kbd>-b=ar</kbd>.</p>
+
+<pre><code>var busterArgs = require("buster-args");
+
+var port = busterArgs.createOption("-p", "--port");
+port.hasValue = true; // So that the parser can read -p2345 as -p=2345
+port.defaultValue = 8282;
+port.addValidator(busterArgs.validators.integer("Custom message. $1 has to be a number."));
+
+var verbose = busterArgs.createOption("-v");
+verbose.addValidator(function () {
+    if (this.timesSet > 3) {
+        // See also "Asynchronous validators".
+        // TODO: Make a link
+        return "-v can only be 3 levels.";
+    }
+});
+
+// Operands are statements without options. I.e. mything --port=1234 path/to/stuff
+var rootPath = busterArgs.createOperand(busterArgs.OPD_DIRECTORY);
+rootPath.signature = "Presentation root directory"; // Used in error msgs for this option
+rootPath.addValidator(busterArgs.validators.required()); // Will use default error msg
+
+busterArgs.handle(process.argv, function (errors) {
+    if (errors) {
+        console.log(errors[0]);
+        return;
+    }
+
+    // Various useful ways to get the  values from the options.
+    verbose.timesSet; // Will be between 0 and 3.
+    port.isSet;
+    port.value();
+    rootPath.value();
+});
+</code></pre>
+
+<%= partial :footer %>
