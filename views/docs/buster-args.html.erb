@@ -31,7 +31,7 @@ rootPath.<%= anchor "signature" %> = "Presentation root directory"; // Used in e
 rootPath.<%= anchor "addValidator" %>(busterArgs.validators.<%= anchor "file", "validator-file" %>()); // Will use default error msg
 rootPath.<%= anchor "addValidator" %>(busterArgs.validators.<%= anchor "required", "required-validator" %>());
 
-args.<%= anchor "handle" %>(process.argv, function (errors) {
+args.<%= anchor "handle" %>(process.argv.slice(2), function (errors) {
     if (errors) {
         console.log(errors[0]);
         return;
@@ -57,14 +57,14 @@ args.<%= anchor "handle" %>(process.argv, function (errors) {
 
   <p>Creates a new operand. An operand has all the properties of a <%= anchor "argument" %>.</p>
 
-  <h3 id="<%= id "handle" %>"><code>handle(argv, callback)</code></h3>
+  <h3 id="<%= id "handle" %>"><code>handle(args, callback)</code></h3>
 
-  <p>Performs parsing and validation of argv. The two first entries of <code>argv</code> will be discarded, see <a href="http://nodejs.org/docs/v0.4.8/api/process.html#process.argv"><code>process.argv</code></a>.</p>
+  <p>Performs parsing and validation of argv. In node.JS, make sure to discard the firs two items of <a href="http://nodejs.org/docs/v0.4.8/api/process.html#process.argv"><code>process.argv</code></a>, as they contain unrelated arguments ("node" and the file name).</p>
 
   <p>The callback is called with one argument, <code>errors</code>, which is either undefined, or an array of errors and/or validation messages.</p>
 
   <pre><code>var args = Object.create(buster.args);
-args.handle(process.argv, function (errors) {
+args.handle(process.argv.slice(2), function (errors) {
     if (errors) {
         // Print an error msg, i.e. console.log(errors[0])
          return;
@@ -302,7 +302,7 @@ var help = args.createOption("--help", "-h");
 help.helpText = "Show this text";
 options.push(help);
 
-args.handle(process.argv, function (errors) {
+args.handle(process.argv.slice(2), function (errors) {
     if (errors) {
         console.log(errors[0]); return;
     }
