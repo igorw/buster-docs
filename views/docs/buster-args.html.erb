@@ -15,7 +15,7 @@
 var port = args.<%= anchor "createOption" %>("-p", "--port");
 port.<%= anchor "hasValue" %> = true; // So that the parser can read -p2345 as -p=2345
 port.<%= anchor "defaultValue" %> = 8282;
-port.<%= anchor "addValidator" %>(busterArgs.validators.<%= anchor "integer", "integer-validator" %>("Custom message. $1 has to be a number."));
+port.<%= anchor "addValidator" %>(busterArgs.validators.<%= anchor "integer", "integer-validator" %>("Custom message. ${1} has to be a number."));
 
 var verbose = args.<%= anchor "createOption" %>("-v");
 verbose.<%= anchor "addValidator" %>(function () {
@@ -45,134 +45,177 @@ args.<%= anchor "handle" %>(process.argv, function (errors) {
 });
 </code></pre>
 
-<h3><code>var args = Object.create(require("buster-args"))</code></h3>
-<p>Creates a new instance of buster.args.</p>
+<div class="section">
+  <h3><code>var args = Object.create(require("buster-args"))</code></h3>
+  <p>Creates a new instance of buster.args.</p>
 
-<h3 id="<%= id "create-option" %>"><code>var opt = buster.args.createOption("opt1", ["opt2", ...])</code></h3>
+  <h3 id="<%= id "create-option" %>"><code>var opt = buster.args.createOption("opt1", ["opt2", ...])</code></h3>
 
-<p>Creates a new <%= anchor "option" %>. An option has all the properties of a <%= anchor "option-ish" %>, as well as <%= anchor "hasValue", "option-has-value" %> and <%= anchor "timesSet", "option-times-set" %></p>
+  <p>Creates a new <%= anchor "option" %>. An option has all the properties of a <%= anchor "option-ish" %>, as well as <%= anchor "hasValue", "option-has-value" %> and <%= anchor "timesSet", "option-times-set" %></p>
 
-<h3 id="<%= id "createOperand" %>"><code>var opd = buster.args.createOperand()</code></h3>
+  <h3 id="<%= id "createOperand" %>"><code>var opd = buster.args.createOperand()</code></h3>
 
-<p>Creates a new operand. An operand has all the properties of a <%= anchor "option-ish" %>.</p>
+  <p>Creates a new operand. An operand has all the properties of a <%= anchor "option-ish" %>.</p>
 
-<h3 id="<%= id "handle" %>"><code>buster.args.handle(argv, callback)</code></h3>
+  <h3 id="<%= id "handle" %>"><code>buster.args.handle(argv, callback)</code></h3>
 
-<p>Performs parsing and validation of argv, which is assumed to be <a href="http://nodejs.org/docs/v0.4.8/api/process.html#process.argv"><code>process.argv</code></a>.</p>
+  <p>Performs parsing and validation of argv, which is assumed to be <a href="http://nodejs.org/docs/v0.4.8/api/process.html#process.argv"><code>process.argv</code></a>.</p>
 
-<p>The callback is called with one argument, <code>errors</code>, which is either undefined, or an array of errors and/or validation messages.</p>
+  <p>The callback is called with one argument, <code>errors</code>, which is either undefined, or an array of errors and/or validation messages.</p>
 
-<pre><code>var args = Object.create(buster.args);
-args.handle(process.argv, function () {
-    
+  <pre><code>var args = Object.create(buster.args);
+args.handle(process.argv, function (errors) {
+    if (errors) {
+        // Print an error msg, i.e. console.log(errors[0])
+         return;
+    }
+    // Continue with normal operation. I.e. myOpt.hasValue,
+    // myOpt.timesSet, otherOpt.value(), etc.
 });</code></pre>
+</div>
 
-<h2 id="<%= id "option-ish" %>">Options</h2>
+<div class="section">
+  <h2 id="<%= id "option-ish" %>">Options</h2>
 
-<h3 id="<%= id "timesSet" %>"><code>var num = opt.timesSet</code></h3>
+  <h3 id="<%= id "timesSet" %>"><code>var num = opt.timesSet</code></h3>
 
-<p>The number of times an option has been set. Useful for options like <kbd>-v</kbd> (verbose) which you might want to allow setting multiple times, giving the user more and more verbose output from your program.</p>
+  <p>The number of times an option has been set. Useful for options like <kbd>-v</kbd> (verbose) which you might want to allow setting multiple times, giving the user more and more verbose output from your program.</p>
 
-<pre><code>-v // 1
+  <pre><code>-v // 1
 -vv // 2
 -v -v -v -v // 4
 -v -vv -vv -vvv // 8
 </code></pre>
 
-<h3><code>opt.hasValue = [true|false]</code></code></h3>
-<p>Tells the parser that it should look for a value for this option.</p>
-<p>If not true, you'll get <code>"unrecognized option 1234"</code> for <kbd>--port 1234</kbd>, since the parser didn't know how to handle 1234.</p>
+  <h3><code>opt.hasValue = [true|false]</code></h3>
+  <p>Tells the parser that it should look for a value for this option.</p>
+  <p>If not true, you'll get <code>"unrecognized option 1234"</code> for <kbd>--port 1234</kbd>, since the parser didn't know how to handle 1234.</p>
+</div>
 
-<h2 id="<%= id "option-ish" %>">Option and operand shared</h2>
+<div class="section">
+  <h2 id="<%= id "option-ish" %>">Options and operands</h2>
 
-<h3 id="<%= id "addValidator" %>"><code>opt.addValidator(<%= anchor "validator" %>)</code></h3>
-<p>Adds a validator to an option-ish.</p>
+  <p>Options and operands both share these attributes.</p>
 
-<h3 id="<%= id "isSet" %>"><code>var bool = opt.isSet</code></h3>
-<p>True or false depending on wether or not the option was present in argv.</p>
+  <h3 id="<%= id "addValidator" %>"><code>opt.addValidator(<%= anchor "validator" %>)</code></h3>
+  <p>Adds a validator to an option-ish.</p>
 
-<h3 id="<%= id "value" %>"><code>var val = opt.value()</code></h3>
-<p>The value of the option-ish. Is normally a string, but may be any object since validators can change option-ish values as they see fit. See <%= anchor "actualValue" %>.</p>
+  <h3 id="<%= id "isSet" %>"><code>var bool = opt.isSet</code></h3>
+  <p>True or false depending on wether or not the option was present in argv.</p>
 
-<h3 id="<%= id "actualValue" %>"><code>opt.actualValue = newValue</code></h3>
-<p>Override the value an option-ish gets from argv. This is probably only useful in validations. The <%= anchor "integer", "validator-integer" %> built in validator uses this to set the value to a number object instead of a string object, for example.</p>
+  <h3 id="<%= id "value" %>"><code>var val = opt.value()</code></h3>
+  <p>The value of the option-ish. Is normally a string, but may be any object since validators can change option-ish values as they see fit. See <%= anchor "actualValue" %>.</p>
 
-<h2 id="<%= id "validator" %>">Validators</h2>
+  <h3 id="<%= id "actualValue" %>"><code>opt.actualValue = newValue</code></h3>
+  <p>Override the value an option-ish gets from argv. This is probably only useful in validations. The <%= anchor "integer", "validator-integer" %> built in validator uses this to set the value to a number object instead of a string object, for example.</p>
 
-<p>Validators lets you add requirements with associated error messages to options and operands. Validators can also mutate the values of options. The <%= anchor "integer", "validator-integer" %> validator will for example set the value to a <a href="http://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number">Number</a> object upon successful validation.</p>
+  <h2 id="<%= id "validator" %>">Validators</h2>
 
-<p>buster.args has a number of built-in validators, and an API for adding custom validators.</p>
+  <p>Validators lets you add requirements with associated error messages to options and operands. Validators can also mutate the values of options. The <%= anchor "integer", "validator-integer" %> validator will for example set the value to a <a href="http://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number">Number</a> object upon successful validation.</p>
 
-<h2>Built-in validators</h2>
+  <p>buster.args has a number of built-in validators, and an API for adding custom validators.</p>
+</div>
 
-<p>The built in validators provides a selection of generic validators. You can customize the error messages by passing strings with tokens like <code>"${1}"</code> in them. The number and value maps are documented for each validator.</p>
+<div class="section">
+  <h2>Built-in validators</h2>
 
-<pre><code>buster.args.validators.required(); // Will use default built-in error message.
+  <p>The built in validators provides a selection of generic validators. You can customize the error messages by passing strings with tokens like <code>"${1}"</code> in them. The number and value maps are documented for each validator.</p>
+
+  <pre><code>// Uses built-in error message
+buster.args.validators.required();
+// Specify your own error message
 buster.args.validators.required("${1} has to be set");</code></pre>
 
-<!-- <h3 id="<%= id "validator-required" %>"><code>buster.args.validators.required("err", "<%= anchor "statErr" %>")</code></h3> -->
+  <!-- <h3 id="<%= id "validator-required" %>"><code>buster.args.validators.required("err", "<%= anchor "statErr" %>")</code></h3> -->
 
-<h3 id="<%= id "validator-required"%>"><code>buster.args.validators.required("err")</code></h3>
+  <h3 id="<%= id "validator-required"%>"><code>buster.args.validators.required("err")</code></h3>
 
-<p>Fails if the option is not set.</p>
+  <p>Fails if the option is not set.</p>
 
-<h4>Custom error message</h4>
+  <h4>Custom error message</h4>
 
-<dl>
-  <dt><code>${1}</code></dt>
-  <dd>The <%= anchor "signature" %></dd>
-</dl>
+  <dl>
+    <dt><code>${1}</code></dt>
+    <dd>The option <%= anchor "signature" %></dd>
+  </dl>
 
-<h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.integer("err")</code></h3>
+  <h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.integer("err")</code></h3>
 
-<p>Will fail validation if the option was not an integer, i.e. <code>"foo"</code> and <code>42.5</code>. Upon successful validation, the value of the option will be overwritten with the Number object for the passed value.</p>
+  <p>Will fail validation if the option was not an integer, i.e. <code>"foo"</code> and <code>42.5</code>. Upon successful validation, the value of the option will be overwritten with the Number object for the passed value.</p>
 
-<h4>Custom error message</h4>
+  <h4>Custom error message</h4>
 
-<dl>
-  <dt><code>${1}</code></dt>
-  <dd>Value</dd>
-  <dt><code>${2}</code></dt>
-  <dd>The <%= anchor "signature" %></dd>
-</dl>
+  <dl>
+    <dt><code>${1}</code></dt>
+    <dd>The specified number</dd>
+    <dt><code>${2}</code></dt>
+    <dd>The option <%= anchor "signature" %></dd>
+  </dl>
 
-<h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.number("err")</code></h3>
+  <h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.number("err")</code></h3>
 
-<p>Will fail validation if the option was not a number, i.e. <code>"foo"</code> and <code>?</code>. Upon successful validation, the value of the option will be overwritten with the Number object for the passed value.</p>
+  <p>Will fail validation if the option was not a number, i.e. <code>"foo"</code> and <code>?</code>. Upon successful validation, the value of the option will be overwritten with the Number object for the passed value.</p>
 
-<h4>Custom error message</h4>
+  <h4>Custom error message</h4>
 
-<dl>
-  <dt><code>${1}</code></dt>
-  <dd>Value</dd>
-  <dt><code>${2}</code></dt>
-  <dd>The <%= anchor "signature" %></dd>
-</dl>
+  <dl>
+    <dt><code>${1}</code></dt>
+    <dd>The specified number</dd>
+    <dt><code>${2}</code></dt>
+    <dd>The option <%= anchor "signature" %></dd>
+  </dl>
 
-<h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.number("err", "<%= anchor "statErr" %>")</code></h3>
+  <h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.file("err", "<%= anchor "statErr" %>")</code></h3>
 
-<p>Will fail validation if the option was not a path pointing to an existing file in the file system.</p>
+  <p>Will fail validation if the option was not a path pointing to an existing file in the file system.</p>
 
-<h4>Custom error message</h4>
+  <h4>Custom error message</h4>
 
-<dl>
-  <dt><code>${1}</code></dt>
-  <dd>Value</dd>
-  <dt><code>${2}</code></dt>
-  <dd>The <%= anchor "signature" %></dd>
-</dl>
+  <dl>
+    <dt><code>${1}</code></dt>
+    <dd>The specified file</dd>
+    <dt><code>${2}</code></dt>
+    <dd>The option <%= anchor "signature" %></dd>
+  </dl>
 
-<h3 id="<%= id "statErr" %>"><code>statErr</code> common error message</h3>
+  <h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.directory("err", "<%= anchor "statErr" %>")</code></h3>
 
-<p>Used across multiple validators, when <code>fs.stat</code> receives an error. This typically happens if there's no file or directory at the path specified.</p>
+  <p>Will fail validation if the option was not a path pointing to an existing directory in the file system.</p>
 
-<dl>
-  <dt><code>${1}</code></dt>
-  <dd>The passed value</dd>
+  <h4>Custom error message</h4>
 
-  <dt><code>${2}</code></dt>
-  <dd>The <%= anchor "signature" %></dd>
-</dl>
+  <dl>
+    <dt><code>${1}</code></dt>
+    <dd>The specified directory</dd>
+    <dt><code>${2}</code></dt>
+    <dd>The option <%= anchor "signature" %></dd>
+  </dl>
+
+  <h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.fileOrDirectory("err", "<%= anchor "statErr" %>")</code></h3>
+
+  <p>Will fail validation if the option was not a path pointing to an existing file or directory in the file system. Will fail for block devices, sockets, et c.</p>
+
+  <h4>Custom error message</h4>
+
+  <dl>
+    <dt><code>${1}</code></dt>
+    <dd>The specified file or directory</dd>
+    <dt><code>${2}</code></dt>
+    <dd>The option <%= anchor "signature" %></dd>
+  </dl>
+
+  <h3 id="<%= id "statErr" %>"><code>statErr</code> common error message</h3>
+
+  <p>Used across multiple validators, when <code>fs.stat</code> receives an error. This typically happens if there's no file or directory at the path specified.</p>
+
+  <dl>
+    <dt><code>${1}</code></dt>
+    <dd>The specified file or directory</dd>
+
+    <dt><code>${2}</code></dt>
+    <dd>The option <%= anchor "signature" %></dd>
+  </dl>
+</div>
 
 <h2>Custom validators</h2>
 
