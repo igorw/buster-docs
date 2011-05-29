@@ -8,41 +8,259 @@
   <dd><code>require("buster-args");</code></dd>
 </dl>
 
-<p>An unobtrusive ambiguity aware parser for command line interfaces (CLIs). It's <strong>unobtrusive</strong> because it doesn't mandate a specific way of printing error messages, help messages and other output, and because it has no control flow wrapper DSL. It's <strong>ambiguity aware</strong> because it allows you to handle corner cases such as <kbd>-bar</kbd>, which can mean both <kbd>-b -a -r</kbd> and <kbd>-b=ar</kbd>.</p>
+<p>An unobtrusive ambiguity aware parser for command line interfaces (CLIs). It's <strong>unobtrusive</strong> because it doesn't mandate a specific way of printing error messages, help messages and other output, and because it has no control flow wrapper DSL. It's <strong>ambiguity aware</strong> because it lets you specify how to handle ambiguities such as <kbd>-bar</kbd>, which can mean both <kbd>-b -a -r</kbd> and <kbd>-b=ar</kbd>.</p>
 
-<pre><code>var busterArgs = require("buster-args");
+<pre><code>var args = Object.create(buster-args);
 
-var port = busterArgs.createOption("-p", "--port");
-port.hasValue = true; // So that the parser can read -p2345 as -p=2345
-port.defaultValue = 8282;
-port.addValidator(busterArgs.validators.integer("Custom message. $1 has to be a number."));
+var port = args.<%= anchor "createOption" %>("-p", "--port");
+port.<%= anchor "hasValue" %> = true; // So that the parser can read -p2345 as -p=2345
+port.<%= anchor "defaultValue" %> = 8282;
+port.<%= anchor "addValidator" %>(busterArgs.validators.<%= anchor "integer", "integer-validator" %>("Custom message. $1 has to be a number."));
 
-var verbose = busterArgs.createOption("-v");
-verbose.addValidator(function () {
-    if (this.timesSet > 3) {
-        // See also "Asynchronous validators".
-        // TODO: Make a link
+var verbose = args.<%= anchor "createOption" %>("-v");
+verbose.<%= anchor "addValidator" %>(function () {
+    if (this.<%= anchor "timesSet" %> > 3) {
+        // See also <%= anchor "asynchronous validators", "async-validators" %>.
         return "-v can only be 3 levels.";
     }
 });
 
 // Operands are statements without options. I.e. mything --port=1234 path/to/stuff
-var rootPath = busterArgs.createOperand(busterArgs.OPD_DIRECTORY);
-rootPath.signature = "Presentation root directory"; // Used in error msgs for this option
-rootPath.addValidator(busterArgs.validators.required()); // Will use default error msg
+var rootPath = args.<%= anchor "createOperand" %>();
+rootPath.<%= anchor "signature" %> = "Presentation root directory"; // Used in error msgs for this option
+rootPath.<%= anchor "addValidator" %>(busterArgs.validators.<%= anchor "file", "validator-file" %>()); // Will use default error msg
+rootPath.<%= anchor "addValidator" %>(busterArgs.validators.<%= anchor "required", "required-validator" %>());
 
-busterArgs.handle(process.argv, function (errors) {
+args.<%= anchor "handle" %>(process.argv, function (errors) {
     if (errors) {
         console.log(errors[0]);
         return;
     }
 
     // Various useful ways to get the  values from the options.
-    verbose.timesSet; // Will be between 0 and 3.
-    port.isSet;
-    port.value();
-    rootPath.value();
+    verbose.<%= anchor "timesSet" %>; // Will be between 0 and 3.
+    port.<%= anchor "isSet" %>;
+    port.<%= anchor "value" %>();
+    rootPath.<%= anchor "value" %>();
 });
 </code></pre>
+
+<h3><code>var args = Object.create(require("buster-args"))</code></h3>
+<p>Creates a new instance of buster.args.</p>
+
+<h3 id="<%= id "create-option" %>"><code>var opt = buster.args.createOption("opt1", ["opt2", ...])</code></h3>
+
+<p>Creates a new <%= anchor "option" %>. An option has all the properties of a <%= anchor "option-ish" %>, as well as <%= anchor "hasValue", "option-has-value" %> and <%= anchor "timesSet", "option-times-set" %></p>
+
+<h3 id="<%= id "createOperand" %>"><code>var opd = buster.args.createOperand()</code></h3>
+
+<p>Creates a new operand. An operand has all the properties of a <%= anchor "option-ish" %>.</p>
+
+<h3 id="<%= id "handle" %>"><code>buster.args.handle(argv, callback)</code></h3>
+
+<p>Performs parsing and validation of argv, which is assumed to be <a href="http://nodejs.org/docs/v0.4.8/api/process.html#process.argv"><code>process.argv</code></a>.</p>
+
+<p>The callback is called with one argument, <code>errors</code>, which is either undefined, or an array of errors and/or validation messages.</p>
+
+<pre><code>var args = Object.create(buster.args);
+args.handle(process.argv, function () {
+    
+});</code></pre>
+
+<h2 id="<%= id "option-ish" %>">Options</h2>
+
+<h3 id="<%= id "timesSet" %>"><code>var num = opt.timesSet</code></h3>
+
+<p>The number of times an option has been set. Useful for options like <kbd>-v</kbd> (verbose) which you might want to allow setting multiple times, giving the user more and more verbose output from your program.</p>
+
+<pre><code>-v // 1
+-vv // 2
+-v -v -v -v // 4
+-v -vv -vv -vvv // 8
+</code></pre>
+
+<h3><code>opt.hasValue = [true|false]</code></code></h3>
+<p>Tells the parser that it should look for a value for this option.</p>
+<p>If not true, you'll get <code>"unrecognized option 1234"</code> for <kbd>--port 1234</kbd>, since the parser didn't know how to handle 1234.</p>
+
+<h2 id="<%= id "option-ish" %>">Option and operand shared</h2>
+
+<h3 id="<%= id "addValidator" %>"><code>opt.addValidator(<%= anchor "validator" %>)</code></h3>
+<p>Adds a validator to an option-ish.</p>
+
+<h3 id="<%= id "isSet" %>"><code>var bool = opt.isSet</code></h3>
+<p>True or false depending on wether or not the option was present in argv.</p>
+
+<h3 id="<%= id "value" %>"><code>var val = opt.value()</code></h3>
+<p>The value of the option-ish. Is normally a string, but may be any object since validators can change option-ish values as they see fit. See <%= anchor "actualValue" %>.</p>
+
+<h3 id="<%= id "actualValue" %>"><code>opt.actualValue = newValue</code></h3>
+<p>Override the value an option-ish gets from argv. This is probably only useful in validations. The <%= anchor "integer", "validator-integer" %> built in validator uses this to set the value to a number object instead of a string object, for example.</p>
+
+<h2 id="<%= id "validator" %>">Validators</h2>
+
+<p>Validators lets you add requirements with associated error messages to options and operands. Validators can also mutate the values of options. The <%= anchor "integer", "validator-integer" %> validator will for example set the value to a <a href="http://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number">Number</a> object upon successful validation.</p>
+
+<p>buster.args has a number of built-in validators, and an API for adding custom validators.</p>
+
+<h2>Built-in validators</h2>
+
+<p>The built in validators provides a selection of generic validators. You can customize the error messages by passing strings with tokens like <code>"${1}"</code> in them. The number and value maps are documented for each validator.</p>
+
+<pre><code>buster.args.validators.required(); // Will use default built-in error message.
+buster.args.validators.required("${1} has to be set");</code></pre>
+
+<!-- <h3 id="<%= id "validator-required" %>"><code>buster.args.validators.required("err", "<%= anchor "statErr" %>")</code></h3> -->
+
+<h3 id="<%= id "validator-required"%>"><code>buster.args.validators.required("err")</code></h3>
+
+<p>Fails if the option is not set.</p>
+
+<h4>Custom error message</h4>
+
+<dl>
+  <dt><code>${1}</code></dt>
+  <dd>The <%= anchor "signature" %></dd>
+</dl>
+
+<h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.integer("err")</code></h3>
+
+<p>Will fail validation if the option was not an integer, i.e. <code>"foo"</code> and <code>42.5</code>. Upon successful validation, the value of the option will be overwritten with the Number object for the passed value.</p>
+
+<h4>Custom error message</h4>
+
+<dl>
+  <dt><code>${1}</code></dt>
+  <dd>Value</dd>
+  <dt><code>${2}</code></dt>
+  <dd>The <%= anchor "signature" %></dd>
+</dl>
+
+<h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.number("err")</code></h3>
+
+<p>Will fail validation if the option was not a number, i.e. <code>"foo"</code> and <code>?</code>. Upon successful validation, the value of the option will be overwritten with the Number object for the passed value.</p>
+
+<h4>Custom error message</h4>
+
+<dl>
+  <dt><code>${1}</code></dt>
+  <dd>Value</dd>
+  <dt><code>${2}</code></dt>
+  <dd>The <%= anchor "signature" %></dd>
+</dl>
+
+<h3 id="<%= id "validator-integer" %>"><code>buster.args.validators.number("err", "<%= anchor "statErr" %>")</code></h3>
+
+<p>Will fail validation if the option was not a path pointing to an existing file in the file system.</p>
+
+<h4>Custom error message</h4>
+
+<dl>
+  <dt><code>${1}</code></dt>
+  <dd>Value</dd>
+  <dt><code>${2}</code></dt>
+  <dd>The <%= anchor "signature" %></dd>
+</dl>
+
+<h3 id="<%= id "statErr" %>"><code>statErr</code> common error message</h3>
+
+<p>Used across multiple validators, when <code>fs.stat</code> receives an error. This typically happens if there's no file or directory at the path specified.</p>
+
+<dl>
+  <dt><code>${1}</code></dt>
+  <dd>The passed value</dd>
+
+  <dt><code>${2}</code></dt>
+  <dd>The <%= anchor "signature" %></dd>
+</dl>
+
+<h2>Custom validators</h2>
+
+<p>A validator is a function that returns a string or undefined (or promises, see <%= anchor "async-validators" %>). The <code>this</code> scope in the function is the option for which the validator is being performed.</p>
+
+<pre><code>var opt = args.createOption("-v");
+opt.addValidator(function () {
+    if (this.value() == "can not be this value") {
+        return "This is the error message.";
+    }
+});</code></pre>
+
+<h3 id="<%= id "async-validators" %>">Asynchronous validators</h3>
+
+<p><%= m "buster-promise", "Promises" %> are used to facilitate asynchronous validators. Here's an example of a validator that checks if a file is larger than 1MB.</p>
+
+<pre><code>var busterPromise = require("buster-promise");
+opt.addValidator(function () {
+    var self = this;
+    var promise = busterPromise.create();
+    fs.stat(this.value(), function (err, stat) {
+        if (err) {
+            promise.reject("Unknown error: " + err);
+        }
+
+        if (stat.size > 1024) {
+            promise.reject(self.value() + " (" + self.signature + ") was larger than 1MB");
+        } else {
+            promise.resolve();
+        }
+    });
+    return promise;
+});</code></pre>
+
+<p>Given <kbd>--myopt /path/to/file</kbd> and the file is larger than 1MB, you'll get the error message <code>"/path/to/file (--myopt) was larger than 1MB"</code>.</p>
+
+<p>Rejecting the promise counts as an error. The first argument should be a string, and is the error message.</p>
+
+<h2 id="<%= id "signature" %>">Option and operand signatures</h2>
+
+<p>The signature is used to identify options and operands in validation errors. Options automatically gets a signature consisting of the option flags assigned to it.</p>
+
+<pre><code>var opt = args.creatOption("-v", "--version");
+opt.signature; // "-v/--version"
+opt.signature = "-v"; // custom signature</code></pre>
+
+<p>Specifying a signature is more useful operands, since and operand doesn't have any data that it can use to auto generate a signature.</p>
+
+<pre><code>var rootDir = args.createOperand();
+rootDir.signature; // undefined, operands has no default signature
+rootDir.signature = "Root directory";</code></pre>
+
+<h2>Providing <kbd>--help</kbd></h2>
+
+<p>It's not in the nature of buster.args to automatically handle <kbd>--help</kbd> for you. It is however very easy to add such an option to your program.</p>
+
+<pre><code>var args = Object.create(buster.args);
+var options = [];
+
+var port = args.createOption("--port");
+port.hasValue = true;
+port.defaultValue = 1234;
+port.helpText = "The port to start the server on.";
+options.push(port);
+
+var verbose = args.createOption("-v");
+verbose.helpText = "Level of detail in output. Pass multiple times (i.e. -vvv) for more output.";
+options.push(verbose);
+
+var help = args.createOption("--help", "-h");
+help.helpText = "Show this text";
+options.push(help);
+
+args.handle(process.argv, function (errors) {
+    if (errors) {
+        console.log(errors[0]); return;
+    }
+
+    if (help.<%= anchor "isSet" %>) {
+        for (var i = 0; i < options.length; i++) {
+            console.log(options[i].<%= anchor "signature" %> + ": " + options[i].helpText);
+        }
+    } else {
+        // Proceed with normal program operation
+    }
+});
+</code></pre>
+
+<p>Note that the <code>helpText</code> property is not built-in buster.args functionality. It's just an arbitrary property on the option object that you can use for the purpose of associating a help text with an option.</p>
 
 <%= partial :footer %>
