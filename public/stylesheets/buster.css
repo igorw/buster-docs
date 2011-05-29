@@ -496,6 +496,10 @@ p + .properties {
 }
 }
 
+kbd {
+    background-color: #e5e5e5;
+}
+
 /* Footer */
 .footer {
     background: #222;
