@@ -615,7 +615,7 @@ buster.assert.isNotArrayLike([1, 2, 3]); // Fails</code></pre>
           </p>
           <pre><code>buster.assert.match("Give me something", "Give", "This will pass");
 buster.assert.match("Give me something", "sumptn", "This will fail");
-buster.assert.match("Yeah", { toString: function () { return "yeah!"; } }); // Passes
+buster.assert.match("Yeah!", { toString: function () { return "yeah"; } }); // Passes
 buster.assert.match("Oh no", /[a-z]/); // Fails</code></pre>
           <h4>Regular expression matcher</h4>
           <p>
