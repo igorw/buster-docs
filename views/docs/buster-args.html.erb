@@ -46,31 +46,31 @@ args.<%= anchor "handle" %>(process.argv.slice(2), function (errors) {
 </code></pre>
 
 <div class="section">
-  <h3><code>var args = Object.create(require("buster-args"))</code></h3>
+  <h3 id="<%= id "args" %>"><code>var args = Object.create(require("buster-args"))</code></h3>
   <p>Creates a new instance of buster.args.</p>
 
-  <h3 id="<%= id "createOption" %>"><code>var opt = buster.args.createOption("opt1", ["opt2", ...])</code></h3>
+  <h3 id="<%= id "createOption" %>"><code>var opt = <%= anchor "args" %>.createOption("opt1", ["opt2", ...])</code></h3>
 
   <p>Creates a new <%= anchor "option" %>. An option has all the properties of a <%= anchor "argument" %>, as well as <%= anchor "hasValue", "option-has-value" %> and <%= anchor "timesSet", "option-times-set" %></p>
 
-  <h3 id="<%= id "addShorthand" %>"><code>buster.args.addShorthand("opt", ["argv1", ...])</code></h3>
+  <h3 id="<%= id "addShorthand" %>"><code><%= anchor "args" %>.addShorthand("opt", ["argv1", ...])</code></h3>
 
   <p>A shorthand is a convenience method for adding options to your CLI that actually sets other options.</p>
 
-  <pre><code>var opt = args.createOption("--env");
+  <pre><code>var opt = <%= anchor "args" %>.createOption("--env");
 opt.hasValue = true;
 
-args.addShorthand("--development", ["--env", "development"]);
-args.addShorthand("--production", ["--env", "production"]);
+<%= anchor "args" %>.addShorthand("--development", ["--env", "development"]);
+<%= anchor "args" %>.addShorthand("--production", ["--env", "production"]);
 </code></pre>
 
   <p>This makes passing <kbd>--development</kbd> an equlvalent to passing <kbd>--env development</kbd>.</p>
 
-  <h3 id="<%= id "createOperand" %>"><code>var opd = buster.args.createOperand()</code></h3>
+  <h3 id="<%= id "createOperand" %>"><code>var opd = <%= anchor "args" %>.createOperand()</code></h3>
 
   <p>Creates a new operand. An operand has all the properties of a <%= anchor "argument" %>.</p>
 
-  <h3 id="<%= id "handle" %>"><code>handle(args, callback)</code></h3>
+  <h3 id="<%= id "handle" %>"><code><%= anchor "args" %>.handle(args, callback)</code></h3>
 
   <p>Performs parsing and validation of argv. In node.JS, make sure to discard the firs two items of <a href="http://nodejs.org/docs/v0.4.8/api/process.html#process.argv"><code>process.argv</code></a>, as they contain unrelated arguments ("node" and the file name).</p>
 
