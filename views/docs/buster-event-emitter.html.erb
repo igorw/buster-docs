@@ -44,19 +44,19 @@ eventedLogger.level = eventedLogger.LEVEL_INFO;
 
 eventedLogger.info = function () {
     if (this.level >= this.LEVEL_INFO) {
-        this.emit("info", Array.prototype.slice(arguments));
+        this.emit("info", Array.prototype.slice.call(arguments));
     }
 };
 
 eventedLogger.warn = function () {
     if (this.level >= this.LEVEL_WARN) {
-        this.emit("warn", Array.prototype.slice(arguments));
+        this.emit("warn", Array.prototype.slice.call(arguments));
     }
 };
 
 eventedLogger.error = function () {
     if (this.level >= this.LEVEL_ERROR) {
-        this.emit("error", Array.prototype.slice(arguments));
+        this.emit("error", Array.prototype.slice.call(arguments));
     }
 };</code></pre>
   <p>
@@ -80,19 +80,19 @@ logger.on("info", function () {
 
     info: function () {
         if (this.level >= this.LEVEL_INFO) {
-            this.emit("info", Array.prototype.slice(arguments));
+            this.emit("info", Array.prototype.slice.call(arguments));
         }
     },
 
     warn: function () {
         if (this.level >= this.LEVEL_WARN) {
-            this.emit("warn", Array.prototype.slice(arguments));
+            this.emit("warn", Array.prototype.slice.call(arguments));
         }
     },
 
     error: function () {
         if (this.level >= this.LEVEL_ERROR) {
-            this.emit("error", Array.prototype.slice(arguments));
+            this.emit("error", Array.prototype.slice.call(arguments));
         }
     }
 };</code></pre>
@@ -142,13 +142,13 @@ emitter.hasListener("click", logger.log, logger); // true</code></pre>
     listeners.
   </p>
   <pre><code>var listener = function () {
-    console.log(Array.prototype.slice(arguments, ", "));
+    console.log(Array.prototype.slice.call(arguments));
 };
 
 var emitter = buster.eventEmitter.create();
 emitter.on("some-event", listener);
 
-emitter.emit("some-event", 2, 3, 4, 5); // Listener prints "2, 3, 4, 5"</code></pre>
+emitter.emit("some-event", 2, 3, 4, 5); // Listener prints "[2, 3, 4, 5]"</code></pre>
   <h3 id="<%= id('bind') %>"><code>bind(object[, events])</code></h3>
   <p>
     Binds methods on an object as event listeners, ensuring the methods are
