@@ -82,7 +82,7 @@ buster.isArguments([]); // false</code></pre>
   </p>
   <pre><code>var target = { id: 42, num: 0 };
 
-target = buster.create(target,
+target = buster.extend(target,
                        { id: 13, name: "One" },
                        { name: "Two", prop: "erty" });
 
