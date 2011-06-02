@@ -71,6 +71,8 @@
         this.input = this.form.getElementsByTagName("input")[0];
         this.backend = { add: sinon.spy() };
         this.controller = todoList.formController.create(this.form, this.backend);
+        this.callback = sinon.spy();
+        this.controller.on('item', this.callback);
      },
 
     "adding items": {
