@@ -96,7 +96,7 @@ args.handle(process.argv.slice(2), function (errors) {
 
   <p><kbd>-pabc</kbd> can mean  both <kbd>-p -a -b -c</kbd> and <kbd>-p=abc</kbd>. buster.args uses the <%= anchor "hasValue" %> to separate the two. With <code>hasValue</code> set to true, <kbd>-pabc</kbd> will be handled as <kbd>-p=abc</kbd>. When false (default), it will be handled as <kbd>-p -a -b -c</kbd>. In that case you also need to have option handlers for <kbd>-a</kbd>, <kbd>-b</kbd> and <kbd>-c</kbd>, or you'll get a validation error such as <code>"unknown option -a"</code> (depending on which option buster.args first encountered that didn't exist).</p>
 
-  <p>An <strong>operand</strong> is an option-less value, i.e. <kbd>foo</kbd> (with no <kbd>-b</kbd> or <kbd>--myopt</kbd> prefixing it). It's commonly used for arguments that always have to be passed. Examples of this are <kbd>nano path/to/file.txt</kbd>, <kbd>git-checkout master</kbd>, <kbd>rmdir my_dir</kbd>, etc. The validators <%= anchor "file", "validator-file" %>, <%= anchor "diretory", "validator-directory" %>, and <%= anchor "fileOrDirectory", "validator-file-or-directory" %> are very useful for operands.</p>
+  <p>An <strong>operand</strong> is an option-less value, i.e. <kbd>foo</kbd> (with no <kbd>-b</kbd> or <kbd>--myopt</kbd> prefixing it). It's commonly used for arguments that always have to be passed. Examples of this are <kbd>nano path/to/file.txt</kbd>, <kbd>git-checkout master</kbd>, <kbd>rmdir my_dir</kbd>, etc. The validators <%= anchor "file", "validator-file" %>, <%= anchor "directory", "validator-directory" %>, and <%= anchor "fileOrDirectory", "validator-file-or-directory" %> are very useful for operands.</p>
 
   <p>Note that buster can handle a mix and match of options and operands in any order, i.e. <kbd>mycommand --port 1234 my/directory</kbd> and <kbd>mycommand my/directory --port 1234</kbd> will both work.</p>
 
@@ -108,7 +108,7 @@ args.handle(process.argv.slice(2), function (errors) {
   <p>Adds a validator to an argument.</p>
 
   <h3 id="<%= id "isSet" %>"><code>var bool = opt.isSet</code></h3>
-  <p>True or false depending on wether or not the option was present in argv.</p>
+  <p>True or false depending on whether or not the option was present in argv.</p>
 
   <h3 id="<%= id "value" %>"><code>var val = opt.value()</code></h3>
   <p>The value of the argument. Is normally a string, but may be any object since validators can change argument values as they see fit. See <%= anchor "actualValue" %>.</p>
@@ -284,7 +284,7 @@ opt.addValidator(function () {
 
 <p>The signature is used to identify options and operands in validation errors. Options automatically gets a signature consisting of the option flags assigned to it.</p>
 
-<pre><code>var opt = args.creatOption("-v", "--version");
+<pre><code>var opt = args.createOption("-v", "--version");
 opt.signature; // "-v/--version"
 opt.signature = "-v"; // custom signature</code></pre>
 

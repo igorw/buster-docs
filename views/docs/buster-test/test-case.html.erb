@@ -44,13 +44,13 @@
     "gutter game yields 0 in score": function () {
         this.rollMany(20, 0);
 
-        assertEquals(0, this.game.score());
+        buster.assert.equals(0, this.game.score());
     },
 
     "1 pin on each roll should yield score of 20": function () {
         this.rollMany(20, 1);
 
-        assertEquals(20, this.game.score());
+        buster.assert.equals(20, this.game.score());
     }
 });</code></pre>
 <h3 id="<%= id('example-controller-tests') %>">Example: controller tests</h3>
@@ -71,6 +71,8 @@
         this.input = this.form.getElementsByTagName("input")[0];
         this.backend = { add: sinon.spy() };
         this.controller = todoList.formController.create(this.form, this.backend);
+        this.callback = sinon.spy();
+        this.controller.on('item', this.callback);
      },
 
     "adding items": {
@@ -95,7 +97,7 @@
 
                 this.controller.addItem();
 
-                assertEquals("", this.input.value);
+                buster.assert.equals("", this.input.value);
             }
         },
 
@@ -325,7 +327,7 @@
   </p>
   <p>
     Buster recognizes the valid use of deferred tests and provides a simple way
-    to defer a test &emdash; simply "comment out" its name, i.e., prefix the
+    to defer a test - simply "comment out" its name, i.e., prefix the
     name with a pair of <code>//</code>:
   </p>
   <pre><code>var testCase = buster.testCase("Bowling kata tests", {
@@ -342,13 +344,13 @@
     "gutter game yields 0 in score": function () {
         this.rollMany(20, 0);
 
-        assertEquals(0, this.game.score());
+        buster.assert.equals(0, this.game.score());
     },
 
     "// 1 pin on each roll should yield score of 20": function () {
         this.rollMany(20, 1);
 
-        assertEquals(20, this.game.score());
+        buster.assert.equals(20, this.game.score());
     }
 });</code></pre>
 <p>

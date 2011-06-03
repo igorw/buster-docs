@@ -59,12 +59,12 @@ var spec = describe("Bowling kata", function () {
 
     should("yield 0 in score for gutter game", function () {
         this.rollMany(20, 0);
-        assertEquals(0, this.game.score());
+        buster.assert.equals(0, this.game.score());
     });
 
     should("yield score of 20 for 1 pin on each roll", function () {
         this.rollMany(20, 1);
-        assertEquals(20, this.game.score());
+        buster.assert.equals(20, this.game.score());
     });
 });</code></pre>
 <h3 id="<%= id('example-controller-specs') %>">Example: controller specs</h3>
@@ -86,6 +86,8 @@ var spec = describe("Bowling kata", function () {
         this.input = this.form.getElementsByTagName("input")[0];
         this.backend = { add: sinon.spy() };
         this.controller = todoList.formController.create(this.form, this.backend);
+        this.callback = sinon.spy();
+        this.controller.on('item', this.callback);
      });
 
     describe("adding items", function () {
@@ -110,7 +112,7 @@ var spec = describe("Bowling kata", function () {
 
                 this.controller.addItem();
 
-                assertEquals("", this.input.value);
+                buster.assert.equals("", this.input.value);
             });
         });
 
@@ -364,13 +366,13 @@ var spec = describe("Bowling kata", function () {
     should("yield 0 in score for gutter game", function () {
         this.rollMany(20, 0);
 
-        assertEquals(0, this.game.score());
+        buster.assert.equals(0, this.game.score());
     });
 
     shouldEventually("1 pin on each roll should yield score of 20", function () {
         this.rollMany(20, 1);
 
-        assertEquals(20, this.game.score());
+        buster.assert.equals(20, this.game.score());
     });
 });</code></pre>
 <p>
