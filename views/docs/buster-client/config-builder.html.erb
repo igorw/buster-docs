@@ -9,7 +9,60 @@
   <dd>N/A</dd>
 </dl>
 <p>
-  Builds <%=m "client/session-config", "session configuration" %> and more from
-  JSON configuration - either as strings or directly from files.
+  Processes common configuration required for creating
+  <%=m "client/session", "sessions" %> with <%=m "server" %>. The configuration
+  builder can process JSON - either as a string, or directly from file. It
+  processes the <%=l "resources" %>, <%=l "load" %>, <%=l "rootPath" %> and
+  <%=l "server" %> properties, leaving any other configuration for
+  specific clients to process further.
 </p>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('create') %>" data-title="+create();+">
+    <code>var builder = buster.configBuilder.create();</code>
+  </h3>
+  <p>
+    Create a configuration builder.
+  </p>
+  <h3 id="<%= id('load') %>"><code>load(json[, rootPath]);</code></h3>
+  <p>
+    Load a string of JSON configuration into the builder. Call multiple times to
+    merge configuration from several sources.
+    See <%= anchor "configuration options", "configuration-options" %>.
+  </p>
+  <h3 id="<%= id('loadFile') %>"><code>loadFile(fileName);</code></h3>
+  <p>
+    Reads a file as utf-8 text, and loads its contents as JSON configuration
+    (using <%=l "load" %>). The returned promise is resolved once the
+    configuration has been passed to <code>load</code>. It rejects if there's
+    any problem reading the file.
+  </p>
+  <h3 id="<%= id('configure') %>" data-title="+configure();+">
+    <code>var <%=m "promise", "promise" %> = client.configure();</code>
+  </h3>
+  <p>
+    Returns a promise that resolves as soon as the configuration is ready for
+    use. This means that all configuration files and globbing is completed.
+  </p>
+  <h3 id="<%= id('loadResourceConfigs') %>" data-title="+loadResourceConfigs(config);+">
+    <code>var <%=m "promise", "promise" %> = client.loadResourceConfigs(config);</code>
+  </h3>
+  <h3 id="<%= id('loadResourceLoadConfigs') %>" data-title="+loadResourceLoadConfigs(config);+">
+    <code>var <%=m "promise", "promise" %> = client.loadResourceLoadConfigs(config);</code>
+  </h3>
+  <h3 id="<%= id('loadServerConfig') %>"><code>loadServerConfig(config);</code></h3>
+</div>
+<div class="section">
+  <h2 id="<%= id('configuration-options') %>">Configuration options</h2>
+  <dl class="properties">
+    <dt><code>rootPath</code></dt>
+    <dd></dd>
+    <dt><code>resources</code></dt>
+    <dd></dd>
+    <dt><code>load</code></dt>
+    <dd></dd>
+    <dt><code>server</code></dt>
+    <dd></dd>
+  </dl>
+</div>
 <%= partial :footer %>
