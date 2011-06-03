@@ -54,7 +54,7 @@ try {
             Assertion passed. The callback is invoked with the assertion name,
             e.g. <code>"isString"</code>, as its only argument.
           </p>
-          <%= event("failure", [[:error, "#assertion-error"]]) %>
+          <%= event("failure", [[:error, "#AssertionError"]]) %>
           <p>
             Assertion failed. The callback is invoked with an
             <%=l "AssertionError" %> object.
@@ -615,8 +615,7 @@ buster.assert.isNotArrayLike([1, 2, 3]); // Fails</code></pre>
           </p>
           <pre><code>buster.assert.match("Give me something", "Give", "This will pass");
 buster.assert.match("Give me something", "sumptn", "This will fail");
-buster.assert.match("Yeah", { toString: function () { return "yeah!"; } }); // Passes
-buster.assert.match("Oh no", /[a-z]/); // Fails</code></pre>
+buster.assert.match("Yeah!", { toString: function () { return "yeah"; } }); // Passes
           <h4>Regular expression matcher</h4>
           <p>
             When the matcher is a regular expression, the assertion will pass if
@@ -1089,7 +1088,7 @@ buster.assert.notClassName(el, ["item", "feed"]); // Passes</code></pre>
         </div>
         <div class="section">
           <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
-          <h3 id="<%= id('assertion-error') %>"><code>AssertionError</code></h3>
+          <h3 id="<%= id('AssertionError') %>"><code>AssertionError</code></h3>
           <p>
             An exception (specifically, an <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error"><code>Error</code> object</a>) whose <code>name</code> property is <code>"AssertionError"</code>.
           </p>

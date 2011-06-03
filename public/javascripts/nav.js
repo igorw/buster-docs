@@ -17,6 +17,25 @@ buster.byClass = function (className) {
     return results;
 };
 
+// Get all text nodes in order and concat them to one string.
+// Leaves <code> nodes intact.
+function strippedHtml(element, html) {
+    var html = html || [];
+    for (var i = 0, ii = element.childNodes.length; i < ii; i++) {
+        var childNode = element.childNodes[i];
+        if (childNode.nodeType == 3) {
+            html.push(childNode.nodeValue);
+        } else if (childNode.nodeName == "CODE") {
+            html.push("<code>" + strippedHtml(childNode, []) + "</code>");
+        } else {
+            strippedHtml(childNode, html);
+        }
+    }
+
+    return html.join("");
+}
+
+
 function sectionTitle(section) {
     var attr = section.getAttribute("data-title");
 
@@ -24,7 +43,7 @@ function sectionTitle(section) {
         attr = "<code>" + attr.substring(1, attr.length - 1) + "</code>";
     }
 
-    return attr || section.innerHTML;
+    return attr || strippedHtml(section);
 }
 
 buster.addHoverAnchor = function (element) {
