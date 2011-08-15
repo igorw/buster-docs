@@ -131,9 +131,14 @@ args.handle(process.argv.slice(2), function (errors) {
 </code></pre>
 
   <h3 id="<%= id "hasValue" %>"><code>opt.hasValue = [true|false]</code></h3>
-  <p>Tells the parser that it should look for a value for this option.</p>
+  <p>Tells the parser that it should look for a value for this option. An error will be generated if the option is passed without a value. See <%= anchor "acceptsValueAbsence" %> to change this behaviour.</p>
   <p>The default value is <code>false</code>.</p>
   <p>If not true, you'll get <code>"unrecognized option 1234"</code> for <kbd>--port 1234</kbd>, since the parser didn't know how to handle 1234.</p>
+
+  <h3 id="<%= id "acceptsValueAbsence" %>"><code>opt.acceptsValueAbsence = [true|false]</code></h3>
+  <p>Allows for passing the option both with and without a value, when <%= anchor "hasValue" %> is true.</p>
+  <p>Useful for cases where you have options that work with and without a value passed to it, such as <kbd>--help</kbd> and <kbd>--help sometopic</kbd>.</p>
+  <p>Defaults to <code>false</code>.</p>
 </div>
 
 <div class="section">

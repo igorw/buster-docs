@@ -466,7 +466,7 @@ assert.isArrayLike(42);        // Fails</code></pre>
           </p>
           <pre><code>assert.match("Give me something", "Give", "This will pass");
 assert.match("Give me something", "sumptn", "This will fail");
-assert.match("Yeah!", { toString: function () { return "yeah"; } }); // Passes
+assert.match("Yeah!", { toString: function () { return "yeah"; } }); // Passes</code></pre>
           <h4>Regular expression matcher</h4>
           <p>
             When the matcher is a regular expression, the assertion will pass if
