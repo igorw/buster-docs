@@ -208,7 +208,7 @@ buster.args.validators.required("${1} has to be set");</code></pre>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
 
-  <h3 id="<%= id "validator-file" %>"><code>validators.file("err", "<%= anchor "statErr" %>")</code></h3>
+  <h3 id="<%= id "validator-file" %>"><code>validators.file("err")</code></h3>
 
   <p>Will fail validation if the option was not a path pointing to an existing file in the file system.</p>
 
@@ -221,7 +221,7 @@ buster.args.validators.required("${1} has to be set");</code></pre>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
 
-  <h3 id="<%= id "validator-directory" %>"><code>validators.directory("err", "<%= anchor "statErr" %>")</code></h3>
+  <h3 id="<%= id "validator-directory" %>"><code>validators.directory("err")</code></h3>
 
   <p>Will fail validation if the option was not a path pointing to an existing directory in the file system.</p>
 
@@ -234,7 +234,7 @@ buster.args.validators.required("${1} has to be set");</code></pre>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
 
-  <h3 id="<%= id "validator-file-or-directory" %>"><code>validators.fileOrDirectory("err", "<%= anchor "statErr" %>")</code></h3>
+  <h3 id="<%= id "validator-file-or-directory" %>"><code>validators.fileOrDirectory("err")</code></h3>
 
   <p>Will fail validation if the option was not a path pointing to an existing file or directory in the file system. Will fail for block devices, sockets, et c.</p>
 
@@ -243,18 +243,6 @@ buster.args.validators.required("${1} has to be set");</code></pre>
   <dl>
     <dt><code>${1}</code></dt>
     <dd>The specified file or directory</dd>
-    <dt><code>${2}</code></dt>
-    <dd>The option <%= anchor "signature" %></dd>
-  </dl>
-
-  <h3 id="<%= id "statErr" %>"><code>statErr</code> common error message</h3>
-
-  <p>Used across multiple validators, when <code>fs.stat</code> receives an error. This typically happens if there's no file or directory at the path specified.</p>
-
-  <dl>
-    <dt><code>${1}</code></dt>
-    <dd>The specified file or directory</dd>
-
     <dt><code>${2}</code></dt>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
