@@ -1,0 +1,57 @@
+<p>It's so quick. And dirty!</p>
+
+<h2>Install</h2>
+
+<pre>npm install -g buster</pre>
+
+<p>Then need to either have NODE_PATH set up or also <kbd>npm install buster</kbd> (without -g) in the project where you want use buster.</p>
+
+<h2>Config file</h2>
+
+<p>Put it in <kbd>test/buster.js</kbd> in your project. Or <kbd>spec/buster.js</kbd>. Or anywhere, and <kbd>buster test -c path/to/config-file</kbd>.</p>
+
+<pre><code>var config = module.exports;
+
+config["Node tests"] = {
+    environment: "node",
+    tests: ["test/*.js"]
+};</code></pre>
+
+<h2>Write a test</h2>
+
+<p>In, say, test/my-test.js.</p>
+
+<pre><code>var buster = require("buster");
+buster.testCase("omg wtf bbq", {
+    setUp: function () {
+    },
+
+    "test a test": function () {
+        buster.assert(true);
+        // There's no assert.notEquals. Use refute.equals for symmetry win.
+        buster.refute.equals("foo", "bar"); 
+    },
+
+
+    "test another test": function (done) {
+        // This is an asynchonous test. It won't be considered successfull
+        // until the done function is called.
+        setTimeout(function () {
+            buster.assert(true);
+            done();
+        }, 1000);
+    },
+
+    " a context": {
+        setUp: function () {
+            // With it's own setUp and tearDown that "inherits" from parent.
+        },
+
+       "and more tests": function () {
+       }
+    }
+});</code></pre>
+
+<h2>Run it</h2>
+
+<p>Run the <kbd>buster test</kbd> command. See also <kbd>buster test --help</kbd></p>
