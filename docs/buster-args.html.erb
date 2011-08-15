@@ -113,6 +113,19 @@ args.handle(process.argv.slice(2), function (errors) {
 
   <h3 id="<%= id "actualValue" %>"><code>opt.actualValue = newValue</code></h3>
   <p>Override the value an argument gets from argv. This is probably only useful in validations. The <%= anchor "integer", "validator-integer" %> built in validator uses this to set the value to a number object instead of a string object, for example.</p>
+
+  <h3 id="<%= id "operation" %>"><code>opt.operation = function(promise){}</code></h3>
+  <p>Arguments can have an optional operation associated with it. When the argument is present in argv, the handler will be executed before <%= anchor "handle" %> resolves. The operation is handed a promise. Resolving the promise will set the <%= anchor "value" %> of the option. Rejecting it will make <%= anchor "handle" %> return an error. This is useful because it guarantees that at the time you handle, you know you either have the correct operation value or an error.</p>
+  <p>An example where operations are useful is to parse and read a config file on the file system.</p>
+  <pre><code>myOpt.operation = function (promise) {
+    fs.readFile(myOpt.value(), function (err, data) {
+        if (err) {
+            promise.reject(err.message);
+        } else {
+            promise.resolve(JSON.parse(data);
+        }
+    });
+};</code></pre>
 </div>
 
 <div class="section">
