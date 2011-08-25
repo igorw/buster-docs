@@ -1105,6 +1105,38 @@ refute.className(el, ["item", "feed"]); // Passes</code></pre>
             ascii formatting of objects (including DOM elements) do:
           </p>
           <pre><code>buster.assertions.format = buster.format.ascii;</code></pre>
+          <h2>Supporting utilities</h2>
+          <h3 id="<%= id('isNode') %>"><code>isNode(object)</code></h3>
+          <p>
+            Returns <code>true</code> if the object is a DOM node. The check is made by
+            attempting to call <code>appendChild</code> on it, passing in an element.
+          </p>
+          <h3 id="<%= id('isElement') %>"><code>isElement(object)</code></h3>
+          <p>
+            Returns <code>true</code> if the object is a DOM element. The check is made
+            by calling <%=anchor "buster.isNode", "isNode" %> and asserting that the
+            element's <code>nodeType</code> is 1 (i.e. element).
+          </p>
+          <h3 id="<%= id('isArguments') %>"><code>isArguments(object)</code></h3>
+          <p>
+            Returns true if the argument is an <code>arguments</code> object. Buster
+            checks this by making sure the object is array-like, but not actually an
+            array.
+          </p>
+          <pre><code>function check() {
+              buster.isArguments(arguments); // true
+              }
+
+              buster.isArguments([]); // false</code></pre>
+          <h3 id="<%= id('keys') %>"><code>keys(object)</code></h3>
+          <p>
+            Cross-browser implementation of
+            <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/keys">Object.keys</a>.
+            From MDC: <q>returns an array whose elements are strings
+            corresponding to the enumerable properties found directly upon
+            object. The ordering of the properties is the same as that given by
+            looping over the properties of the object manually</q>.
+          </p>
         </div>
         <div class="section">
           <h2 id="<%= id('properties') %>">Properties</h2>
