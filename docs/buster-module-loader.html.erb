@@ -1,0 +1,36 @@
+<h1><code>buster.moduleLoader</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.2.1 <span class="date">(2011-08-25)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-module-loader");</code></dd>
+</dl>
+<p>
+  Load Node modules and/or objects from inside Node modules using a simple
+  string identifier.
+</p>
+<pre><code>var moduleLoader = require("buster-module-loader");
+
+var assert = moduleLoader.<%= anchor "load" %>("buster-assertions").assert;
+
+// This is the same:
+var assert = moduleLoader.<%= anchor "load" %>("buster-assertions#assert");</code></pre>
+<div class="section">
+  <h2>Methods</h2>
+  <h3 id="<%= id "load" %>"><code>var object = moduleLoader.load(identifier)</code></h3>
+  <p>
+    Load the module/object. The hash character ("#") separates module and
+    object. The object may be dotted, to reach inside nested object graphs. If
+    the string identifies an object that is not defined, the method throws an
+    error.
+  </p>
+  <pre><code>try {
+    var mod = moduleLoader.load("module#nested.object");
+} catch (e) {
+    console.log("Unable to load that object");
+}</code></pre>
+  <p>
+    The module loader could for instance be used to load reporters:
+  </p>
+  <pre><code>var reporter = moduleLoader.load("buster-test#reporters.xUnitConsole");</code></pre>
+</div>

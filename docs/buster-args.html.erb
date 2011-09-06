@@ -44,6 +44,7 @@ args.<%= anchor "handle" %>(process.argv.slice(2), function (errors) {
 </code></pre>
 
 <div class="section">
+  <h2>Methods</h2>
   <h3 id="<%= id "args" %>"><code>var args = Object.create(require("buster-args"))</code></h3>
   <p>Creates a new instance of buster.args.</p>
 
@@ -113,6 +114,19 @@ args.handle(process.argv.slice(2), function (errors) {
 
   <h3 id="<%= id "actualValue" %>"><code>opt.actualValue = newValue</code></h3>
   <p>Override the value an argument gets from argv. This is probably only useful in validations. The <%= anchor "integer", "validator-integer" %> built in validator uses this to set the value to a number object instead of a string object, for example.</p>
+
+  <h3 id="<%= id "operation" %>"><code>opt.operation = function(promise){}</code></h3>
+  <p>Arguments can have an optional operation associated with it. When the argument is present in argv, the handler will be executed before <%= anchor "handle" %> resolves. The operation is handed a promise. Resolving the promise will set the <%= anchor "value" %> of the option. Rejecting it will make <%= anchor "handle" %> return an error. This is useful because it guarantees that at the time you handle, you know you either have the correct operation value or an error.</p>
+  <p>An example where operations are useful is to parse and read a config file on the file system.</p>
+  <pre><code>myOpt.operation = function (promise) {
+    fs.readFile(myOpt.value(), function (err, data) {
+        if (err) {
+            promise.reject(err.message);
+        } else {
+            promise.resolve(JSON.parse(data);
+        }
+    });
+};</code></pre>
 </div>
 
 <div class="section">
@@ -194,7 +208,7 @@ buster.args.validators.required("${1} has to be set");</code></pre>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
 
-  <h3 id="<%= id "validator-file" %>"><code>validators.file("err", "<%= anchor "statErr" %>")</code></h3>
+  <h3 id="<%= id "validator-file" %>"><code>validators.file("err")</code></h3>
 
   <p>Will fail validation if the option was not a path pointing to an existing file in the file system.</p>
 
@@ -207,7 +221,7 @@ buster.args.validators.required("${1} has to be set");</code></pre>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
 
-  <h3 id="<%= id "validator-directory" %>"><code>validators.directory("err", "<%= anchor "statErr" %>")</code></h3>
+  <h3 id="<%= id "validator-directory" %>"><code>validators.directory("err")</code></h3>
 
   <p>Will fail validation if the option was not a path pointing to an existing directory in the file system.</p>
 
@@ -220,7 +234,7 @@ buster.args.validators.required("${1} has to be set");</code></pre>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
 
-  <h3 id="<%= id "validator-file-or-directory" %>"><code>validators.fileOrDirectory("err", "<%= anchor "statErr" %>")</code></h3>
+  <h3 id="<%= id "validator-file-or-directory" %>"><code>validators.fileOrDirectory("err")</code></h3>
 
   <p>Will fail validation if the option was not a path pointing to an existing file or directory in the file system. Will fail for block devices, sockets, et c.</p>
 
@@ -229,18 +243,6 @@ buster.args.validators.required("${1} has to be set");</code></pre>
   <dl>
     <dt><code>${1}</code></dt>
     <dd>The specified file or directory</dd>
-    <dt><code>${2}</code></dt>
-    <dd>The option <%= anchor "signature" %></dd>
-  </dl>
-
-  <h3 id="<%= id "statErr" %>"><code>statErr</code> common error message</h3>
-
-  <p>Used across multiple validators, when <code>fs.stat</code> receives an error. This typically happens if there's no file or directory at the path specified.</p>
-
-  <dl>
-    <dt><code>${1}</code></dt>
-    <dd>The specified file or directory</dd>
-
     <dt><code>${2}</code></dt>
     <dd>The option <%= anchor "signature" %></dd>
   </dl>
