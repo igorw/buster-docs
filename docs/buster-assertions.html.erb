@@ -1,7 +1,7 @@
         <h1><code>buster.assertions</code></h1>
         <dl>
           <dt>Version</dt>
-          <dd>0.6.0 <span class="date">(2011-08-09)</span></dd>
+          <dd>0.7.0 <span class="date">(2011-09-10)</span></dd>
           <dt>Module</dt>
           <dd><code>require("buster-assertions");</code></dd>
           <dt>In browsers</dt>
@@ -56,6 +56,14 @@ refute.equals(42, 43);</code></pre>
           clearer way. It also brings with it a nice consistency in that
           any <code>assert.xyz</code> always has a corresponding
           <code>refute.xyz</code> that does the opposite check.
+        </p>
+        <h3>Adding custom assertions</h3>
+        <p>
+          Custom, project specific assertions can help the readability of your
+          tests, and improve your test feedback. You can add assertions that
+          behave exactly like the built-in ones (i.e. with counting, message
+          formatting, expectations and more) by using the <code>add</code>
+          method.
         </p>
         <div class="section">
           <h2 id="<%= id('events') %>">Events</h2>
@@ -1105,6 +1113,129 @@ refute.className(el, ["item", "feed"]); // Passes</code></pre>
             ascii formatting of objects (including DOM elements) do:
           </p>
           <pre><code>buster.assertions.format = buster.format.ascii;</code></pre>
+          <h3 id="<%= id('add') %>"><code>add(name, func[, options])</code></h3>
+          <p>
+            Adds a custom assertion. Using this 'macro' to add project specific
+            assertions has a few advantages:
+          </p>
+          <ul>
+            <li>Assertions will be counted.</li>
+            <li>
+              Failure messages will have interpolated arguments formatted by
+              <%= anchor("<code>buster.assertions.format</code>", "format") %>.
+            </li>
+            <li>
+              A single function generates both an assertion and a refutation.
+            </li>
+            <li>
+              If using expectations, an expectation can easily be generated as
+              well.
+            </li>
+            <li>
+              When <%=l "failOnNoAssertions" %> is set to <code>true</code>, the
+              assertion will behave correctly (important for asynchronous tests).
+            </li>
+            <li>The assertion will fail if too few arguments are passed.</li>
+          </ul>
+          <p>
+            Here's an example of adding a "foo" validator, that only passes when
+            its only argument is the string "foo":
+          </p>
+          <pre><code>var assert = buster.assertions.assert;
+var refute = buster.assertions.refute;
+var expect = buster.assertions.expect;
+
+buster.assertions.add("isFoo", function (actual) {
+    return actual == "foo";
+}, {
+    assertFail: "Expected ${1} to be foo!",
+    refuteFail: "Expected not to be foo!",
+    expect: "toBeFoo"
+});
+
+// Now you can do:
+// Passes
+assert.isFoo("foo");
+
+// Fails: "[assert.isFoo] Expected { id: 42 } to be foo!"
+assert.isFoo({ id: 42 });
+
+// Fails: "[assert.isFoo] Ouch: Expected { id: 42 } to be foo!"
+assert.isFoo({ id: 42 }, "Ouch");
+
+// Fails: "[refute.isFoo] Expected not to be foo!"
+refute.isFoo("foo");
+
+// Passes
+expect("foo").toBeFoo();</code></pre>
+          <h4>Arguments</h4>
+          <h5><code>name</code></h5>
+          <p>The name of the new assertion/refutation.</p>
+          <h5><code>func</code></h5>
+          <p>
+            The verification function. Should return <code>true</code> when
+            the assertion passes. The generated refutation will pass when the
+            function returns false.
+          </p>
+          <p>
+            In some cases the refutation may not be the exact opposite of the
+            assertion. If that is the case you should exclude the
+            <code>func</code> argument all together, and provide
+            <code>options.assert</code> and <code>options.refute</code> for
+            custom functions instead.
+          </p>
+          <p>
+            Note that the number of formal parameters the function accepts
+            determines the number of required arguments to the function.
+          </p>
+          <p>
+            All arguments are available for interpolation into the resulting
+            error message. The first argument will be available as
+            <code>"${1}"</code>, the second as <code>"${2}"</code> and so on. If
+            you need other values inserted into the error message, see the
+            <code>values</code> option.
+          </p>
+          <h5><code>options</code></h5>
+          <dl>
+            <dt><code>assertFail</code></dt>
+            <dd>
+              The error message to use when the assertion fails. If the
+              assertion was called with a custom message (as the last argument),
+              it will be prepended to this message. The message may refer to
+              arguments through switches like <code>"${1}"</code> and so on (see
+              above, under the <code>func</code> argument).
+            </dd>
+            <dt><code>refuteFail</code></dt>
+            <dd>Like <code>assertFail</code>, but for refutations</dd>
+            <dt><code>values</code></dt>
+            <dd>
+              A function that maps values to be interpolated into the failure
+              messages. This can be used when you need something more/else than
+              the actual arguments in order. For instance, the built-in
+              <%= anchor("<code>assert.typeOf</code>", "assert-typeOf") %>
+              assertion needs the actual type. It's <code>assertFail</code> is
+              <code>"Expected typeof ${1} (${3}) to be ${2}"</code>, and its
+              <code>values</code> option is:
+              <pre><code>values: function (actual, expected) {
+    return [actual, expected, typeof actual];
+}</code></pre>
+            </dd>
+            <dt><code>expect</code></dt>
+            <dd>
+              The name of the assertion as an expectation,
+              e.g. "toBeSomething". Optional.
+            </dd>
+            <dt><code>assert</code></dt>
+            <dd>
+              If no <code>func</code> is provided, this function is the
+              verification for the assert.
+            </dd>
+            <dt><code>refute</code></dt>
+            <dd>
+              If no <code>func</code> is provided, this function is the
+              verification for the refute.
+            </dd>
+          </dl>
           <h2>Supporting utilities</h2>
           <h3 id="<%= id('isNode') %>"><code>isNode(object)</code></h3>
           <p>
