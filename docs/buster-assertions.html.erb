@@ -1196,7 +1196,7 @@ expect("foo").toBeFoo();</code></pre>
             <code>values</code> option.
           </p>
           <h5><code>options</code></h5>
-          <dl>
+          <dl class="properties">
             <dt><code>assertFail</code></dt>
             <dd>
               The error message to use when the assertion fails. If the
@@ -1209,13 +1209,15 @@ expect("foo").toBeFoo();</code></pre>
             <dd>Like <code>assertFail</code>, but for refutations</dd>
             <dt><code>values</code></dt>
             <dd>
-              A function that maps values to be interpolated into the failure
-              messages. This can be used when you need something more/else than
-              the actual arguments in order. For instance, the built-in
-              <%= anchor("<code>assert.typeOf</code>", "assert-typeOf") %>
-              assertion needs the actual type. It's <code>assertFail</code> is
-              <code>"Expected typeof ${1} (${3}) to be ${2}"</code>, and its
-              <code>values</code> option is:
+              <p>
+                A function that maps values to be interpolated into the failure
+                messages. This can be used when you need something more/else than
+                the actual arguments in order. For instance, the built-in
+                <%= anchor("<code>assert.typeOf</code>", "assert-typeOf") %>
+                assertion needs the actual type. It's <code>assertFail</code> is
+                <code>"Expected typeof ${1} (${3}) to be ${2}"</code>, and its
+                <code>values</code> option is:
+              </p>
               <pre><code>values: function (actual, expected) {
     return [actual, expected, typeof actual];
 }</code></pre>
