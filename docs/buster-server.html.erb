@@ -1,0 +1,69 @@
+<h1><code>buster.server</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.2 <span class="date">(2011-10-04)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-server");</code></dd>
+</dl>
+
+<p>Automates browsers via frames. A server have a set of captured browsers, and a FIFO list of sessions. The topmost session is the current one, and the next session is automatically loaded when the current session ends.</p>
+
+<div class="section">
+  <h2>Methods</h2>
+
+  <h3 id="<%= id "create" %>"><code>var server = busterServer.create(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
+  <p>Creates a new server instance. Prevents <code>"request"</code> event handlers from being called for requests handled by the buster-server.</p>
+</div>
+
+<div class="section">
+  <h2>Capturing</h2>
+  <h3 id="<%= id "oncapture" %>"><code>server.capture.oncapture = function(req, res, <%= anchor "client", "captured-client" %>){}</code></h3>
+  <p>This property is required.</p>
+  <p>The <code>req</code> and <code>res</code> comes directly from the node HTTP server. You have to manually handle the response, for example:</p>
+  <pre><code>server.capture.oncapture = function (req, res, client) {
+    res.writeHead(302, {"Location": client.url});
+    res.end();
+}</code></pre>
+
+  <p>This snippet will redirect the browser to the capture page (the page with the frames etc) after capturing. You're free to do whatever you want here. For example, you can redirect to a page that lets you configure additional options for the captured browser, and then redirect to the <code>client.url</code> when you're done.</p>
+
+  <h3 id="<%= id "capture-url" %>"><code>server.capture.captureUrl = "/capture"</code></h3>
+  <p>The default value of this property is <code>"/capture"</code>.</p>
+  <p>A GET request to this URL on the http server where you mounted the buster-server will cause a new <%= anchor "captured client", "captured-client" %> to be created.</p>
+</div>
+
+<div class="section">
+  <h2>Sessions</h2>
+
+  <p>Sessions live in a FIFO queue. A session is loaded immediately if there are no sessions in progress at the time, or is added to the queue of sessions if there is one in progress. As soon as the in-progress session ends, the next session in the queue is loaded.</p>
+  <p>A session is in practice identical to a resource set. The root resource will be loaded in the DOM of the captured clients. The entries in <code>load</code> will automatically be injected into the root resource.</p>
+  <p>When the session starts, Buster sets the <code>"src"</code> property of a <code>&lt;frame&gt;</code> to the URL to the root resource of the session. TODO: Write more stuff here.</p>
+
+  <h3 id="<%= id "create-session" %>"><code>var sess = server.session.createSession(sessionData)</code></h3>
+  <p>Creates a new session. <code>sessionData</code> is identical to that of a resource set. TODO: link to resource set docs here.</p>
+
+  <h3 id="<%= id "session-id" %>">sess.id</h3>
+  <p>The ID of the session. TODO: Write about how this ID is useful for faye messaging.</p>
+</div>
+
+<div class="section">
+  <h2>Ending sessions</h2>
+
+  <h3 id="<%= id "ending-session" %>"><code>server.session.destroySession(<%= anchor "sessionId", "session-id" %>)</code></h3>
+
+  <h3 id="<%= id "ending-session-faye" %>">From the browser/session directly</h3>
+  <p></p>
+</div>
+
+<div class="section">
+  <h2>Session browser runtime</h2>
+  <p>These global variables are automatically available to all sessions. They are loaded before the session scripts so they can safely be referenced at all times in your session scripts.</p>
+
+  <h3><code>buster</code></h3>
+  <p>The buster-core module in its entirety.</p>
+
+  <h3><code>buster.bayeuxClient</code></h3>
+  <p>The Faye/bayeux client to use for messaging to other clients of the buster-server.</p>
+  <p>buster-server imposes no restrictions on usage except from <%= anchor "ending sessions", "ending-session-faye" %>, so Faye itself is the only limitation to what you can use this for.</p>
+  <p>Read documentation for the Faye clients <a href="http://faye.jcoglan.com/browser.html">here</a>.</p>
+</div>
