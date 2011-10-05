@@ -6,26 +6,31 @@
   <dd><code>require("buster-server");</code></dd>
 </dl>
 
-<p>Automates browsers via frames. A server have a set of captured browsers, and a FIFO list of sessions. The topmost session is the current one, and the next session is automatically loaded when the current session ends.</p>
+<p>Loads HTML documents (sessions) into browsers (captured clients) via a HTTP API and/or a JavaScript API. Internally in buster, we create one session per test run. There are a number of uses for buster-server other than running tests, though. One example is <a href="http://github.com/augustl/slidebuster">Slidebuster</a>, where a session is a presentation, and the generic messaging in buster-server is used to synchronize state across the captured browsers.</p>
 
 <div class="section">
-  <h2>Methods</h2>
+  <h2>Creating a server</h2>
 
   <h3 id="<%= id "create" %>"><code>var server = busterServer.create(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
-  <p>Creates a new server instance. Prevents <code>"request"</code> event handlers from being called for requests handled by the buster-server.</p>
+  <p>Creates a new server instance. Prevents <code>"request"</code> event handlers from being called for requests handled by the buster-server. Otherwise it leaves the http server untouched.</p>
 </div>
 
 <div class="section">
   <h2>Capturing</h2>
   <h3 id="<%= id "oncapture" %>"><code>server.capture.oncapture = function(req, res, <%= anchor "client", "captured-client" %>){}</code></h3>
   <p>This property is required.</p>
-  <p>The <code>req</code> and <code>res</code> comes directly from the node HTTP server. You have to manually handle the response, for example:</p>
+  <p>The function is called every time a browser hits the <%= anchor "capture-url" %> with a GET request. This is where you define the HTTP behaviour of a browser getting captured on your buster-server.</p>
+
   <pre><code>server.capture.oncapture = function (req, res, client) {
     res.writeHead(302, {"Location": client.url});
     res.end();
 }</code></pre>
 
+  <p>The <code>req</code> and <code>res</code> comes directly from the node HTTP server.</p>
+
   <p>This snippet will redirect the browser to the capture page (the page with the frames etc) after capturing. You're free to do whatever you want here. For example, you can redirect to a page that lets you configure additional options for the captured browser, and then redirect to the <code>client.url</code> when you're done.</p>
+
+  <p>You should at least make sure you <code>end()</code> the response. If you don't, the browser will hang and eventually timeout.</p>
 
   <h3 id="<%= id "capture-url" %>"><code>server.capture.captureUrl = "/capture"</code></h3>
   <p>The default value of this property is <code>"/capture"</code>.</p>
@@ -35,24 +40,49 @@
 <div class="section">
   <h2>Sessions</h2>
 
-  <p>Sessions live in a FIFO queue. A session is loaded immediately if there are no sessions in progress at the time, or is added to the queue of sessions if there is one in progress. As soon as the in-progress session ends, the next session in the queue is loaded.</p>
-  <p>A session is in practice identical to a resource set. The root resource will be loaded in the DOM of the captured clients. The entries in <code>load</code> will automatically be injected into the root resource.</p>
-  <p>When the session starts, Buster sets the <code>"src"</code> property of a <code>&lt;frame&gt;</code> to the URL to the root resource of the session. TODO: Write more stuff here.</p>
+  <p>Sessions live in a FIFO queue. A session is loaded immediately if there are no sessions in progress at the time, or is added to the queue of sessions if there is one in progress. As soon as the in-progress session ends, the next session in the queue is automatically loaded.</p>
+  <p>A session is very similar to a resource set. In fact, the APIs for creating a session takes a resource set payload 1:1.</p>  
+  <p>When the session starts, Buster sets the <code>"src"</code> property of the <code>&lt;frame&gt;</code> in each of the servers captured browsers, to the URL to the root resource of the session. TODO: Write more stuff here.</p>
 
   <h3 id="<%= id "create-session" %>"><code>var sess = server.session.createSession(sessionData)</code></h3>
   <p>Creates a new session. <code>sessionData</code> is identical to that of a resource set. TODO: link to resource set docs here.</p>
 
-  <h3 id="<%= id "session-id" %>">sess.id</h3>
+  <h3 id="<%= id "create-session-http" %>">POST /sessions</h3>
+
+  <p>Creates a new session.</p>
+
+  <h4>Request body</h4>
+  <p>The payload for creating a session is identical to that of a resource set. TODO: Link to resource-set docs here.</p>
+
+  <h4>Response body</h4>
+  <pre><code>{
+    "id": <%= anchor "session-id" %>,
+    "rootPath": <%= anchor "session-root-path" %>,
+    "bayeuxClientUrl": <%= anchor "session-bayeux-url" %>,
+}</code></pre>
+
+  <h4>Response status code</h4>
+  <dl>
+    <dt>201</dt>
+    <dd>Session successfully created and will be loaded immediately.</dd>
+    <dt>202</dt>
+    <dd>Session successfully created and was queued.</dd>
+  </dl>
+
+  <h3 id="<%= id "stop-session" %>"><code>server.session.destroySession(<%= anchor "sess.id", "session-id" %>)</code></h3>
+  <p>Stops the session with the given ID.</p>
+
+  <h3 id="<%= id "stop-session-http" %>">DELETE <%= anchor "/session-root-path", "session-root-path" %></h3>
+  <p>Stops the session with the given root path.</p>
+
+  <h3 id="<%= id "session-id" %>"><code>sess.id</code></h3>
   <p>The ID of the session. TODO: Write about how this ID is useful for faye messaging.</p>
-</div>
 
-<div class="section">
-  <h2>Ending sessions</h2>
+  <h3 id="<%= id "session-root-path" %>"><code>sess.rootPath</code></h3>
+  <p>Used to kill the session.</p>
 
-  <h3 id="<%= id "ending-session" %>"><code>server.session.destroySession(<%= anchor "sessionId", "session-id" %>)</code></h3>
-
-  <h3 id="<%= id "ending-session-faye" %>">From the browser/session directly</h3>
-  <p></p>
+  <h3 id="<%= id "session-bayeux-url" %>"><code>sess.bayeuxClientUrl</code></h3>
+  <p>The URL to use for creating Faye/bayeux clients. This property is also available on the server itself if you have programmatic access to it. The URL is the same for all sessions.</p>
 </div>
 
 <div class="section">
@@ -64,6 +94,6 @@
 
   <h3><code>buster.bayeuxClient</code></h3>
   <p>The Faye/bayeux client to use for messaging to other clients of the buster-server.</p>
-  <p>buster-server imposes no restrictions on usage except from <%= anchor "ending sessions", "ending-session-faye" %>, so Faye itself is the only limitation to what you can use this for.</p>
+  <p>buster-server imposes no restrictions on usage or event names. NOTE: this is not true, there are some events that are internal to buster-server sessions for starting and stopping sessions etc.</p>
   <p>Read documentation for the Faye clients <a href="http://faye.jcoglan.com/browser.html">here</a>.</p>
 </div>
