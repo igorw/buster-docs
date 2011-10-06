@@ -17,11 +17,11 @@
 
 <div class="section">
   <h2>Capturing</h2>
-  <h3 id="<%= id "oncapture" %>"><code>server.capture.oncapture = function(req, res, <%= anchor "client", "captured-client" %>){}</code></h3>
+  <h3 id="<%= id "oncapture" %>"><code>server.oncapture = function(req, res, <%= anchor "client", "captured-client" %>){}</code></h3>
   <p>This property is required.</p>
   <p>The function is called every time a browser hits the <%= anchor "capture-url" %> with a GET request. This is where you define the HTTP behaviour of a browser getting captured on your buster-server.</p>
 
-  <pre><code>server.capture.oncapture = function (req, res, client) {
+  <pre><code>server.oncapture = function (req, res, client) {
     res.writeHead(302, {"Location": client.url});
     res.end();
 }</code></pre>
@@ -32,7 +32,7 @@
 
   <p>You should at least make sure you <code>end()</code> the response. If you don't, the browser will hang and eventually timeout.</p>
 
-  <h3 id="<%= id "capture-url" %>"><code>server.capture.captureUrl = "/capture"</code></h3>
+  <h3 id="<%= id "capture-url" %>"><code>server.captureUrl = "/capture"</code></h3>
   <p>The default value of this property is <code>"/capture"</code>.</p>
   <p>A GET request to this URL on the http server where you mounted the buster-server will cause a new <%= anchor "captured client", "captured-client" %> to be created.</p>
 </div>
@@ -44,7 +44,7 @@
   <p>A session is very similar to a resource set. In fact, the APIs for creating a session takes a resource set payload 1:1.</p>  
   <p>When the session starts, Buster sets the <code>"src"</code> property of the <code>&lt;frame&gt;</code> in each of the servers captured browsers, to the URL to the root resource of the session. TODO: Write more stuff here.</p>
 
-  <h3 id="<%= id "create-session" %>"><code>var sess = server.session.createSession(sessionData)</code></h3>
+  <h3 id="<%= id "create-session" %>"><code>var sess = server.createSession(sessionData)</code></h3>
   <p>Creates a new session. <code>sessionData</code> is identical to that of a resource set. TODO: link to resource set docs here.</p>
 
   <h3 id="<%= id "create-session-http" %>">POST /sessions</h3>
@@ -69,7 +69,7 @@
     <dd>Session successfully created and was queued.</dd>
   </dl>
 
-  <h3 id="<%= id "stop-session" %>"><code>server.session.destroySession(<%= anchor "sess.id", "session-id" %>)</code></h3>
+  <h3 id="<%= id "stop-session" %>"><code>server.destroySession(<%= anchor "sess.id", "session-id" %>)</code></h3>
   <p>Stops the session with the given ID.</p>
 
   <h3 id="<%= id "stop-session-http" %>">DELETE <%= anchor "/session-root-path", "session-root-path" %></h3>
