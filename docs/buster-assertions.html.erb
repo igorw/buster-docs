@@ -348,27 +348,23 @@ assert.isNumber(NaN);  // Fails</code></pre>
               <dd><code>typeof object</code></dd>
             </dl>
           </div>
-          <h3 data-title="+isUndefined(object[, msg])+"
-              id="<%= id('assert-isUndefined') %>"><code>assert.isUndefined(object[, message])</code></h3>
+          <h3 data-title="+defined(object[, msg])+"
+              id="<%= id('assert-defined') %>"><code>assert.defined(object[, message])</code></h3>
           <p>
-            Fails if <code>object</code> is not <code>undefined</code>.  The
+            Fails if <code>object</code> is <code>undefined</code>. The
             optional message is prepended to the failure message if provided.
           </p>
           <pre><code>var a;
-assert.isUndefined(undefined, "This will pass");
-assert.isUndefined({}, "This will fail");
-assert.isUndefined(a);  // Passes
-assert.isUndefined({}); // Fails</code></pre>
+assert.defined({}, "This will pass");
+assert.defined(undefined, "This will fail");
+assert.defined({});  // Passes
+assert.defined(a); // Fails</code></pre>
           <div class="msg">
             <h4>Message</h4>
-            <p><code>assert.isUndefined.msgFail = "${0}Expected typeof ${1} (${2}) to undefined";</code></p>
+            <p><code>assert.defined.msgFail = "${0}Expected to be defined";</code></p>
             <dl>
               <dt><code>${0}</code></dt>
               <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-              <dt><code>${2}</code></dt>
-              <dd><code>typeof object</code></dd>
             </dl>
           </div>
           <h3 data-title="+isNull(object[, msg])+" id="<%= id('assert-isNull') %>"><code>assert.isNull(object[, message])</code></h3>
@@ -807,21 +803,21 @@ refute.typeOf({}, "object");     // Fails</code></pre>
               <dd>The expected type, a string</dd>
             </dl>
           </div>
-          <h3 data-title="+notUndefined(object[, msg])+"
-              id="<%= id('refute-isUndefined') %>"><code>refute.isUndefined(object[, message])</code></h3>
+          <h3 data-title="+defined(object[, msg])+"
+              id="<%= id('refute-defined') %>"><code>refute.defined(object[, message])</code></h3>
           <p>
-            Fails if <code>object</code> is <code>undefined</code>.  The optional
-            message is prepended to the failure message if provided.
+            Fails if <code>object</code> is not <code>undefined</code>. The
+            optional message is prepended to the failure message if provided.
           </p>
           <pre><code>var a;
 
-refute.isUndefined({}, "This will pass");
-refute.isUndefined(undefined, "This will fail");
-refute.isUndefined({});  // Passes
-refute.isUndefined(a); // Fails</code></pre>
+refute.defined(undefined, "This will pass");
+refute.defined({}, "This will fail");
+refute.defined(a);  // Passes
+refute.defined({}); // Fails</code></pre>
           <div class="msg">
             <h4>Message</h4>
-            <p><code>refute.isUndefined.msgFail = "${0}Expected typeof ${1} (${2}) not to be undefined";</code></p>
+            <p><code>refute.defined.msgFail = "${0}Expected typeof ${1} (${2}) to be undefined";</code></p>
             <dl>
               <dt><code>${0}</code></dt>
               <dd>The custom message, if any</dd>
@@ -1238,7 +1234,7 @@ expect("foo").toBeFoo();</code></pre>
               verification for the refute.
             </dd>
           </dl>
-          <h2>Supporting utilities</h2>
+          <h2 id="<%= id('utilities') %>">Supporting utilities</h2>
           <h3 id="<%= id('isNode') %>"><code>isNode(object)</code></h3>
           <p>
             Returns <code>true</code> if the object is a DOM node. The check is made by
