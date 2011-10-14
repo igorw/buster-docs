@@ -1,0 +1,119 @@
+<h1><code>buster.resources</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.1 <span class="date">(2011-10-04)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-resources");</code></dd>
+</dl>
+
+<p>Note: this documentation is <em>very</em> incomplete.</p>
+
+<p>Loads HTML documents (sessions) into browsers (captured clients) via a HTTP API and/or a JavaScript API. Internally in buster, we create one session per test run. There are a number of uses for buster-server other than running tests, though. One example is <a href="http://github.com/augustl/slidebuster">Slidebuster</a>, where a session is a presentation, and the generic messaging in buster-server is used to synchronize state across the captured browsers.</p>
+
+<div class="section">
+  <h2>Bundling multiple resource sets</h2>
+
+  <p>This section will contain information about the resource set manager that allows creation of resource set that have a common ground used for caching etc across multiple resource sets.</p>
+</div>
+
+
+<div class="section">
+  <h2>Resource set</h2>
+
+  <p>A resource set lets you represent a set of files associated with paths. It lets you create bundles of multiple resources, proxy certain paths to other HTTP servers, preprocess resources (for example convert CoffeeScript into JavaScript), and more.</p>
+
+  <p>Resource sets can technically speaking be created individually without a resource set manager, but that's not a public API at the moment.</p>
+
+  <h3 id="<%= id "resource-set-create" %>"><code>var rs = resources.createResourceSet(<%= anchor "resourceSetPayload", "resource-set-payload" %>)</code></h3>
+  <p>Creates a new resource set with the given resource set payload.</p>
+
+  <h3 id="<%= id "resource-set-payload" %>">Resource set payload</h3>
+
+  <p>The resource set payload is an object that consists of a set of resources, and optionally a list of resources to automatically load in the root resource. TODO: Write about root resource and auto injection.</p>
+
+  <h3 id="<%= id "resource-set-add-resource" %>"><code>rs.addResource(path, <%= anchor "resourcePayload", "resource-payload" %>)</code></h3>
+
+  <p>Adds a new resource, per the resource payload data structure. The path has to start with a slash.</p>
+
+  <h3 id="<%= id "resource-set-add-file" %>"><code>rs.addFile(filePath, options)</code></h3>
+
+  <p>A convenience method for adding a file by path to a resource set. The file is not loaded immediately, but upon <code><%= anchor "getResource", "resource-set-get-resource" %></code>. If the file doesn't exist, you won't get an error message when calling this function.</p>
+
+  <p><code>rs.addFile("/absolute/path/to/file");</code> will create a resource for that file with the resource set path being the same as the absolute path to the file.</p>
+
+  <p><code>rs.addFile("/absolute/path/to/file", {path: "/my-file"});</code> will create a resource for that file with a custom resource set path.</p>
+
+  <p>Other than <code>path</code>, the options passed are normal <%= anchor "resource payloads", "resource-payload" %>, i.e. <code>rs.addFile("/my/file", {headers: {"Content-Type": "text/plain"}})</code>.</p>
+
+  <h3 id="<%= id "resource-set-remove" %>"><code>rs.removeResource(path)</code></h3>
+
+  <p>Removes a resource with the  given path. Will also remove it from <code>load</code> if present.</p>
+
+  <h3 id="<%= id "resource-set-get-resource" %>"><code>rs.getResource(path, function (err, resource) {})</code></h3>
+
+  <p>Gets a resource by path. If there was an error, the <code>err</code> will be none-<code>undefined</code>. The resource is a read-only representation of the resource. TODO: document those.</p>
+
+  <h3 id="<%= id "resource-set-get-resource-http" %>"><code>rs.getResourceViaHttp(req, res)</code></h3>
+
+  <p>Gets the resource via a HTTP request.</p>
+  <p>Responds with 200 OK with the resource if everything went OK. Responds with the appropriate error codes when stuff goes wrong. TODO: write about customized error handling.</p>
+
+  <h3 id="<%= id "resource-set-get-read-only" %>"><code>rs.getReadOnly(function (err, resourceSet) {})</code></h3>
+
+  <p>Gets a read-only representation of the entire resource set. Any property in this object can be modified without altering the original resource set. All resources has been resolved so their <code>content</code> properties are strings or Buffers ready for JSON-ifying etc.</p>
+</div>
+
+<div class="section">
+  <h2>Resource payload</h2>
+
+  <p>This section describes the object that is passed to resource creation, such as <code>rs.addResource("/path", payload)</code> and <code>rs.addFile("/path/to/file", payload)</code>.</p>
+
+  <h3><code>{content: "a string"}</code></h3>
+  <p>Sets the content of the resource to the value of the string.</p>
+
+  <h3><code>{content: new Buffer(...)}</code></h3>
+  <p>Sets the content of the resource to the value of the buffer.</p>
+
+  <h3><code>{content: function (<%= m "promise" %>) {}}</code></h3>
+  <p>Function will be called when needed and allows for asynchronous fetching of content via a promise. This is what <%= anchor "addFile", "resource-set-add-file" %> uses under the hood.</p>
+
+  <p>It is imperative that you either resolve or reject the promise. There's no internal time out, so if you do networking or something else that could time out, you should create your own timeout and reject the promise when the timeout fires. You also need to make sure you don't accept the promise after you already rejected it, and vice versa.</p>
+
+  <pre><code>rs.addResource("/foo", {
+    content: function (promise) {
+        // We don't do anything asynchronous here so we might as well
+        // have used a string directly instead of a function.
+        promise.resolve("This is the content");
+    }
+});</code></pre>
+
+  <pre><code>rs.addResource("/foo", {
+    content: function (promise) {
+        fs.readFile("/foo", function (err, data) {
+            if (err) {
+                promise.reject(err);
+            } else {
+                promise.resolve(data);
+            }
+        });
+    }
+});</code></pre>
+
+  <pre><code>rs.addResource("/foo", {
+    content: function (promise) {
+        http.request(
+            {host: "myserver.com", port: 80, path: "/test"},
+            function (res) {
+                var data = "";
+                res.on("data", function (chunk) { data += chunk; });
+                res.on("end", function () { promise.resolve(data); });
+            }
+        ).end();
+    }
+});</code></pre>
+
+  <h3><code>{headers:{"Header": "Value"}}</code></h3>
+  <p>Set custom headers. A Content-Type header will be added automatically if not present, via the <a href="https://github.com/bentomas/node-mime">node-mime</a> project.</p>
+
+  <h3>TODO: Document all properties</h3>
+</div>
