@@ -44,7 +44,7 @@
   <p>The promise is resolved when the group has been fully loaded.</p>
 
   <h3 id="<%= id "group-setup-framework" %>">grp.setupFrameworkResources()</h3>
-  <p>Adds all the framework resources such as <%= "assert" %>, <%= "promise" %>, <%= "test" %> and Sinon to the resource set for the group. These resources are prepended so they appear before the files of the config group, so that everything is loaded beforehand.</p>
+  <p>Adds all the framework resources such as <%= m "assert" %>, <%= m "promise" %>, <%= m "test" %> and Sinon to the resource set for the group. These resources are prepended so they appear before the files of the config group, so that everything is loaded beforehand.</p>
   <p>This is a separate method so you can easily inject your own wiring code between the framework code and the group specific code.</p>
 
   <pre><code>grp.resolve().then(function () {
