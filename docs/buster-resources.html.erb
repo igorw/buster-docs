@@ -25,10 +25,6 @@
   <h3 id="<%= id "resource-set-create" %>"><code>var rs = resources.createResourceSet(<%= anchor "resourceSetPayload", "resource-set-payload" %>)</code></h3>
   <p>Creates a new resource set with the given resource set payload.</p>
 
-  <h3 id="<%= id "resource-set-payload" %>">Resource set payload</h3>
-
-  <p>The resource set payload is an object that consists of a set of resources, and optionally a list of resources to automatically load in the root resource. TODO: Write about root resource and auto injection.</p>
-
   <h3 id="<%= id "resource-set-add-resource" %>"><code>rs.addResource(path, <%= anchor "resourcePayload", "resource-payload" %>)</code></h3>
 
   <p>Adds a new resource, per the resource payload data structure. The path has to start with a slash.</p>
@@ -62,7 +58,30 @@
 </div>
 
 <div class="section">
-  <h2>Resource payload</h2>
+  <h2 id="<%= id "resource-set-payload" %>">Resource set payload</h2>
+
+  <p>The resource set payload is an object that consists of a set of resources, and optionally a list of resources to automatically load in the root resource. TODO: Write about root resource and auto injection.</p>
+
+  <pre><code>resources.createResourceSet({
+    resources: {
+        "/path": {<%= anchor "resource-payload" %>},
+        "/other-path": {<%= anchor "resource-payload" %>},
+        ...
+    },
+    load: [resourcePath, ...]
+}
+})</code></pre>
+
+  <h3 id="<%= id "resource-set-payload-resources" %>"><code>resources</code></h3>
+  <p>An object where the key is the path and the value is the <%= anchor "resource payload", "resource-payload" %>. The equivalent of calling <%= anchor "addResource()", "resource-set-add-resource" %>.</p>
+
+  <h3 id="<%= id "resource-set-payload-load" %>"><code>load</code></h3>
+  <p>List of paths to "load". The path must exist as a resource.</p>
+  <p>In <%= m "server" %>, the resources in <code>load</code> will be automatically injected as script tags before the closing <code>&lt;/body&gt;</code> tag. A resource set does not in itself what it means to load something.</p>
+</div>
+
+<div class="section">
+  <h2 id="<%= id "resource-payload" %>">Resource payload</h2>
 
   <p>This section describes the object that is passed to resource creation, such as <code>rs.addResource("/path", payload)</code> and <code>rs.addFile("/path/to/file", payload)</code>.</p>
 
