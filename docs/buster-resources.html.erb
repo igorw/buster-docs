@@ -6,6 +6,8 @@
   <dd><code>require("buster-resources");</code></dd>
 </dl>
 
+<p>Manages resources for <%= m "server" %>.</p>
+
 <div class="section">
   <h2>Bundling multiple resource sets</h2>
 
@@ -64,13 +66,13 @@
 
   <p>This section describes the object that is passed to resource creation, such as <code>rs.addResource("/path", payload)</code> and <code>rs.addFile("/path/to/file", payload)</code>.</p>
 
-  <h3><code>{content: "a string"}</code></h3>
+  <h3 id="<%= id "resource-payload-content-string" %>"><code>{content: "a string"}</code></h3>
   <p>Sets the content of the resource to the value of the string.</p>
 
-  <h3><code>{content: new Buffer(...)}</code></h3>
+  <h3 id="<%= id "resource-payload-content-buffer" %>"><code>{content: new Buffer(...)}</code></h3>
   <p>Sets the content of the resource to the value of the buffer.</p>
 
-  <h3><code>{content: function (<%= m "promise" %>) {}}</code></h3>
+  <h3 id="<%= id "resource-payload-content-function" %>"><code>{content: function (<%= m "promise" %>) {}}</code></h3>
   <p>Function will be called when needed and allows for asynchronous fetching of content via a promise. This is what <%= anchor "addFile", "resource-set-add-file" %> uses under the hood.</p>
 
   <p>It is imperative that you either resolve or reject the promise. There's no internal time out, so if you do networking or something else that could time out, you should create your own timeout and reject the promise when the timeout fires. You also need to make sure you don't accept the promise after you already rejected it, and vice versa.</p>
@@ -108,8 +110,20 @@
     }
 });</code></pre>
 
-  <h3><code>{headers:{"Header": "Value"}}</code></h3>
+  <h3 id="<%= id "resource-payload-headers" %>"><code>{headers:{"Header": "Value"}}</code></h3>
   <p>Set custom headers. A Content-Type header will be added automatically if not present, via the <a href="https://github.com/bentomas/node-mime">node-mime</a> project.</p>
 
-  <h3>TODO: Document all properties</h3>
+  <h3 id="<%= id "resource-payload-etag" %>"><code>{etag:"value"}</code></h3>
+  <p>The etag is used in combination with the name of the resource to determine wether the <%= m "server" %> already has this resource.</p>
+  <p>How the etag is calculated is entirely up to you. By convention, the only expectation is that if the file for which the resource points to has changed, the etag should change as well. Internally in buster, we calculate the etag by applying SHA1 to the mtime and the absolute path to the file.</p>
+  <p>TODO: write more about how to practically perform caching against buster-server.</p>
+
+  <h3 id="<%= id "resource-payload-backend" %>"><code>{backend: "url"}</code></h3>
+  <p>A full URL to a http server that will be requested when the resource in question is requested.</p>
+  <p>The URLs will be rewritten based on the path to the resource itself. For <code>rs.addResource("/foo", {backend: "http://foo.com"});</code>, a call to <code>rs.getResource("/foo/test", cb);</code> will perform a request to <em>http://foo.com/test</em>.</p>
+  <p>When <%= anchor "getResource", "resource-set-get-resource" %> is used, a plain HTTP request with no special request headers are performed.</p>
+  <p>When <%= anchor "getResourceViaHttp", "resource-set-get-resource-http" %> is used, a mini proxy server will perform a HTTP request matching the incoming request.</p>
+
+  <h3 id="<%= id "resource-payload-combine" %>"><code>{combine: ["/foo.js", "/bar.js"]}</code></h3>
+  <p>Combines existing reseources into one resource. The resources passed have to exist before you create a combined resource for them.</p>
 </div>
