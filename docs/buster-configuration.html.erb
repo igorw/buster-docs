@@ -1,0 +1,65 @@
+<h1><code>buster.configuration</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.2.0 <span class="date">(2011-10-04)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-configuration");</code></dd>
+</dl>
+
+<p>Handles the loading of buster config files. This module is probably never used directly by any module other than <%= m "cli" %>.</p>
+
+<div class="section">
+  <h2>Configuration</h2>
+
+  <p>Represents the overall configuration file. Has a list of <%= anchor "groups", "group" %> and functionality to add new groups, filter groups based on various criteria, and more.</p>
+
+  <h3><code>conf.groups</code></h3>
+  <p>An array consisting of all the <%= anchor "groups", "group" %> in the config file.</p>
+
+  <h3><code>conf.resolveGroups(function (err) {})</code></h3>
+  <p>Resolves all of the groups. See <%= anchor "group-resolve" %>.</p>
+
+  <h3><code>conf.addGroup(name, groupData)</code></h3>
+  <p>Adds a new group.</p>
+
+  <h3><code>conf.filterEnv(envName)</code></h3>
+  <p>Permanently removes all groups that aren't of <code>envName</code>'s environment. The available environments are <code>"browser"</code> and <code>"node"</code>.</p>
+
+  <h3><code>conf.filterGroup(regex)</code></h3>
+  <p>Permanently filters out groups which name doesn't match the regex.</p>
+</div>
+
+<div class="section">
+  <h2 id="<%= id "group" %>">Configuration group</h2>
+
+  <p>The individual object in the configuration's list of groups.</p>
+
+  <h3 id="<%= id "group-resource-set" %>"><code>grp.resourceSet</code></h3>
+  <p>A <%= m "resources" %> resource set, containing resources for all the objects in the config file group.</p>
+
+  <p>This property is undefined before <%= anchor "resolve", "group-resolve" %> is called.</p>
+
+  <h3 id="<%= id "group-resolve" %>">var <%= m "promise", "promise" %> = grp.resolve()</code></h3>
+  <p>Creates the resource set by performing all globs and file system operations neccesary to build up the full resource set for the config group. The group is pretty much useless until this method is called. It won't even have a <code>resourceSet</code> property defined.</p>
+  <p>The promise is resolved when the group has been fully loaded.</p>
+
+  <h3 id="<%= id "group-setup-framework" %>">grp.setupFrameworkResources()</h3>
+  <p>Adds all the framework resources such as <%= m "assert" %>, <%= m "promise" %>, <%= m "test" %> and Sinon to the resource set for the group. These resources are prepended so they appear before the files of the config group, so that everything is loaded beforehand.</p>
+  <p>This is a separate method so you can easily inject your own wiring code between the framework code and the group specific code.</p>
+
+  <pre><code>grp.resolve().then(function () {
+    // Load custom-thing before the files in the config group.
+    grp.resourceSet.addResource("/custom-thing", {...});
+    grp.resourceSet.prependToLoad("/custom-thing");
+
+    // Load framework files, will be prepended so it loads before
+    // the stuff added above
+    grp.setupFrameworkResources();
+
+    // If you wish, you can load stuff before the framework resources.
+    // You probably don't need to do that though.
+    grp.resourceSet.addResource("/something-else", {...});
+    grp.prependToLoad("/something-else");
+});
+</code></pre>
+</div>

@@ -1,15 +1,82 @@
 <p><strong>Important:</strong> Buster.JS is not yet released. The documentation is by no means complete.</p>
 
-<p>There's a <a href="http://busterjs.org/docs/quick-and-dirty-getting-started">Getting started guide</a>, only for Node.JS testing only so far though.</p>
+<h2>Guides</h2>
 
-<h2><%= m("assertions", "buster.assertions") %></h2>
-<p>Contains all assertions for test cases.</p>
+<table>
+  <tr></tr>
 
-<h2><%= m("args", "buster.args") %></h2>
-<p>Reusable and unobtrusive utility for parsing command line options.</p>
+<p>There's a <a href="<%= doc_url "quick-and-dirty-getting-started" %>">Getting started guide</a>, only for Node.JS testing only so far though.</p>
 
-<h2><%= m("test", "buster.test") %></h2>
-<p>Test cases, contexts, reporters, and more.</p>
+<h2>Modules</h2>
 
-<h2><%= m("promise", "buster.promise") %></h2>
-<p>An implementation of the promise pattern.</p>
+<table class="first-column-nowrap zebra-striped">
+  <tr>
+    <td><%= m("args") %></td>
+    <td>Reusable and unobtrusive utility for parsing command line options.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("assertions") %></td>
+    <td>Contains all assertions for test cases.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("configuration") %></td>
+    <td>Defines the behaviour of configuration files.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("core", "buster-core") %></td>
+    <td>The <code>buster</code> object.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("evented-logger") %></td>
+    <td>Reusable evebt based logger component</td>
+  </tr>
+
+  <tr>
+    <td><%= m("format") %></td>
+    <td>Utility library for formatting JavaScript objects as nice looking strings.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("module-loader", "buster-module-loader") %></td>
+    <td>Resolves node modules from strings like <code>"module-name#prop-name"</code>.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("promise") %></td>
+    <td>An implementation of the promise pattern.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("resources") %></td>
+    <td>Generic representation</td>
+  </tr>
+
+  <tr>
+    <td><%= m("script-loader", "buster-script-loader") %></td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td><%= m("server") %></td>
+    <td></td>
+  </tr>
+
+  <tr>
+      <td><%= m("test") %></td>
+      <td>Test cases, contexts, reporters, and more.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("user-agent-parser", "buster-user-agent-parser") %></td>
+    <td>Reusable stand-alne module for getting platform, browser name and browser version from a user agent string.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("util") %></td>
+    <td></td>
+  </tr>
+</table>
