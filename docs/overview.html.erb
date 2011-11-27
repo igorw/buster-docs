@@ -31,17 +31,19 @@ config["My tests"] = {
 
 buster test --config anywhere/buster.js
 // Can also specify config file</pre>
+
+
 <h2>Test cases</h2>
 
 <p>Typically, you have one test case per file. Here's an example, in <kbd>test/my-thing-test.js</kbd>. Since the file name ends with <kbd>-test.js</kbd>, the config file above will load the test.</p>
 
 <pre><code>buster.testCase("My thing", {
     "test something": function () {
-        buster.assert.equals("foo", "bar");
+        assert.equals("foo", "bar");
     },
 
     "test other": function () {
-        buster.assert(true);
+        assert(true);
     }
 })</code></pre>
 
@@ -78,7 +80,7 @@ var myLib = require("../lib/my-lib");
 
 buster.testCase("A test case", {
     "test it": function () {
-        buster.assert(myLib.doIt());
+        assert(myLib.doIt());
     }
 })</code></pre>
 
@@ -88,48 +90,48 @@ buster.testCase("A test case", {
 
 <p>Buster.JS comes <a href="https://busterjs.org/docs/buster-assertions/">packed with assertions</a>, and a simple DSl to add your own assertions.</p>
 
-<pre><code>buster.assert(true);
-buster.assert.same(two, objects);
-buster.assert.equals(two, objects);
-buster.assert.defined(something);
-buster.assert.exception(function () { ... });
-buster.assert.isNull();
+<pre><code>assert(true);
+assert.same(two, objects);
+assert.equals(two, objects);
+assert.defined(something);
+assert.exception(function () { ... });
+assert.isNull();
 // .. and many more</code></pre>
 
-<p>Note the lack of <code>notEquals</code>, <code>notDefined</code> etc. Instead, Buster.JS provides a more symmetric API.</p>
+<p>Note the lack of <code>assert.notEquals</code>, <code>assert.notDefined</code> etc. Instead, Buster.JS provides a more symmetric API.</p>
 
 <pre><code>// This assertion does not exist!
-buster.assert.notEquals(foo, bar);
+assert.notEquals(foo, bar);
 
 // Instead:
-buster.refute.equals(two, objects);
+refute.equals(two, objects);
 
 // And so on
-buster.refute(false);
-buster.refute.same(two, objects);
-buster.refute.defined(something);</code></pre>
+refute(false);
+refute.same(two, objects);
+refute.defined(something);</code></pre>
 
 <p>So instead of changing the function name, replace <code>assert</code> with <code>refute</code>.</p>
 
-<p><code>buster.assert.match</code> is neat. All the assertions below will pass.</p>
+<p><code>assert.match</code> is neat. All the assertions below will pass.</p>
 
 <pre><code>// Partial property matching
 var largeObject = {foo: "bar", baz: {test: "it"}};
-buster.assert.match(largeObject, {foo: "bar"});
+assert.match(largeObject, {foo: "bar"});
 
 // Fancy string matching
-buster.assert.match("Yeah!", { toString: function () { return "yeah"; } });
+assert.match("Yeah!", { toString: function () { return "yeah"; } });
 
 // Regexp matching
-buster.assert.match("Give me something", /^[a-z\s]$/i);
+assert.match("Give me something", /^[a-z\s]$/i);
 
 // Lazy types
-buster.assert.match("123", 123);
+assert.match("123", 123);
 
 // DOM elements
 var el = document.getElementById("myEl");
 
-buster.assert.match(el, {
+assert.match(el, {
     tagName: "h2",
     className: "item",
     innerHTML: "Howdy"
@@ -154,7 +156,7 @@ var spec = describe("Bowling kata", function () {
 
     should("yield 0 in score for gutter game", function () {
         this.rollMany(20, 0);
-        buster.assert.equals(0, this.game.score());
+        assert.equals(0, this.game.score());
     });
 });</code></pre>
 
@@ -193,19 +195,19 @@ var spec = describe("Bowling kata", function () {
     },
 
     "test this one is not deferred and will run": function () {
-        buster.assert(true);
+        assert(true);
     }
 })</code></pre>
 
 <h2>Mocking and stubbing</h2>
 
-<p><a href="http://sinonjs.org">Sinon.JS</a> is bundled with Buster.JS test cases. Every test in a test case has a sandbox associated with it, so its easy to mock and stub with no side effects beyond the scope of the test. <code>buster.assert</code> also comes with a lot of Sinon.JS aware assertions.</p>
+<p><a href="http://sinonjs.org">Sinon.JS</a> is bundled with Buster.JS test cases. Every test in a test case has a sandbox associated with it, so its easy to mock and stub with no side effects beyond the scope of the test. <code>assert</code> also comes with a lot of Sinon.JS aware assertions.</p>
 
 <pre><code>buster.testCase("My tests", {
     "should demonstrate stubbing": function () {
         this.stub(myLib.thingie, "aMethod");
         doSomething();
-        buster.assert.calledOnce(myLib.thingie.aMethod);
+        assert.calledOnce(myLib.thingie.aMethod);
     }
 })</code></pre>
 
@@ -217,12 +219,12 @@ var spec = describe("Bowling kata", function () {
 
 <pre><code>buster.testCase("My thing", {
     "test not asynchronous": function () {
-        buster.assert(true);
+        assert(true);
     },
 
     "test asynchronous": function (done) {
         myLibrary.doAjaxRequest("/foo", function (response) {
-            buster.assert.equals(response.statusCode, 200);
+            assert.equals(response.statusCode, 200);
             done();
         });
     }
@@ -261,7 +263,7 @@ var spec = describe("Bowling kata", function () {
     },
 
     "test simple test": function () {
-        buster.assert(true);
+        assert(true);
     },
 
     "on steroids": {
@@ -342,8 +344,8 @@ config["My tests"] = {
     "should POST to /todo-items": function () {
         myThing.createTodoItem("Some item");
 
-        buster.assert.equals(this.server.requests.length, 1);
-        buster.assert.match(this.server.requests[0], {
+        assert.equals(this.server.requests.length, 1);
+        assert.match(this.server.requests[0], {
             method: "POST",
             url: "/todo-items"
         });
@@ -366,8 +368,8 @@ config["My tests"] = {
 
         // Sinon.JS replaces the entire XHR stack and synchronously handles
         // the request.
-        buster.assert.calledOnce(callback);
-        buster.assert.equals(callback.getCall(0).args[0], {
+        assert.calledOnce(callback);
+        assert.equals(callback.getCall(0).args[0], {
             test: "Fetch eggs", done: false, id: 1
         });
     }
