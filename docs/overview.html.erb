@@ -106,15 +106,15 @@ buster.refute.defined(something);</code></pre>
 
 <p><code>buster.assert.match</code> is neat. All the assertions below will pass.</p>
 
-<pre><code>// Perform a partial match
+<pre><code>// Partial property matching
 var largeObject = {foo: "bar", baz: {test: "it"}};
-buster.match(largeObject, {foo: "bar"});
+buster.assert.match(largeObject, {foo: "bar"});
 
 // Fancy string matching
 buster.assert.match("Yeah!", { toString: function () { return "yeah"; } });
 
 // Regexp matching
-assert.match("Give me something", /^[a-z\s]$/i);
+buster.assert.match("Give me something", /^[a-z\s]$/i);
 
 // Lazy types
 buster.assert.match("123", 123);
@@ -172,19 +172,163 @@ var spec = describe("Bowling kata", function () {
 
 <h2>Deferred/pending tests</h2>
 
-<p></p>
+<p>Commenting out an entire test case is bad. It will leave the test case out of the loop entirely, and you might forget to comment it back in again before pushing your code.</p>
+
+<p>To remedy this, Buster.JS supports deferring a test so it doesn't actually run, but you get notified that there's a deferred tests every time you run your test suite.</p>
+
+<p><%= img "overview/buster-test-deferred.png", :width => "529", :height => "348" %></p>
+
+<p>To defer a test, add <kbd>//</kbd> to the start of the test name.</p>
+
+<pre><code>buster.testCase("My tests", {
+    "// test should bla bla bla test case": function () {
+        // This function will not be called
+    },
+
+    "test this one is not deferred and will run": function () {
+        buster.assert(true);
+    }
+})</code></pre>
 
 <h2>Mocking and stubbing</h2>
 
-<h2>Proxying to real http servers</h2>
+<p><a href="http://sinonjs.org">Sinon.JS</a> is bundled with Buster.JS test cases. Every test in a test case has a sandbox associated with it, so its easy to mock and stub with no side effects beyond the scope of the test. <code>buster.assert</code> also comes with a lot of Sinon.JS aware assertions.</p>
 
-<h2>Running a subset of tests</h2>
-<h3>Run individual test cases</h3>
-<h3>Run individual files</h3>
+<pre><code>buster.testCase("My tests", {
+    "should demonstrate stubbing": function () {
+        this.stub(myLib.thingie, "aMethod");
+        doSomething();
+        buster.assert.calledOnce(myLib.thingie.aMethod);
+    }
+})</code></pre>
+
+<p>TODO: documentation is missing for the sinon-buster module. For now, refer to <a href="http://sinonjs.org/docs/">the Sinon.JS documentation</a> and do some guesswork...</p>
 
 <h2>Asynchronous tests</h2>
 
+<h2>Test case contexts</h2>
+
+<h2>Proxying to http servers</h2>
+
+<p>In your browser tests you might want to perform HTTP request to a server, such as your application server. This can be difficult since your tests run via the Buster.JS server, and you can't access your application server due to cross domain origin policies in browsers.</p>
+
+<p>To remedy this, Buster.JS lets you set up a proxy server in your config file.</p>
+
+<pre><code>var config = module.exports;
+
+config["My tests"] = {
+    sources: ["../lib/**/*.js"],
+    tests: ["*-test.js"],
+    resources: {
+        "/app": "http://192.168.1.200:3030"
+    }
+}</code></pre>
+
+<p>A request to <kbd>/app/foo</kbd> will be proxied to <kbd>http://192.168.1.200:3030/foo</kbd>.</p>
+
+<p>If you're talking to an app server with state, you probably want to reset it before every test to avoid leaks from test case to test case. You're responsible for doing that yourself. Here's an example using an asynchronous setUp that won't run the test until the request to reset the app server has ended.</p>
+
+<pre><code>buster.testCase("My tests", {
+    setUp: function (done) {
+        myHttpLib("/app/reset", {
+            success: function () { done(); }
+        });
+    },
+
+    // ... tests here ...
+})</code></pre>
+
+<h2>Running a subset of tests</h2>
+
+<p>To run a single test, pass it's full name as an operand to <kbd>buster test</kbd>.</p>
+
+<pre>buster test "My tests should run this particular test"</pre>
+
+<p>The operand is treated as a JavaScript regular expression so you can do partial matching and regex stuff in it as well.</p>
+
+<pre>buster test "* delete user"</pre>
+
+<p>To run a single file, do this:</p>
+
+<pre>buster test --file test/mytest.js</pre>
+
+<p>This assumes the presence of a config file, and just like plain <kbd>buster test</kbd> it tries to find a config file automatically, if you don't specify one with <kbd>--config</kbd>. Buster needs the config file to load your proxies, library code, dependencies, and so on.</p>
+
+
+<h2>Testing AJAX</h2>
+
+<p>Buster.JS comes with Sinon.JS. This makes mocking out the entire XHR stack in a browser trivial.</p>
+
+<pre><code>buster.testCase("My tests", {
+    setUp: function () {
+        this.server = this.fakeServer.create();
+    },
+
+    "should POST to /todo-items": function () {
+        myThing.createTodoItem("Some item");
+
+        buster.assert.equals(this.server.requests.length, 1);
+        buster.assert.match(this.server.requests[0], {
+            method: "POST",
+            url: "/todo-items"
+        });
+    },
+
+    "should yield list item to callback on success": function () {
+        this.server.respondsWith(
+            "POST",
+            "/todo-items",
+            [200, {"content-type": "application/json"},
+            '{"text":"Fetch eggs","done":false,"id":1}']);
+
+        var callback = this.spy();
+        // Assuming implementation calls the callback with a JSON.parsed
+        // response body when the request ends
+        myThing.createTodoItem("Fetch eggs", callback);
+
+        // Cause the request to respond, based on respondsWith above.
+        this.server.respond();
+
+        // Sinon.JS replaces the entire XHR stack and synchronously handles
+        // the request.
+        buster.assert.calledOnce(callback);
+        buster.assert.equals(callback.getCall(0).args[0], {
+            test: "Fetch eggs", done: false, id: 1
+        });
+    }
+})</code></pre>
+
+<p>Sinon.JS will mock out XMLHTTPRequest at the lowest possible level, so your HTTP libraries doesn't need any modification to be testable in this way. Even if you use jQuery or another 3rd party library for your HTTP.</p>
+
 <h2>Feature detection</h2>
+
+<h2>Custom test beds</h2>
+
+<p class="warning">
+  Note: this feature has not yet landed in the beta. Currently it can sort of be achieved by adding <code>resources: [{path: "/", content: "html here"}]</code> to the config file.
+</p>
+
+<p>For browser tests, you can specify the HTML document the tests will run in. Buster.JS defaults to a plain HTML5 document. But you might want to run the tests in a HTML4 strict environment, and what not.</p>
+
+<pre><code>var config = module.exports;
+
+config["My tests"] = {
+    sources: ["../lib/**/*.js"],
+    tests: ["*-test.js"],
+    testbed: "my-file.html"
+}</code></pre>
+
+<p>Script tags for your tests will be added automatically at the ending body tag, or at the end of the document if no ending body tag is present.</p>
+
+<h2>Headless browser testing</h2>
+
+<p class="warning">
+  Note: this feature has not yet landed in the beta.
+</p>
+
+<p>You don't need a browser to do browser testing with Buster.JS. By running tests and not starting a server, Buster.JS will automatically run the tests headless in a PhantomJS browser.</p>
+
+<p>This is particularly convenient for integration of Buster.JS with editors and IDEs. You can provide a simple "play button" to run the tests, and you don't need to do anything other than shelling out to <kbd>buster test</kbd> which will take care of running the tests in PhantomJS even if there's no Buster.JS server running.</p>
 
 <h2>Editor integration</h2>
 <h3>TextMate</h3>
