@@ -424,6 +424,12 @@ config["My tests"] = {
 
 <p>This is particularly convenient for integration of Buster.JS with editors and IDEs. You can provide a simple "play button" to run the tests, and you don't need to do anything other than shelling out to <kbd>buster test</kbd> which will take care of running the tests in PhantomJS even if there's no Buster.JS server running.</p>
 
+<h2>Global variables</h2>
+
+<p>By default, Buster.JS exposes three global variables: <code>buster</code>, <code>assert</code> and <code>refute</code>. The two latter are also available as properties on the <code>buster</code> object (<code>buster.assert</code>, <code>buster.refute</code>). You can tell Buster.JS to only expose the <code>buster</code> global variable.</p>
+
+<p>TODO: explain how this is done.</p>
+
 <h2>Editor integration</h2>
 <h3>TextMate</h3>
 <p>Magnar Sveen maintains <a href="https://github.com/magnars/buster.tmbundle">TextMate bundle</a>. It includes snippets, running tests with <kbd>command + R</kbd>, and more.</p>
