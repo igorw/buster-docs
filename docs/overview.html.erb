@@ -137,6 +137,8 @@ assert.match(el, {
     innerHTML: "Howdy"
 });</code></pre>
 
+<p>Adding your own custom assertions is easy. The DSL is scoped such that you get both an assert and refute.</p>
+
 <h2>BDD syntax</h2>
 
 <p>Buster.JS is pluggable so you can write your own front-ends. Buster.JS also come with one extra front-end built in, the BDD spec style syntax.</p>
@@ -423,6 +425,26 @@ config["My tests"] = {
 <p>You don't need a browser to do browser testing with Buster.JS. By running tests and not starting a server, Buster.JS will automatically run the tests headless in a PhantomJS browser.</p>
 
 <p>This is particularly convenient for integration of Buster.JS with editors and IDEs. You can provide a simple "play button" to run the tests, and you don't need to do anything other than shelling out to <kbd>buster test</kbd> which will take care of running the tests in PhantomJS even if there's no Buster.JS server running.</p>
+
+<h2>Logging</h2>
+
+<p>Logging with <code>buster.log</code> will group the log messages in the reporter output with the test that was logged from. When logging objects of various sorts, the logger uses a (pluggable) formatter for pretty output.</p>
+
+<p><%= img "overview/buster-test-logging.png", :width => "633", :height => "382" %></p>
+
+<p>In node.js, when running tests <code>buster.log</code> is available globally by default, for convenience. So you can <code>buster.log</code> in your implementations without requiring buster first.</p>
+
+<h2>Modularity</h2>
+
+<p>TODO: buster-assertions in JSTestDriver</p>
+
+<p>TODO: slidebuster</p>
+
+<h2>AMD - control when tests start running</h2>
+
+<p>Some applications use a module loader (AMD = Asynchronous Module Definitions). So the default strategy of Buster.JS to start running tests on <code>window.onload</code> may not work for you. You can disable auto running and tell Buster.JS when to start running tets.</p>
+
+<p>Add <code>{autoRun: false}</code> to your config file and call <code>buster.run()</code> to start the test run. That gives you full control over when the test run starts.</p>
 
 <h2>Global variables</h2>
 
