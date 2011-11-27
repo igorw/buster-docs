@@ -88,7 +88,7 @@ buster.testCase("A test case", {
 
 <h2>Assertions</h2>
 
-<p>Buster.JS comes <a href="https://busterjs.org/docs/buster-assertions/">packed with assertions</a>, and a simple DSl to add your own assertions.</p>
+<p>Buster.JS comes <a href="https://busterjs.org/docs/buster-assertions/">packed with assertions</a>, and a simple DSL to add your own assertions.</p>
 
 <pre><code>assert(true);
 assert.same(two, objects);
@@ -138,6 +138,14 @@ assert.match(el, {
 });</code></pre>
 
 <p>Adding your own custom assertions is easy. The DSL is scoped such that you get both an assert and refute.</p>
+
+<pre><code>buster.assertions.add("inRange", function (num, lower, upper) {
+    return num >= lower && num <= upper;
+}, {
+    assertFail: "Expected ${1} to be between ${2} and ${3}",
+    refuteFail: "Expected ${1} not to be between ${2} and ${3}", // Optional
+    expect: "toBeInRange" // Optional
+});</code></pre>
 
 <h2>BDD syntax</h2>
 
