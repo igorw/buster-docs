@@ -1,0 +1,191 @@
+<h1>Buster.JS overview</h1>
+<p>Buster.JS is a JavaScript test framework for node and browsers.</p>
+
+<h2>Installation</h2>
+
+<p>When you've installed <a href="http://nodejs.org/">Node 0.6.3 or later</a>, use <kbd>npm</kbd> to install Buster.JS</p>
+
+<pre>npm install -g buster</pre>
+
+<h2>Test cases</h2>
+
+<pre><code>buster.testCase("My tests", {
+    "test "
+})</code></pre>
+
+<p>Note that you are free to name your test cases whatever you want. They don't have to start with <code>"test ..."</code> or <code>"should ..."</code>.</p>
+
+<h2>The config file</h2>
+
+<p>Buster.JS needs a config file, both for node.js tests and browser tests. Name the config file <kbd>buster.js</kbd> and put it in either <kbd>tests/</kbd> or <kbd>specs/</kbd> in your project.</p>
+
+<pre><code>var config = module.exports;
+
+config["My tests"] = {
+    env: "browser",        // or "node"
+    sources: [
+        "../lib/mylib.js", // Paths are relative to config file
+        "../lib/**/*.js"   // Basic glob patterns supported
+    ],
+    tests: [
+        "*-test.js"
+    ]
+}</code></pre>
+
+<p>Run tests for your config file with:</p>
+
+<pre>buster test
+// Assumes test/buster.js or spec/buster.js
+
+buster test --config anywhere/buster.js
+// Can also specify config file</pre>
+
+<h2>Browser testing</h2>
+
+<p>Buster.JS can automate browsers JsTestDriver style. First, start the server.</p>
+
+<p><%= img "overview/buster-server-start.png", :width => "529", :height => "348" %></p>
+
+<p>Open the browsers you want to run tests in and click the capture button.</p>
+
+<p><%= img "overview/buster-server-capture-firefox.png", :width => "827", :height => "339" %></p>
+
+<p>Buster.JS automatically runs the tests in all the captured browsers.</p>
+
+<p><%= img "overview/buster-test-run-browsers.png", :width => "529", :height => "348" %></p>
+
+<h2>Static HTML based browser testing</h2>
+
+<p>Buster also has a static browser runner that runs tests by opening a web page in a browser. This is similar to QUnit, Mocha, etc.</p>
+
+<p><%= img "overview/buster-static-start.png", :width => "529", :height => "348" %></p>
+
+<p><%= img "overview/buster-static-success.png", :width => "514", :height => "470" %></p>
+
+<h2>Node testing</h2>
+
+<p>Works just like browser tests, but you need to require Buster.JS in your tests.</p>
+
+<pre><code>var buster = require("buster");
+var myLib = require("../lib/my-lib");
+
+buster.testCase("A test case", {
+    "test it": function () {
+        buster.assert(myLib.doIt());
+    }
+})</code></pre>
+
+<p>Specify <code>env: "node"</code> in the config file and you're good to go.</p>
+
+<h2>Assertions</h2>
+
+<p>Buster.JS comes <a href="https://busterjs.org/docs/buster-assertions/">packed with assertions</a>, and a simple DSl to add your own assertions.</p>
+
+<pre><code>buster.assert(true);
+buster.assert.same(two, objects);
+buster.assert.equals(two, objects);
+buster.assert.defined(something);
+buster.assert.exception(function () { ... });
+buster.assert.isNull();
+// .. and many more</code></pre>
+
+<p>Note the lack of <code>notEquals</code>, <code>notDefined</code> etc. Instead, Buster.JS provides a more symmetric API.</p>
+
+<pre><code>// This assertion does not exist!
+buster.assert.notEquals(foo, bar);
+
+// Instead:
+buster.refute.equals(two, objects);
+
+// And so on
+buster.refute(false);
+buster.refute.same(two, objects);
+buster.refute.defined(something);</code></pre>
+
+<p>So instead of changing the function name, replace <code>assert</code> with <code>refute</code>.</p>
+
+<p><code>buster.assert.match</code> is neat. All the assertions below will pass.</p>
+
+<pre><code>// Perform a partial match
+var largeObject = {foo: "bar", baz: {test: "it"}};
+buster.match(largeObject, {foo: "bar"});
+
+// Fancy string matching
+buster.assert.match("Yeah!", { toString: function () { return "yeah"; } });
+
+// Regexp matching
+assert.match("Give me something", /^[a-z\s]$/i);
+
+// Lazy types
+buster.assert.match("123", 123);
+
+// DOM elements
+var el = document.getElementById("myEl");
+
+buster.assert.match(el, {
+    tagName: "h2",
+    className: "item",
+    innerHTML: "Howdy"
+});</code></pre>
+
+<h2>BDD syntax</h2>
+
+<p>Buster.JS is pluggable so you can write your own front-ends. Buster.JS also come with one extra front-end built in, the BDD spec style syntax.</p>
+
+<pre><code>buster.spec.expose(); // Make functions global
+
+var spec = describe("Bowling kata", function () {
+    before(function () {
+        this.game = new BowlingGame();
+
+        this.rollMany = function (rolls, pins) {
+            for (var i = 0; i < rolls; ++i) {
+                this.game.roll(pins);
+            }
+        };
+    });
+
+    should("yield 0 in score for gutter game", function () {
+        this.rollMany(20, 0);
+        buster.assert.equals(0, this.game.score());
+    });
+});</code></pre>
+
+<h2>Reporters</h2>
+
+<p>There are a number of reporters built-in to Buster.JS, and you can also easily build your own reporters.</p>
+
+<p>The default reporter, <kbd>dots</kbd>, which is what Buster.JS will use without <kbd>--reporters</kbd>:</p>
+
+<p><%= img "overview/buster-test-reporter-dots.png", :width => "529", :height => "348" %></p>
+
+<p>Other reporters:</p>
+
+<p><%= img "overview/buster-test-reporter-specification.png", :width => "529", :height => "348" %></p>
+
+<p><%= img "overview/buster-test-reporter-xml.png", :width => "529", :height => "348" %></p>
+
+<p><%= img "overview/buster-test-reporter-quiet.png", :width => "529", :height => "348" %></p>
+
+<p><%= img "overview/buster-test-reporter-tap.png", :width => "529", :height => "348" %></p>
+
+
+<h2>Deferred/pending tests</h2>
+
+<p></p>
+
+<h2>Mocking and stubbing</h2>
+
+<h2>Proxying to real http servers</h2>
+
+<h2>Running a subset of tests</h2>
+<h3>Run individual test cases</h3>
+<h3>Run individual files</h3>
+
+<h2>Asynchronous tests</h2>
+
+<h2>Feature detection</h2>
+
+<h2>Editor integration</h2>
+<h3>TextMate</h3>
+<h3>Emacs</h3>
