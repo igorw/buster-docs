@@ -7,14 +7,6 @@
 
 <pre>npm install -g buster</pre>
 
-<h2>Test cases</h2>
-
-<pre><code>buster.testCase("My tests", {
-    "test "
-})</code></pre>
-
-<p>Note that you are free to name your test cases whatever you want. They don't have to start with <code>"test ..."</code> or <code>"should ..."</code>.</p>
-
 <h2>The config file</h2>
 
 <p>Buster.JS needs a config file, both for node.js tests and browser tests. Name the config file <kbd>buster.js</kbd> and put it in either <kbd>tests/</kbd> or <kbd>specs/</kbd> in your project.</p>
@@ -39,10 +31,25 @@ config["My tests"] = {
 
 buster test --config anywhere/buster.js
 // Can also specify config file</pre>
+<h2>Test cases</h2>
+
+<p>Typically, you have one test case per file. Here's an example, in <kbd>test/my-thing-test.js</kbd>. Since the file name ends with <kbd>-test.js</kbd>, the config file above will load the test.</p>
+
+<pre><code>buster.testCase("My thing", {
+    "test something": function () {
+        buster.assert.equals("foo", "bar");
+    },
+
+    "test other": function () {
+        buster.assert(true);
+    }
+})</code></pre>
+
+<p>Note that you are free to name your test cases whatever you want. They don't have to start with <code>"test ..."</code> or <code>"should ..."</code>.</p>
 
 <h2>Browser testing</h2>
 
-<p>Buster.JS can automate browsers JsTestDriver style. First, start the server.</p>
+<p>Buster.JS can automate browsers, JsTestDriver style. First, start the server.</p>
 
 <p><%= img "overview/buster-server-start.png", :width => "529", :height => "348" %></p>
 
@@ -206,7 +213,75 @@ var spec = describe("Bowling kata", function () {
 
 <h2>Asynchronous tests</h2>
 
+<p>Asynchronous tests are tests that aren't finished running when the test method has finished executing. To tag a test as async, have the test function take one argument, <code>done</code>.</p>
+
+<pre><code>buster.testCase("My thing", {
+    "test not asynchronous": function () {
+        buster.assert(true);
+    },
+
+    "test asynchronous": function (done) {
+        myLibrary.doAjaxRequest("/foo", function (response) {
+            buster.assert.equals(response.statusCode, 200);
+            done();
+        });
+    }
+})</code></pre>
+
+<p>The <code>done</code> argument is a function. Call it to tell Bueter.JS that the asynchronous test has finished running. If you <em>don't</em> call <code>done</code>, the test will eventually time out and fail.</p>
+
+<p><code>setUp</code> and <code>tearDown</code> can also be asynchronous. The procedure is identical to that of tests.</p>
+
+<pre><code>buster.testCase("My thing", {
+    setUp: function (done) {
+        this.httpServer = http.createServer(function (req, res) {
+            res.writeHead(418);
+            res.end();
+        });
+        this.httpServer.listen(17171, function () { done(); });
+        this.myThing = new MyThing();
+        this.myThing.attach(this.httpServer);
+    },
+
+    tearDown: function (done) {
+        this.httpServer.on("close", function () { done(); });
+        this.httpServer.close();
+    },
+
+    // ... tests
+})</code></pre>
+
 <h2>Test case contexts</h2>
+
+<p>A test case can have nested contexts, as deep as you want. Pass an object instead of a function to create a context.</p>
+
+<pre><code>buster.testCase("My thing", {
+    setUp: function () {
+        this.myThing = new MyThing();
+    },
+
+    "test simple test": function () {
+        buster.assert(true);
+    },
+
+    "on steroids": {
+        setUp: function () {
+            this.myThing.onSteroids = true;
+        },
+
+        // ... tests
+
+        "with cowbell": {
+            setUp: function () {
+                this.myThing.cobwell = true;
+            },
+
+            // ... tests
+        }
+    }
+})</code></pre>
+
+<p><code>setUp</code> is called top-down, so when a test in the context <code>"with cowbell"</code> is called, the root <code>setUp</code> is called, then the one in <code>"on steroid"</code>, then lastly the one in <code>"with cowbell"</code>. The <code>this</code> is the same in all contexts.</p>
 
 <h2>Proxying to http servers</h2>
 
@@ -302,6 +377,23 @@ config["My tests"] = {
 
 <h2>Feature detection</h2>
 
+<p>You can tell Buster.JS to not run certain test cases in certain situations. This is useful if you want to run the same test suite for a program that works in IE6, so you want to run most of your tests in IE6, but also has features that will crash when called in IE6.</p>
+
+<pre><code>buster.testCase("My thing", {
+    requiresSupportFor: {
+        "touch events": typeof(document.body.ontouchstart) != "object",
+        "XHR": typeof(XMLHttpRequest) != "undefined"
+    },
+
+    "should receive touch events": function () {
+        // ..
+    },
+
+    // ...
+});</code></pre>
+
+<p>You can also apply the feature detection filter to nested contexts to only filter out a subset of the test case.</p>
+
 <h2>Custom test beds</h2>
 
 <p class="warning">
@@ -332,4 +424,9 @@ config["My tests"] = {
 
 <h2>Editor integration</h2>
 <h3>TextMate</h3>
+<p>Magnar Sveen maintains <a href="https://github.com/magnars/buster.tmbundle">TextMate bundle</a>. It includes snippets, running tests with <kbd>command + R</kbd>, and more.</p>
+
 <h3>Emacs</h3>
+<p>Christian Johansen maintains <a href="https://gitorious.org/buster/buster-mode">buster-mode.el</a>.</p>
+
+<p>Magnar Sveen has written a set of <a href="https://github.com/magnars/buster-snippets.el">yasnippet snippets for Buster.JS</a>.</p>
