@@ -139,13 +139,14 @@ assert.match(el, {
 
 <p>Adding your own custom assertions is easy. The DSL is scoped such that you get both an assert and refute.</p>
 
-<pre><code>buster.assertions.add("inRange", function (num, lower, upper) {
-    return num >= lower && num <= upper;
-}, {
-    assertFail: "Expected ${1} to be between ${2} and ${3}",
-    refuteFail: "Expected ${1} not to be between ${2} and ${3}", // Optional
-    expect: "toBeInRange" // Optional
-});</code></pre>
+<pre><code>buster.assertions.add("rotation", {
+    assert: function (num, lower, upper) {
+        return num >= lower && num <= upper;
+    },
+    assertMessage: "Expected ${1} to be between ${2} and ${3}",
+    refuteMessage: "Expected ${1} not to be between ${2} and ${3}"
+});
+</code></pre>
 
 <h2>BDD syntax</h2>
 
