@@ -1,7 +1,7 @@
         <h1><code>buster.assertions</code></h1>
         <dl>
           <dt>Version</dt>
-          <dd>0.7.0 <span class="date">(2011-09-10)</span></dd>
+          <dd>0.8.0 <span class="date">(2011-11-28)</span></dd>
           <dt>Module</dt>
           <dd><code>require("buster-assertions");</code></dd>
           <dt>In browsers</dt>
@@ -94,7 +94,7 @@ refute.equals(42, 43);</code></pre>
             Examples assume that you have
             aliased <code>buster.assertions.assert</code> as such:
           </p>
-        <pre><code>var assert = buster.assertions.assert;</code></pre>
+          <pre><code>var assert = buster.assertions.assert;</code></pre>
           <h3 id="<%= id('assert') %>" data-title="+assert(actual[, msg])+"><code>assert(actual[, message]);</code></h3>
           <p>
             Fails if <code>actual</code> is falsy
@@ -108,44 +108,6 @@ assert(null, "This will fail");
 assert(null); // Fails
 assert(34);   // Passes
 </code></pre>
-          <h3 id="<%= id('assert-isTrue') %>" data-title="+isTrue(actual[, msg])+"><code>assert.isTrue(actual[, message])</code></h3>
-          <p>
-            Fails if the argument is not boolean <code>true</code>.  The optional
-            message is prepended to the failure message if provided.
-          </p>
-          <pre><code>assert.isTrue({ not: "Falsy" }, "This will fail");
-assert.isTrue(true, "This will pass");
-assert.isTrue("Something"); // Fails
-assert.isTrue(true);        // Passes</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isTrue.msgFail = "${0}Expected ${1} to be true";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The value</dd>
-            </dl>
-          </div>
-          <h3 id="<%= id('assert-isFalse') %>" data-title="+isFalse(actual[, msg])+"><code>assert.isFalse(actual[, message])</code></h3>
-          <p>
-            Fails if the argument is not boolean <code>false</code>. The optional
-            message is prepended to the failure message if provided.
-          </p>
-          <pre><code>assert.isFalse(false, "This will pass");
-              assert.isFalse("", "This will fail");
-              assert.isFalse({});    // Fails
-              assert.isFalse(false); // Passes</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isFalse.msgFail = "${0}Expected ${1} to be false";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The value</dd>
-            </dl>
-          </div>
           <h3 id="<%= id('assert-same') %>" data-title="+same(expected, actual[, msg])+"><code>assert.same(expected, actual[, message])</code></h3>
           <p>
             Fails if <code>actual</code> <strong>is not</strong> the same object
@@ -235,27 +197,6 @@ assert.typeOf(null, "function"); // Fails</code></pre>
               <dd><code>typeof object</code></dd>
             </dl>
           </div>
-          <h3 data-title="+isString(object[, msg])+" id="<%= id('assert-isString') %>"><code>assert.isString(object[, message])</code></h3>
-          <p>
-            Fails if <code>object</code> is not a string.  The optional message is
-            prepended to the failure message if provided.
-          </p>
-          <pre><code>assert.isString("Hey there", "This will pass");
-assert.isString({}, "This will fail");
-assert.isString("function");     // Passes
-assert.isString(function () {}); // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isString.msgFail = "${0}Expected typeof ${1} (${2}) to be string";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-              <dt><code>${2}</code></dt>
-              <dd><code>typeof object</code></dd>
-            </dl>
-          </div>
           <h3 data-title="+isObject(object[, msg])+" id="<%= id('assert-isObject') %>"><code>assert.isObject(object[, message])</code></h3>
           <p>
             Fails if <code>object</code> is not an object or if it
@@ -269,50 +210,6 @@ assert.isObject(function () {}); // Fails</code></pre>
           <div class="msg">
             <h4>Message</h4>
             <p><code>assert.isObject.msgFail = "${0}Expected typeof ${1} (${2}) to be object";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-              <dt><code>${2}</code></dt>
-              <dd><code>typeof object</code></dd>
-            </dl>
-          </div>
-          <h3 data-title="+isFunction(object[, msg])+"
-              id="<%= id('assert-isFunction') %>"><code>assert.isFunction(object[, message])</code></h3>
-          <p>
-            Fails if <code>object</code> is not a function.  The optional message
-            is prepended to the failure message if provided.
-          </p>
-          <pre><code>assert.isFunction(function () {}, "This will pass");
-assert.isFunction(42, "This will fail");
-assert.isFunction(function () {}); // Passes
-assert.isFunction([1, 2, 3]);      // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isFunction.msgFail = "${0}Expected typeof ${1} (${2}) to be function";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-              <dt><code>${2}</code></dt>
-              <dd><code>typeof object</code></dd>
-            </dl>
-          </div>
-          <h3 data-title="+isBoolean(object[, msg])+"
-              id="<%= id('assert-isBoolean') %>"><code>assert.isBoolean(object[, message])</code></h3>
-          <p>
-            Fails if <code>object</code> is not a boolean.  The optional message
-            is prepended to the failure message if provided.
-          </p>
-          <pre><code>assert.isBoolean(false, "This will pass");
-assert.isBoolean(42, "This will fail");
-assert.isBoolean(true);      // Passes
-assert.isBoolean([1, 2, 3]); // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isBoolean.msgFail = "${0}Expected typeof ${1} (${2}) to be boolean";</code></p>
             <dl>
               <dt><code>${0}</code></dt>
               <dd>The custom message, if any</dd>
@@ -379,69 +276,6 @@ assert.isNull({});   // Fails</code></pre>
           <div class="msg">
             <h4>Message</h4>
             <p><code>assert.isNull.msgFail = "${0}Expected ${1} to be null";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-            </dl>
-          </div>
-          <h3 data-title="+isNaN(object[, msg])+" id="<%= id('assert-isNaN') %>"><code>assert.isNaN(object[, message])</code></h3>
-          <p>
-            Fails if <code>object</code> is not <code>NaN</code>.
-            The optional message is prepended to the failure message if provided.
-          </p>
-          <pre><code>assert.isNaN(NaN, "This will pass");
-assert.isNaN(24, "This will fail");
-assert.isNaN(NaN);    // Passes
-assert.isNaN([1, 3]); // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isNaN.msgFail = "${0}Expected ${1} to be NaN";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-            </dl>
-          </div>
-          <h3 data-title="+isArray(object[, msg])+" id="<%= id('assert-isArray') %>"><code>assert.isArray(object[, message])</code></h3>
-          <p>
-            Fails if <code>object</code> is not a true array.  The optional
-            message is prepended to the failure message if provided.
-          </p>
-          <pre><code>assert.isArray([1, ""], "This will pass");
-assert.isArray(42, "This will fail");
-assert.isArray([]);  // Passes
-assert.isArray({});  // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isArray.msgFail = "${0}Expected ${1} to be array";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-            </dl>
-          </div>
-
-          <h3 data-title="+isArrayLike(actual[, msg])+"
-              id="<%= id('assert-isArrayLike') %>"><code>assert.isArrayLike(actual[, message])</code></h3>
-          <p>
-            Fails if <code>actual</code> is not array-like. Array-like objects
-            include true arrays,
-            <code>arguments</code> objects and objects that have both a
-            numeric <code>length</code> property and a
-            <code>slice</code> method.  The optional message is prepended to the
-            failure message if provided.
-          </p>
-          <pre><code>assert.isArrayLike({ length: 1, slice: function () {}, "0": 6 }, "This will pass");
-assert.isArrayLike({ length: 1 }, "This will fail"); // Misses slice method
-assert.isArrayLike([1, 2, 3]); // Passes
-assert.isArrayLike(42);        // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.isArrayLike.msgFail = "${0}Expected ${1} to be array like";</code></p>
             <dl>
               <dt><code>${0}</code></dt>
               <dd>The custom message, if any</dd>
@@ -632,31 +466,6 @@ assert.exception(function () {}, "TypeError"); // Fails</code></pre>
               <dd>The exception message</dd>
             </dl>
           </div>
-          <h3 data-title="+inDelta(actual, expected, delta[, msg])+"
-              id="<%= id('assert-isDelta') %>"><code>assert.inDelta(actual, expected, delta[, message])</code></h3>
-          <p>
-            Compares numbers with a delta. Fails if the <code>actual</code> number
-            differs from the
-            <code>expected</code> number by more than +/- <code>delta</code>.
-          </p>
-          <pre><code>assert.inDelta(3, 2.9, 0.1, "This will pass");
-assert.inDelta(3, 2.9, 0.01, "This will fail");
-assert.inDelta(1, 1, 0); // Passes
-assert.inDelta(1, 1.2, 0.1); // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.inDelta.msgFail = "${0}Expected ${1} to be equal to ${2} +/- ${3}";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual number</dd>
-              <dt><code>${2}</code></dt>
-              <dd>The expected number</dd>
-              <dt><code>${3}</code></dt>
-              <dd>The delta</dd>
-            </dl>
-          </div>
         </div>
         <div class="section">
           <h2 id="<%= id('dom-assertions') %>">Browser/DOM-specific assertions</h2>
@@ -845,69 +654,6 @@ refute.isNull(null); // Fails</code></pre>
               <dd>The custom message, if any</dd>
             </dl>
           </div>
-          <h3 data-title="+isNaN(object[, msg])+" id="<%= id('refute-isNaN') %>"><code>refute.isNaN(object[, message])</code></h3>
-          <p>
-            Fails if <code>object</code> is <code>NaN</code>.  The optional
-            message is prepended to the failure message if provided.
-          </p>
-          <pre><code>refute.isNaN(24, "This will pass");
-refute.isNaN(NaN, "This will fail");
-refute.isNaN({});  // Passes
-refute.isNaN(NaN); // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>refute.isNaN.msgFail = "${0}Expected ${1} not to be NaN";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-            </dl>
-          </div>
-          <h3 data-title="+isArray(actual[, msg])+"
-              id="<%= id('refute-isArray') %>"><code>refute.isArray(actual[, message])</code></h3>
-          <p>
-            Fails if <code>actual</code> is a true array.  The optional message is
-            prepended to the failure message if provided.
-          </p>
-          <pre><code>refute.isArray(42, "This will pass");
-refute.isArray([1, ""], "This will fail");
-refute.isArray({});  // Passes
-refute.isArray([]);  // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>refute.isArray.msgFail = "${0}Expected ${1} not to be array";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-            </dl>
-          </div>
-          <h3 data-title="+isArrayLike(actual[, msg])+"
-              id="<%= id('refute-isArrayLike') %>"><code>refute.isArrayLike(actual[, message])</code></h3>
-          <p>
-            Fails if <code>actual</code> is array-like. Array-like objects include
-            true arrays,
-            <code>arguments</code> objects and objects that have both a
-            numeric <code>length</code> property and a
-            <code>slice</code> method.  The optional message is prepended to the
-            failure message if provided.
-          </p>
-          <pre><code>refute.isArrayLike({ length: 1 }, "This will pass"); // Misses slice method
-refute.isArrayLike({ length: 1, slice: function () {}, "0": 6 }, "This will fail");
-refute.isArrayLike(42);        // Passes
-refute.isArrayLike([1, 2, 3]); // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>refute.isArrayLike.msgFail = "${0}Expected ${1} not to be array like";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual object</dd>
-            </dl>
-          </div>
           <h3 data-title="+match(actual, pattern[, msg])+"
               id="<%= id('refute-match') %>"><code>refute.match(actual, pattern[, message])</code></h3>
           <p>
@@ -969,31 +715,6 @@ refute.exception(function () {
               <dd>The type of exception thrown (if any)</dd>
               <dt><code>${2}</code></dt>
               <dd>The exception message</dd>
-            </dl>
-          </div>
-          <h3 data-title="+inDelta(actual, expected, delta[, msg])+"
-              id="<%= id('refute-inDelta') %>"><code>refute.inDelta(actual, expected, delta[, message])</code></h3>
-          <p>
-            Compares numbers with a delta. Fails if the <code>actual</code> number
-            does not differ from the <code>expected</code> number by more
-            than +/- <code>delta</code>.
-          </p>
-          <pre><code>refute.inDelta(3, 2.5, 0.1, "This will pass");
-refute.inDelta(3, 3, 0.01, "This will fail");
-refute.inDelta(1, 0.9, 0); // Passes
-refute.inDelta(1, 1.2, 0.2); // Fails</code></pre>
-          <div class="msg">
-            <h4>Message</h4>
-            <p><code>assert.inDelta.msgFail = "${0}Expected ${1} not to be equal to ${2} +/- ${3}";</code></p>
-            <dl>
-              <dt><code>${0}</code></dt>
-              <dd>The custom message, if any</dd>
-              <dt><code>${1}</code></dt>
-              <dd>The actual number</dd>
-              <dt><code>${2}</code></dt>
-              <dd>The expected number</dd>
-              <dt><code>${3}</code></dt>
-              <dd>The delta</dd>
             </dl>
           </div>
         </div>
