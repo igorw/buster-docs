@@ -17,12 +17,14 @@ config["My tests"] = {
     env: "browser",        // or "node"
     sources: [
         "../lib/mylib.js", // Paths are relative to config file
-        "../lib/**/*.js"   // Basic glob patterns supported
+        "../lib/**/*.js"   // Glob patterns supported
     ],
     tests: [
         "*-test.js"
     ]
-}</code></pre>
+}
+
+// Add more configuration groups as needed</code></pre>
 
 <p>Run tests for your config file with:</p>
 
@@ -38,11 +40,11 @@ buster test --config anywhere/buster.js
 <p>Typically, you have one test case per file. Here's an example, in <kbd>test/my-thing-test.js</kbd>. Since the file name ends with <kbd>-test.js</kbd>, the config file above will load the test.</p>
 
 <pre><code>buster.testCase("My thing", {
-    "test something": function () {
+    "has the foo and bar": function () {
         assert.equals("foo", "bar");
     },
 
-    "test other": function () {
+    "states the obvious": function () {
         assert(true);
     }
 })</code></pre>
@@ -84,11 +86,18 @@ buster.testCase("A test case", {
     }
 })</code></pre>
 
-<p>Specify <code>env: "node"</code> in the config file and you're good to go.</p>
+<p>
+  You can now run the file simply by doing <code>`node my-test.js`</code>, or
+  you can create a configuration file with <code>env: "node"</code> that will
+  run all tests in your project.
+</p>
 
 <h2>Assertions</h2>
 
-<p>Buster.JS comes <a href="https://busterjs.org/docs/buster-assertions/">packed with assertions</a>, and a simple DSL to add your own assertions.</p>
+<p>
+  Buster.JS comes <a href="https://busterjs.org/docs/buster-assertions/">packed
+  with assertions</a>, and a simple DSL to add app-specific custom assertions.
+</p>
 
 <pre><code>assert(true);
 assert.same(two, objects);
@@ -137,24 +146,37 @@ assert.match(el, {
     innerHTML: "Howdy"
 });</code></pre>
 
-<p>Adding your own custom assertions is easy. The DSL is scoped such that you get both an assert and refute.</p>
+<p>
+  Adding your own custom assertions is easy. The DSL produces both an assert
+  and refute. If you provide an <code>expectation</code> name, an expectation is
+  created, too:
+</p>
 
-<pre><code>buster.assertions.add("rotation", {
+<pre><code>buster.assertions.add("inRange", {
     assert: function (num, lower, upper) {
         return num >= lower && num <= upper;
     },
     assertMessage: "Expected ${1} to be between ${2} and ${3}",
-    refuteMessage: "Expected ${1} not to be between ${2} and ${3}"
+    refuteMessage: "Expected ${1} not to be between ${2} and ${3}",
+    expectation: "toBeInRange"
 });
-</code></pre>
+
+// Produces:
+assert.inRange(num, 0, 10);
+refute.inRange(num, 0, 10);
+expect(num).toBeInRange(0, 10);</code></pre>
 
 <h2>BDD syntax</h2>
 
-<p>Buster.JS is pluggable so you can write your own front-ends. Buster.JS also come with one extra front-end built in, the BDD spec style syntax.</p>
+<p>
+  Buster.JS is pluggable so you can write your own front-ends. Buster.JS also
+  ships with two built-in front-ends; the xUnit style test cases we saw
+  previously, and BDD style specs/examples.
+</p>
 
-<pre><code>buster.spec.expose(); // Make functions global
+<pre><code>buster.spec.expose(); // Make spec functions global
 
-var spec = describe("Bowling kata", function () {
+describe("Bowling kata", function () {
     before(function () {
         this.game = new BowlingGame();
 
@@ -165,17 +187,20 @@ var spec = describe("Bowling kata", function () {
         };
     });
 
-    should("yield 0 in score for gutter game", function () {
+    it("yields score 0 for gutter game", function () {
         this.rollMany(20, 0);
-        assert.equals(0, this.game.score());
+        expect(this.game.score()).toEqual(0);
     });
 });</code></pre>
 
 <h2>Reporters</h2>
 
-<p>There are a number of reporters built-in to Buster.JS, and you can also easily build your own reporters.</p>
+<p>
+  There are a number of reporters built into Buster.JS. There is also a simple
+  API for building your own reporters.
+</p>
 
-<p>The default reporter, <kbd>dots</kbd>, which is what Buster.JS will use without <kbd>--reporters</kbd>:</p>
+<p>The default reporter is <kbd>dots</kbd>:</p>
 
 <p><%= img "overview/buster-test-reporter-dots.png", :width => "633", :height => "382" %></p>
 
@@ -189,6 +214,10 @@ var spec = describe("Bowling kata", function () {
 
 <p><%= img "overview/buster-test-reporter-tap.png", :width => "633", :height => "382" %></p>
 
+<p>
+  All human-consumable reporters (i.e. not xml and tap output) can use no
+  colors, bright colors or dim colors.
+</p>
 
 <h2>Deferred/pending tests</h2>
 
@@ -201,22 +230,30 @@ var spec = describe("Bowling kata", function () {
 <p>To defer a test, add <kbd>//</kbd> to the start of the test name.</p>
 
 <pre><code>buster.testCase("My tests", {
-    "// test should bla bla bla test case": function () {
+    "// bla bla bla test case": function () {
         // This function will not be called
     },
 
-    "test this one is not deferred and will run": function () {
+    "this one is not deferred and will run": function () {
         assert(true);
-    }
+    },
+
+    "// exhibits feature A": "A simple place-holder, we need to detail this test"
 })</code></pre>
 
 <h2>Mocking and stubbing</h2>
 
-<p><a href="http://sinonjs.org">Sinon.JS</a> is bundled with Buster.JS test cases. Every test in a test case has a sandbox associated with it, so its easy to mock and stub with no side effects beyond the scope of the test. <code>assert</code> also comes with a lot of Sinon.JS aware assertions.</p>
+<p>
+  Buster.JS ships with <a href="http://sinonjs.org">Sinon.JS</a>. Every test in
+  a test case has a sandbox associated with it, making it easy to mock and stub
+  without worrying about side-effects beyond the scope of the
+  test. <code>assert</code> also comes with lots of Sinon.JS-aware assertions.
+</p>
 
 <pre><code>buster.testCase("My tests", {
-    "should demonstrate stubbing": function () {
-        this.stub(myLib.thingie, "aMethod");
+    "demonstrates stubbing": function () {
+        this.stub(myLib.thingie, "aMethod"); // Will be automatically reverted
+                                             // after the test completes
         doSomething();
         assert.calledOnce(myLib.thingie.aMethod);
     }
@@ -241,7 +278,13 @@ var spec = describe("Bowling kata", function () {
     }
 })</code></pre>
 
-<p>The <code>done</code> argument is a function. Call it to tell Bueter.JS that the asynchronous test has finished running. If you <em>don't</em> call <code>done</code>, the test will eventually time out and fail.</p>
+<p>
+  The <code>done</code> argument is a function. Call it to tell Bueter.JS that
+  the asynchronous test has finished running. If you <em>don't</em>
+  call <code>done</code>, the test will eventually time out and fail. You can
+  also have the test function return a <em>thenable</em> promise to make it
+  asynchronous.
+</p>
 
 <p><code>setUp</code> and <code>tearDown</code> can also be asynchronous. The procedure is identical to that of tests.</p>
 
@@ -266,14 +309,18 @@ var spec = describe("Bowling kata", function () {
 
 <h2>Test case contexts</h2>
 
-<p>A test case can have nested contexts, as deep as you want. Pass an object instead of a function to create a context.</p>
+<p>
+  A test case can have nested contexts, as deep as you want. Pass an object
+  instead of a function to create a context. Nested contexts can have their own
+  setUp and tearDown methods.
+</p>
 
 <pre><code>buster.testCase("My thing", {
     setUp: function () {
         this.myThing = new MyThing();
     },
 
-    "test simple test": function () {
+    "simple test": function () {
         assert(true);
     },
 
@@ -294,7 +341,7 @@ var spec = describe("Bowling kata", function () {
     }
 })</code></pre>
 
-<p><code>setUp</code> is called top-down, so when a test in the context <code>"with cowbell"</code> is called, the root <code>setUp</code> is called, then the one in <code>"on steroid"</code>, then lastly the one in <code>"with cowbell"</code>. The <code>this</code> is the same in all contexts.</p>
+<p><code>setUp</code> is called top-down, so when a test in the context <code>"with cowbell"</code> is called, the root <code>setUp</code> is called, then the one in <code>"on steroids"</code>, then lastly the one in <code>"with cowbell"</code>. The <code>this</code> is the same in all contexts.</p>
 
 <h2>Proxying to http servers</h2>
 
@@ -334,7 +381,9 @@ config["My tests"] = {
 
 <p>The operand is treated as a JavaScript regular expression so you can do partial matching and regex stuff in it as well.</p>
 
-<pre>buster test "* delete user"</pre>
+<pre>buster test "delete user"</pre>
+
+<p>If you don't quote the operand, it will be treated as a series of OR'd filters</p>
 
 <p>To run a single file, do this:</p>
 
@@ -386,11 +435,21 @@ config["My tests"] = {
     }
 })</code></pre>
 
-<p>Sinon.JS will mock out XMLHTTPRequest at the lowest possible level, so your HTTP libraries doesn't need any modification to be testable in this way. Even if you use jQuery or another 3rd party library for your HTTP.</p>
+<p>
+  Sinon.JS mocks out the underlying <code>XMLHttpRequest</code>
+  (or <code>ActiveXObject</code>) object, so your HTTP libraries don't need any
+  modification to be testable in this way - even when using jQuery or another
+  3rd party library for your HTTP connections.
+</p>
 
 <h2>Feature detection</h2>
 
-<p>You can tell Buster.JS to not run certain test cases in certain situations. This is useful if you want to run the same test suite for a program that works in IE6, so you want to run most of your tests in IE6, but also has features that will crash when called in IE6.</p>
+<p>
+  You can tell Buster.JS to not run certain test cases in certain
+  situations. This is useful if you want to run the same test suite for a
+  program that works in IE6, so you want to run most of your tests in IE6, but
+  also has features that will crash when called in IE6.
+</p>
 
 <pre><code>buster.testCase("My thing", {
     requiresSupportFor: {
@@ -410,10 +469,16 @@ config["My tests"] = {
 <h2>Custom test beds</h2>
 
 <p class="warning">
-  Note: this feature has not yet landed in the beta. Currently it can sort of be achieved by adding <code>resources: [{path: "/", content: "html here"}]</code> to the config file.
+  Note: this feature has not yet landed in the beta. Currently it can sort of be
+  achieved by adding <code>resources: [{path: "/", content: "html here"}]</code>
+  to the config file.
 </p>
 
-<p>For browser tests, you can specify the HTML document the tests will run in. Buster.JS defaults to a plain HTML5 document. But you might want to run the tests in a HTML4 strict environment, and what not.</p>
+<p>
+  For browser tests, you can specify the HTML document the tests will run
+  in. Buster.JS defaults to a plain HTML5 document. But you might want to run
+  the tests in a HTML4 strict environment, and what not.
+</p>
 
 <pre><code>var config = module.exports;
 
@@ -461,7 +526,15 @@ config["My tests"] = {
 
 <h2>Global variables</h2>
 
-<p>By default, Buster.JS exposes three global variables: <code>buster</code>, <code>assert</code> and <code>refute</code>. The two latter are also available as properties on the <code>buster</code> object (<code>buster.assert</code>, <code>buster.refute</code>). You can tell Buster.JS to only expose the <code>buster</code> global variable.</p>
+<p>
+  By default, Buster.JS exposes four global variables: <code>buster</code>,
+  <code>expect</code>, <code>assert</code> and <code>refute</code>. The two
+  latter are also available as properties on the <code>buster</code> object
+  (<code>buster.assert</code>, <code>buster.refute</code>). If you're a purist
+  like us, you'll want to disable these additional globals and only have it
+  expose the <code>buster</code> global variable (in browsers, on Node you'll
+  have to <code>require</code> the things you want to use).
+</p>
 
 <p>TODO: explain how this is done.</p>
 
