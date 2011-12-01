@@ -1,17 +1,17 @@
-<h1><code>buster.server</code></h1>
+<h1><code>buster.captureServer</code></h1>
 <dl>
   <dt>Version</dt>
   <dd>0.2 <span class="date">(2011-10-04)</span></dd>
   <dt>Module</dt>
-  <dd><code>require("buster-server");</code></dd>
+  <dd><code>require("buster-capture-server");</code></dd>
 </dl>
 
-<p>Loads HTML documents (sessions) into browsers (captured clients) via a HTTP API and/or a JavaScript API. Internally in buster, we create one session per test run. There are a number of uses for buster-server other than running tests, though. One example is <a href="http://github.com/augustl/slidebuster">Slidebuster</a>, where a session is a presentation, and the generic messaging in buster-server is used to synchronize state across the captured browsers.</p>
+<p>Loads HTML documents (sessions) into browsers (captured clients) via a HTTP API and/or a JavaScript API. Internally in buster, we create one session per test run. There are a number of uses for buster-server other than running tests, though. One example is <a href="http://github.com/augustl/slidebuster">Slidebuster</a>, where a session is a presentation, and the generic messaging in buster-capture-server is used to synchronize state across the captured browsers.</p>
 
 <div class="section">
   <h2>Creating a server</h2>
 
-  <h3 id="<%= id "create" %>"><code>var server = busterServer.create(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
+  <h3 id="<%= id "create" %>"><code>var server = bCaptureServer.create(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
   <p>Creates a new server instance.</p>
   <p>Normally, node HTTP servers will emit the <code>"request"</code> event to all listeners on all requests. This is <strong>not</strong> the case with buster-server. buster-server injects itself into the HTTP server so that the <code>"request"</code> handlers only run for requests that buster-server doesn't handle. Other than that, buster-server leaves the HTTP server untouched.</p>
 </div>
