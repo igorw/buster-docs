@@ -1,0 +1,1 @@
+* "Equivalent" -> bytt med bokser ved siden av hverandre med headinger (http://localhost:9292/buster-event-emitter/#bind)
