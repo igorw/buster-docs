@@ -8,7 +8,7 @@
   <dd>N/A</dd>
 </dl>
 <p>
-  Configures a session to run in <%=m "buster-server",
+  Configures a session to run in <%=m "buster-capture-server",
   "<code>buster.server</code>" %> with the help of <%=m "buster-client/client",
   "<code>buster.client</code>" %>. The session configuration contains resources
   and various backends that should be available for a given task.
@@ -47,7 +47,7 @@ client.createSession(config);</code></pre>
   <h3 id="<%= id('addResource') %>" data-title="+addResource(path, resource)+"><code>addResource(path, <%= anchor("resource", "resource") %>);</code></h3>
   <p>
     Expose a resource at the specified path. The path will possibly be prefixed
-    with the server's mount point, see <%=m "server" %>. 
+    with the server's mount point, see <%=m "capture-server" %>. 
   </p>
   <h4>Adding a JavaScript resource</h4>
   <pre><code>var buster = require("buster-client");
@@ -147,7 +147,7 @@ client.createSession(config, function (configuration) {
   <h3 id="resource"><code>resource</code></h3>
   <p>
     A general-purpose resource that should be made available at the
-    <%=m "server", "server" %>. The resource can be either a "file" — a
+    <%=m "capture-server", "server" %>. The resource can be either a "file" — a
     string located at a certain URL, or a proxy. Binary resources are currently
     not supported.
   </p>
@@ -191,7 +191,7 @@ client.createSession(config, function (configuration) {
     <dd>
       Custom headers for the resource. The server uses MIME type heuristics to
       provide a reasonable <code>Content-Type</code> header as well
-      as <code>Content-Length</code> and more (see <%=m "server" %>). You can
+      as <code>Content-Length</code> and more (see <%=m "capture-server" %>). You can
       use this object to either override default headers or provide custom
       ones.
     </dd>
