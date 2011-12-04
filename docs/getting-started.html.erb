@@ -54,6 +54,34 @@ config["My tests"] = {
 
 <p>All the paths are relative to the config file itself.</p>
 
+<h2>Write tests</h2>
+
+<p>Given the config file above, all files named <em>something</em>-test.js in the same folder as the config file itself will be loaded. You can of course change the glob pattern to better suit your needs. <code>"**/*-test.js"</code> would for example recursively load all <em>something</em>-test.js in the same folder the config file is in, and all its sub folders.</p>
+
+<p>A test case looks like this:</p>
+
+<pre><code>// Browser tests
+
+buster.testCase("A test case", {
+    "test it": function () {
+        assert(true);
+    }
+})</code></pre>
+
+<p>If your test is a Node test, you also need to require Buster.JS.</p>
+
+<pre><code>// Node tests
+var buster = require("buster");
+var myLib = require("../lib/my-lib");
+
+buster.testCase("A test case", {
+    "test it": function () {
+        assert(true);
+    }
+})</code></pre>
+
+<p>See the full <%= m "test/test-case", "buster.testCase" %> docs and <%= m "assertions" %> docs for details.</p>
+
 <h2>Run tests</h2>
 
 <p>When you have a config file, you're ready to run tests.</p>
@@ -70,12 +98,35 @@ config["My tests"] = {
 
 <p><kbd>buster server</kbd></p>
 
+<p><%= img "overview/buster-server-start.png", :width => "633", :height => "382" %></p>
+
+<p>Capture some browsers to run the tests in by visiting the URL. Click the grey capture button to actually perform the capture.</p>
+
+<p><%= img "overview/buster-server-capture-firefox.png", :width => "827", :height => "339" %></p>
+
 <p>Then you're ready to run the tests with:</p>
 
 <p><kbd>buster test</kbd></p>
+
+<p><%= img "overview/buster-test-run-browsers.png", :width => "633", :height => "382" %></p>
 
 <h3>Hybrid tests</h3>
 
 <p>If your project has both Node and browser tests, and your config file specifies multiple groups for the different environments, running <kbd>buster test</kbd> will automatically run all the groups, both Node and browser. This requires that you already have a <kbd>buster server</kbd> up and running.</p>
 
 <p>If you only want to run tests for one environment, use <kbd>buster test --env browser</kbd> or <kbd>buster test --env node</kbd>.</p>
+
+<p>You have to manually make sure your test cases and source files are able to run in both browsers and Node. Here's an example:</p>
+
+<pre><code>(function(){
+    if (typeof require != "undefined") {
+        var buster = require("buster");
+        var myLib = require("../lib/my-lib");
+    }
+}());
+
+buster.testCase("A test case", {
+    "test it": function () {
+        assert(true);
+    }
+})</code></pre>
