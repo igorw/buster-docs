@@ -1,0 +1,132 @@
+Getting Started
+
+<p>This guide walks you through installation and very basic setup of tests in a project.</p>
+
+<h2>Installing</h2>
+
+<p>To install Buster.JS, you need  to install Node, and run <kbd>npm install -g buster</kbd>. Node 0.6.3 or later comes with NPM preinstalled.</p>
+
+<h3>OS X</h3>
+
+<ol>
+  <li>Get the latest Node installer from <a href="http://nodejs.org/">nodejs.org</a>. You need Node 0.6.3 or newer.</li>
+  <li>Run <kbd>npm install -g buster</kbd></li>
+</ol>
+
+<h3>Linux</h3>
+
+<p>Install Node 0.6.3 or later with your favorite package manager. If you don't have one, follow <a href="https://github.com/joyent/node/wiki/Installation">these simple build instructions.</a></p>
+
+<p>When you have Node installed, install Buster.JS.</p>
+
+<ol>
+  <li><kbd>npm install -g buster</kbd></li>
+</ol>
+
+<h3>Windows</h3>
+
+<p>Unfortunately Buster.JS doesn't work on Windows at this time.</p>
+
+<p>This is only because of a trivial detail. A dependency, the <a href="http://search.npmjs.org/#/glob">glob</a> module, doesn't work on Windows. We aim to replace the glob module ASAP, so we can support Windows.</p>
+
+<h2>Create config file</h2>
+
+<p>Add a config file to your project. Call it <tt>test/buster.js</tt> or <tt>spec/buster.js</tt>, so you don't have to specify <kbd>--config</kbd> every time you run tests.</p>
+
+<pre><code>var config = module.exports;
+
+config["My tests"] = {
+    env: "browser",        // or "node"
+    sources: [
+        "../lib/mylib.js", // Paths are relative to config file
+        "../lib/**/*.js"   // Glob patterns supported
+    ],
+    tests: [
+        "*-test.js"
+    ]
+}
+
+// Add more configuration groups as needed</code></pre>
+
+<p>For browser tests, list all your source files in <code>"sources"</code> and test files in <code>"tests"</code>. For Node tests, you don't need to specify <code>"sources"</code> as you typically <code>require</code> your source files directly in the test files.</p>
+
+<p>Read the full <%= m "configuration" %> documentation for details.</p>
+
+<p>All the paths are relative to the config file itself.</p>
+
+<h2>Write tests</h2>
+
+<p>Given the config file above, all files named <em>something</em>-test.js in the same folder as the config file itself will be loaded. You can of course change the glob pattern to better suit your needs. <code>"**/*-test.js"</code> would for example recursively load all <em>something</em>-test.js in the same folder the config file is in, and all its sub folders.</p>
+
+<p>A test case looks like this:</p>
+
+<pre><code>// Browser tests
+
+buster.testCase("A test case", {
+    "test it": function () {
+        assert(true);
+    }
+})</code></pre>
+
+<p>If your test is a Node test, you also need to require Buster.JS.</p>
+
+<pre><code>// Node tests
+var buster = require("buster");
+var myLib = require("../lib/my-lib");
+
+buster.testCase("A test case", {
+    "test it": function () {
+        assert(true);
+    }
+})</code></pre>
+
+<p>See the full <%= m "test/test-case", "buster.testCase" %> docs and <%= m "assertions" %> docs for details.</p>
+
+<h2>Run tests</h2>
+
+<p>When you have a config file, you're ready to run tests.</p>
+
+<h3>Node tests</h3>
+
+<p>For Node tests, you don't need any additional setup. Open a terminal, go to your project, and type in:</p>
+
+<p><kbd>buster test</kbd></p>
+
+<h3>Browser tests</h3>
+
+<p>First, start a server. Open a terminal and type in:</p>
+
+<p><kbd>buster server</kbd></p>
+
+<p><%= img "overview/buster-server-start.png", :width => "633", :height => "382" %></p>
+
+<p>Capture some browsers to run the tests in by visiting the URL. Click the grey capture button to actually perform the capture.</p>
+
+<p><%= img "overview/buster-server-capture-firefox.png", :width => "827", :height => "339" %></p>
+
+<p>Then you're ready to run the tests with:</p>
+
+<p><kbd>buster test</kbd></p>
+
+<p><%= img "overview/buster-test-run-browsers.png", :width => "633", :height => "382" %></p>
+
+<h3>Hybrid tests</h3>
+
+<p>If your project has both Node and browser tests, and your config file specifies multiple groups for the different environments, running <kbd>buster test</kbd> will automatically run all the groups, both Node and browser. This requires that you already have a <kbd>buster server</kbd> up and running.</p>
+
+<p>If you only want to run tests for one environment, use <kbd>buster test --env browser</kbd> or <kbd>buster test --env node</kbd>.</p>
+
+<p>You have to manually make sure your test cases and source files are able to run in both browsers and Node. Here's an example:</p>
+
+<pre><code>(function(){
+    if (typeof require != "undefined") {
+        var buster = require("buster");
+        var myLib = require("../lib/my-lib");
+    }
+}());
+
+buster.testCase("A test case", {
+    "test it": function () {
+        assert(true);
+    }
+})</code></pre>
