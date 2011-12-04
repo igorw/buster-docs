@@ -1,0 +1,91 @@
+Getting Started
+
+<p>This guide walks you through installation and very basic setup of tests in a project.</p>
+
+<h2>Installing</h2>
+
+<p>To install Buster.JS, you need  to install Node, and run <kbd>npm install -g buster</kbd>. Node 0.6.3 or later comes with NPM preinstalled.</p>
+
+<h3>OS X</h3>
+
+<ol>
+  <li>Get the latest Node installer from <a href="http://nodejs.org/">nodejs.org</a>. You need Node 0.6.3 or newer.</li>
+  <li>Run <kbd>npm install -g buster</kbd></li>
+</ol>
+
+<h3>Linux</h3>
+
+<p>When you have Node installed, install Buster.JS.</p>
+
+<ol>
+  <li><kbd>npm install -g buster</kbd></li>
+</ol>
+
+<p>If there's no package for Node 0.6.3 or later on your Linux system, it's easy to build Node yourself.</p>
+
+<ol>
+  <li>Get the latest Node .tar.gz from <a href="http://nodejs.org/">nodejs.org</a>.</li>
+  <li><kbd>tar xvfz path/to/node-v0.6.x.tar.gz</li>
+  <li><kbd>cd path/to/node-v0.6.x</kbd></li>
+  <li><kbd>./configure --prefix=$HOME/local/node</kbd></li>
+  <li><kbd>make</kbd></li>
+  <li><kbd>make install</kbd></li>
+  <li>Add to your .zshrc, .bash_profile, etc: <tt>export PATH=$HOME/local/node/bin:$PATH</tt></li>
+</ol>
+
+<h3>Windows</h3>
+
+<p>Unfortunately Buster.JS doesn't work on Windows at this time.</p>
+
+<p>This is only because of a trivial detail. A dependency, the <a href="http://search.npmjs.org/#/glob">glob</a> module, doesn't work on Windows. We aim to replace the glob module ASAP, so we can support Windows.</p>
+
+<h2>Create config file</h2>
+
+<p>Add a config file to your project. Call it <tt>test/buster.js</tt> or <tt>spec/buster.js</tt>, so you don't have to specify <kbd>--config</kbd> every time you run tests.</p>
+
+<pre><code>var config = module.exports;
+
+config["My tests"] = {
+    env: "browser",        // or "node"
+    sources: [
+        "../lib/mylib.js", // Paths are relative to config file
+        "../lib/**/*.js"   // Glob patterns supported
+    ],
+    tests: [
+        "*-test.js"
+    ]
+}
+
+// Add more configuration groups as needed</code></pre>
+
+<p>For browser tests, list all your source files in <code>"sources"</code> and test files in <code>"tests"</code>. For Node tests, you don't need to specify <code>"sources"</code> as you typically <code>require</code> your source files directly in the test files.</p>
+
+<p>Read the full <%= m "configuration" %> documentation for details.</p>
+
+<p>All the paths are relative to the config file itself.</p>
+
+<h2>Run tests</h2>
+
+<p>When you have a config file, you're ready to run tests.</p>
+
+<h3>Node tests</h3>
+
+<p>For Node tests, you don't need any additional setup. Open a terminal, go to your project, and type in:</p>
+
+<p><kbd>buster test</kbd></p>
+
+<h3>Browser tests</h3>
+
+<p>First, start a server. Open a terminal and type in:</p>
+
+<p><kbd>buster server</kbd></p>
+
+<p>Then you're ready to run the tests with:</p>
+
+<p><kbd>buster test</kbd></p>
+
+<h3>Hybrid tests</h3>
+
+<p>If your project has both Node and browser tests, and your config file specifies multiple groups for the different environments, running <kbd>buster test</kbd> will automatically run all the groups, both Node and browser. This requires that you already have a <kbd>buster server</kbd> up and running.</p>
+
+<p>If you only want to run tests for one environment, use <kbd>buster test --env browser</kbd> or <kbd>buster test --env node</kbd>.</p>
