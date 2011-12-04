@@ -1,4 +1,4 @@
-Buster.JS Assertions
+Assertions
 
         <dl>
           <dt>Version</dt>
@@ -511,6 +511,216 @@ assert.className(el, ["item", "feed"]); // Passes</code></pre>
           </div>
         </div>
         <div class="section">
+          <h2 id="<%= id('stubs') %>">Stubs and spies</h2>
+          <p>
+            The default Buster.JS bundle comes with built-in spies, stubs and
+            mocks provided by <a href="http://sinonjs.org">Sinon.JS</a>. The
+            assertions are indisposable when working with spies and
+            stubs. However, note that these assertions are technically provided
+            by the integration package <%=m "sinon" %>, <em>not</em>
+            <strong>buster-assertions</strong>. This only matters if you use
+            this package stand-alone.
+          </p>
+          <h3 data-title="+called(spy)+"
+              id="<%= id('assert-called') %>"><code>assert.called(spy)</code></h3>
+          <p>
+            Fails if the spy has never been called.
+          </p>
+          <pre><code>var spy = sinon.spy();
+
+assert.called(spy); // Fails
+
+spy();
+assert.called(spy); // Passes
+
+spy();
+assert.called(spy); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>assert.called.assertMessage = "Expected ${0} to be called at least once but was never called";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+            </dl>
+          </div>
+          <h3 data-title="+callOrder(spy, spy2, ...)+"
+              id="<%= id('assert-callOrder') %>"><code>assert.callOrder(spy, spy2, ...)</code></h3>
+          <p>
+            Fails if the spies were not called in the specified order.
+          </p>
+          <pre><code>var spy1 = sinon.spy();
+var spy2 = sinon.spy();
+var spy3 = sinon.spy();
+
+spy1();
+spy2();
+spy3();
+
+assert.callOrder(spy1, spy3, spy2); // Fails
+assert.callOrder(spy1, spy2, spy3); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>assert.callOrder.assertMessage = "Expected ${expected} to be called in order but were called as ${actual}";</code></p>
+            <dl>
+              <dt><code>${expected}</code></dt>
+              <dd>A string representation of the expected call order</dd>
+              <dt><code>${actual}</code></dt>
+              <dd>A string representation of the actual call order</dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledOnce(spy)+"
+              id="<%= id('assert-calledOnce') %>"><code>assert.calledOnce(spy)</code></h3>
+          <p>
+            Fails if the spy has never been called or if it was called more than
+            once.
+          </p>
+          <pre><code>var spy = sinon.spy();
+
+assert.called(spy); // Fails
+
+spy();
+assert.called(spy); // Passes
+
+spy();
+assert.called(spy); // Fails</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>assert.calledOnce.assertMessage = "Expected ${0} to be called once but was called ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The number of calls, as a string. Ex: "two times"</dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                The call log. All calls as a string. Each line is one call and
+                includes passed arguments, returned value and more.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledTwice(spy)+"
+              id="<%= id('assert-calledTwice') %>"><code>assert.calledTwice(spy)</code></h3>
+          <p>
+            Only passes if the spy was called exactly two times.
+          </p>
+          <pre><code>var spy = sinon.spy();
+
+assert.called(spy); // Fails
+
+spy();
+assert.called(spy); // Fails
+
+spy();
+assert.called(spy); // Passes
+
+spy();
+assert.called(spy); // Fails</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>assert.calledTwice.assertMessage = "Expected ${0} to be called twice but was called ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The number of calls, as a string. Ex: "two times"</dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                The call log. All calls as a string. Each line is one call and
+                includes passed arguments, returned value and more.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledThrice(spy)+"
+              id="<%= id('assert-calledThrice') %>"><code>assert.calledThrice(spy)</code></h3>
+          <p>
+            Only passes if the spy has been called exactly three times.
+          </p>
+          <pre><code>var spy = sinon.spy();
+
+assert.called(spy); // Fails
+
+spy();
+assert.called(spy); // Fails
+
+spy();
+assert.called(spy); // Passes
+
+spy();
+assert.called(spy); // Fails</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>assert.calledThrice.assertMessage = "Expected ${0} to be called thrice but was called ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The number of calls, as a string. Ex: "two times"</dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                The call log. All calls as a string. Each line is one call and
+                includes passed arguments, returned value and more.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledWith(spy, arg1, arg2, ...)+"
+              id="<%= id('assert-calledWith') %>"><code>assert.calledWith(spy, arg1, arg2, ...)</code></h3>
+          <p>
+            Passes if the spy was called at least once with the specified
+            arguments. Other arguments may have been passed after the specified
+            ones.
+          </p>
+          <pre><code>var spy = sinon.spy();
+var arr = [1, 2, 3];
+spy(12);
+spy(42, 13);
+spy("Hey", arr, 2);
+
+assert.calledWith(spy, 12);         // Passes
+assert.calledWith(spy, "Hey");      // Passes
+assert.calledWith(spy, "Hey", 12);  // Fails
+assert.calledWith(spy, "Hey", arr); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>assert.calledWith.assertMessage = "Expected ${0} to be called with arguments ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected arguments</dd>
+              <dt><code>${2}</code></dt>
+              <dd>String representation of all calls.</dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledOnceWith(spy, arg1, arg2, ...)+"
+              id="<%= id('assert-calledOnceWith') %>"><code>assert.calledOnceWith(spy, arg1, arg2, ...)</code></h3>
+          <p>
+            Passes if the spy was called exactly once and with the specified
+            arguments. Other arguments may have been passed after the specified
+            ones.
+          </p>
+          <pre><code>var spy = sinon.spy();
+var arr = [1, 2, 3];
+spy(12);
+
+assert.calledOnceWith(spy, 12);     // Passes
+assert.calledOnceWith(spy, 42);     // Fails
+
+spy(42, 13);
+assert.calledOnceWith(spy, 42, 13); // Fails</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>assert.calledOnceWith.assertMessage = "Expected ${0} to be called once with arguments ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected arguments</dd>
+              <dt><code>${2}</code></dt>
+              <dd>String representation of all calls.</dd>
+            </dl>
+          </div>
+        </div>
+        <div class="section">
           <h2 id="<%= id('refutations') %>">Refutations</h2>
           <p>
             Examples assume that you have
@@ -767,6 +977,202 @@ refute.className(el, ["item", "feed"]); // Passes</code></pre>
           </div>
         </div>
         <div class="section">
+          <h2 id="<%= id('refute-stubs') %>">Stubs and spies</h2>
+          <p>
+            See <%= anchor("Stubs and spies", "stubs") %> for explanation. The
+            following are spy/stub related refutations.
+          </p>
+          <h3 data-title="+called(spy)+"
+              id="<%= id('refute-called') %>"><code>refute.called(spy)</code></h3>
+          <p>
+            Passes when spy has never been called.
+          </p>
+          <pre><code>var spy = sinon.spy();
+
+refute.called(spy); // Passes
+
+spy();
+refute.called(spy); // Fails</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>refute.called.assertMessage = "Expected ${0} to not be called but was called ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The number of calls as a string. Ex: "two times".</dd>
+              <dt><code>${2}</code></dt>
+              <dd>All calls formatted as a multi-line string.</dd>
+            </dl>
+          </div>
+          <h3 data-title="+callOrder(spy, spy2, ...)+"
+              id="<%= id('refute-called') %>"><code>refute.callOrder(spy, spy2, ...)</code></h3>
+          <p>
+            Passes where
+            <%= anchor "<code>assert.callOrder</code>", "assert-callOrder" %>
+            fails.
+          </p>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>refute.callOrder.assertMessage = "Expected ${expected} not to be called in order";</code></p>
+            <dl>
+              <dt><code>${expected}</code></dt>
+              <dd>A string representation of the expected call order</dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledOnce(spy)+"
+              id="<%= id('refute-calledOnce') %>"><code>refute.calledOnce(spy)</code></h3>
+          <p>
+            Fails if the spy was called exactly once.
+          </p>
+          <pre><code>var spy = sinon.spy();
+
+refute.called(spy); // Passes
+
+spy();
+refute.called(spy); // Fails
+
+spy();
+refute.called(spy); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>refute.calledOnce.assertMessage = "Expected ${0} to not be called exactly once${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The number of calls, as a string. Ex: "two times"</dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                The call log. All calls as a string. Each line is one call and
+                includes passed arguments, returned value and more.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledTwice(spy)+"
+              id="<%= id('refute-calledTwice') %>"><code>refute.calledTwice(spy)</code></h3>
+          <p>
+            Fails if the spy was called exactly twice.
+          </p>
+          <pre><code>var spy = sinon.spy();
+
+refute.called(spy); // Passes
+
+spy();
+refute.called(spy); // Passes
+
+spy();
+refute.called(spy); // Fails
+
+spy();
+refute.called(spy); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>refute.calledTwice.assertMessage = "Expected ${0} to not be called exactly twice${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The number of calls, as a string. Ex: "two times"</dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                The call log. All calls as a string. Each line is one call and
+                includes passed arguments, returned value and more.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledThrice(spy)+"
+              id="<%= id('refute-calledThrice') %>"><code>refute.calledThrice(spy)</code></h3>
+          <p>
+            Fails if the spy was called exactly three times.
+          </p>
+          <pre><code>var spy = sinon.spy();
+refute.called(spy); // Passes
+
+spy();
+refute.called(spy); // Passes
+
+spy();
+refute.called(spy); // Passes
+
+spy();
+refute.called(spy); // Fails
+
+spy();
+refute.called(spy); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>refute.calledThrice.assertMessage = "Expected ${0} to not be called exactly thrice${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The number of calls, as a string. Ex: "two times"</dd>
+              <dt><code>${2}</code></dt>
+              <dd>
+                The call log. All calls as a string. Each line is one call and
+                includes passed arguments, returned value and more.
+              </dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledWith(spy, arg1, arg2, ...)+"
+              id="<%= id('refute-calledWith') %>"><code>refute.calledWith(spy, arg1, arg2, ...)</code></h3>
+          <p>
+            Fails if the spy was called at least once with the specified
+            arguments.
+          </p>
+          <pre><code>var spy = sinon.spy();
+var arr = [1, 2, 3];
+spy(12);
+spy(42, 13);
+spy("Hey", arr, 2);
+
+refute.calledWith(spy, 12);         // Fails
+refute.calledWith(spy, "Hey");      // Fails
+refute.calledWith(spy, "Hey", 12);  // Passes
+refute.calledWith(spy, "Hey", arr); // Fails</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>refute.calledWith.assertMessage = "Expected ${0} not to be called with arguments ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected arguments</dd>
+              <dt><code>${2}</code></dt>
+              <dd>String representation of all calls.</dd>
+            </dl>
+          </div>
+          <h3 data-title="+calledOnceWith(spy, arg1, arg2, ...)+"
+              id="<%= id('refute-calledOnceWith') %>"><code>refute.calledOnceWith(spy, arg1, arg2, ...)</code></h3>
+          <p>
+            Fails if the spy was called exactly once and with the specified
+            arguments. Other arguments may have been passed after the specified
+            ones.
+          </p>
+          <pre><code>var spy = sinon.spy();
+var arr = [1, 2, 3];
+spy(12);
+
+refute.calledOnceWith(spy, 12);     // Fails
+refute.calledOnceWith(spy, 42);     // Passes
+
+spy(42, 13);
+refute.calledOnceWith(spy, 42, 13); // Passes</code></pre>
+          <div class="msg">
+            <h4>Message</h4>
+            <p><code>refute.calledOnceWith.assertMessage = "Expected ${0} not to be called once with arguments ${1}${2}";</code></p>
+            <dl>
+              <dt><code>${0}</code></dt>
+              <dd>The spy</dd>
+              <dt><code>${1}</code></dt>
+              <dd>The expected arguments</dd>
+              <dt><code>${2}</code></dt>
+              <dd>String representation of all calls.</dd>
+            </dl>
+          </div>
+        </div>
+        <div class="section">
           <h2 id="<%= id('expectations') %>">Expectations</h2>
           <p>
             All of buster-assertion's assertions and refutations are also
@@ -806,6 +1212,18 @@ expect(42).not().toEqual(43); // Passes</code></pre>
           <p>See <%=l "assert.tagName" %></p>
           <h3 data-title="+toHaveClassName(expected)+" id="<%= id('toHaveClassName') %>"><code>expect(actual).toHaveClassName(expected)</code></h3>
           <p>See <%=l "assert.className" %></p>
+          <h3 data-title="+toBeCalled()+" id="<%= id('toBeCalled) %>"><code>expect(spy).toBeCalled()</code></h3>
+          <p>See <%=l "assert.called" %></p>
+          <h3 data-title="+toBeCalledOnce()+" id="<%= id('toBeCalledOnce') %>"><code>expect(spy).toBeCalledOnce(expected)</code></h3>
+          <p>See <%=l "assert.calledOnce" %></p>
+          <h3 data-title="+toBeCalledTwice()+" id="<%= id('toBeCalledTwice') %>"><code>expect(spy).toBeCalledTwice(expected)</code></h3>
+          <p>See <%=l "assert.calledTwice" %></p>
+          <h3 data-title="+toBeCalledThrice()+" id="<%= id('toBeCalledThrice') %>"><code>expect(spy).toBeCalledThrice(expected)</code></h3>
+          <p>See <%=l "assert.calledThrice" %></p>
+          <h3 data-title="+toBeCalledWith(arg1, arg2, ...)+" id="<%= id('toBeCalledWith') %>"><code>expect(spy).toBeCalledWith(arg1, arg2, ...)</code></h3>
+          <p>See <%=l "assert.calledWith" %></p>
+          <h3 data-title="+toBeCalledOnceWith(arg1, arg2, ...)+" id="<%= id('toBeCalledOnceWith') %>"><code>expect(spy).toBeCalledOnceWith(arg1, arg2, ...)</code></h3>
+          <p>See <%=l "assert.calledOnceWith" %></p>
         </div>
         <div class="section">
           <h2 id="<%= id('methods') %>">Methods</h2>
