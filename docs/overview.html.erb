@@ -46,6 +46,26 @@ buster test --config anywhere/buster.js
 
 <p>Note that you are free to name your test cases whatever you want. They don't have to start with <code>"test ..."</code> or <code>"should ..."</code>.</p>
 
+<h2>Examples</h2>
+
+<p>
+  Buster.JS has pluggable "front-ends" to specifying
+  examples/tests/whatever. Here's the other bundled way of doing it:
+</p>
+
+<pre><code>// Expose describe and it functions globally
+buster.spec.expose();
+
+describe("My thing", function () {
+    it("has the foo and bar", function () {
+        expect("foo").toEqual("bar");
+    });
+
+    it("states the obvious", function () {
+        expect(true).toBeSameAs(true);;
+    });
+});</code></pre>
+
 <h2>Browser testing</h2>
 
 <p>Buster.JS can automate browsers, JsTestDriver style. First, start the server.</p>
