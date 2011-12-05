@@ -1,0 +1,47 @@
+Node testing
+
+<p class="warning">
+  Note: this document is work in progress
+</p>
+
+<h2>Getting started</h2>
+
+<p>To set up Node testing, specify <code>"node"</code> as the environment in your config file.</p>
+
+<pre><code>var config = module.exports;
+
+config["My tests"] = {
+    env: "node",
+    tests: [
+        "**/*-test.js"
+    ]
+}</code></pre>
+
+<p>This config file will load all <em>something</em>-test.js in the same folder as the config file and all sub folders. Unlike browser tests, you don't need to specify your source files with <code>"sources"</code>. In fact, doing so will only make the tests slower, as the config file takes longer time to load. Instead, you do what you always do in Node: require the modules you use in the files where you need to use them.</p>
+
+<pre><code>var buster = require("buster");
+var myLib = require("../lib/my-lib");
+
+buster.testCase("A test case", {
+    "test it": function () {
+        assert(true);
+    }
+})</code></pre>
+
+<p>As we can see, we also need to require Buster.JS itself. The <code>"buster"</code> module provides all the core functionality such as test cases, assertions, and more.</p>
+
+<h2>Running tests</h2>
+
+<p>To run the tests, simply type:</p>
+
+<p><kbd>buster test</kbd></p>
+
+<p>Here's the test output for the <%= m "args" %> module.</p>
+
+<p><%= img "node-testing/buster-test-node.png", :width => "633", :height => "382" %></p>
+
+<p>See <strong>TODO: link to documentation</strong> for more information about the options you can pass to <kbd>buster test</kbd>.</p>
+
+<h2>Tips and tricks</h2>
+
+<h3>Testing the HTTP module</h3>
