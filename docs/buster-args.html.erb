@@ -56,14 +56,14 @@ args.<%= anchor "handle" %>(process.argv.slice(2), function (errors) {
 
   <p>A shorthand is a convenience method for adding options to your CLI that actually sets other options.</p>
 
-  <pre><code>var opt = <%= anchor "args" %>.createOption("--env");
+  <pre><code>var opt = <%= anchor "args" %>.createOption("--environment");
 opt.hasValue = true;
 
-<%= anchor "args" %>.addShorthand("--development", ["--env", "development"]);
-<%= anchor "args" %>.addShorthand("--production", ["--env", "production"]);
+<%= anchor "args" %>.addShorthand("--development", ["--environment", "development"]);
+<%= anchor "args" %>.addShorthand("--production", ["--environment", "production"]);
 </code></pre>
 
-  <p>This makes passing <kbd>--development</kbd> an equlvalent to passing <kbd>--env development</kbd>.</p>
+  <p>This makes passing <kbd>--development</kbd> an equlvalent to passing <kbd>--environment development</kbd>.</p>
 
   <h3 id="<%= id "createOperand" %>"><code>var opd = <%= anchor "args" %>.createOperand()</code></h3>
 

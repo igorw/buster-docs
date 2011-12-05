@@ -4,30 +4,33 @@ Getting Started
 
 <h2>Installing</h2>
 
-<p>To install Buster.JS, you need  to install Node, and run <kbd>npm install -g buster</kbd>. Node 0.6.3 or later comes with NPM preinstalled.</p>
+<p>
+  To run Buster.JS we recommend Node 0.6.3 or newer and NPM. Node 0.6.3 and
+  newer comes with NPM bundled.
+</p>
 
 <h3>OS X</h3>
 
 <ol>
   <li>Get the latest Node installer from <a href="http://nodejs.org/">nodejs.org</a>. You need Node 0.6.3 or newer.</li>
-  <li>Run <kbd>npm install -g buster</kbd></li>
+  <li><kbd>sudo npm install -g buster</kbd></li>
 </ol>
 
 <h3>Linux</h3>
 
-<p>Install Node 0.6.3 or later with your favorite package manager. If you don't have one, follow <a href="https://github.com/joyent/node/wiki/Installation">these simple build instructions.</a></p>
-
-<p>When you have Node installed, install Buster.JS.</p>
-
 <ol>
+  <li>Install Node 0.6.3 or later with your favorite package manager. If you don't have one, follow <a href="https://github.com/joyent/node/wiki/Installation">these simple build instructions.</a></li>
   <li><kbd>npm install -g buster</kbd></li>
 </ol>
 
 <h3>Windows</h3>
 
-<p>Unfortunately Buster.JS doesn't work on Windows at this time.</p>
+<p>Unfortunately Buster.JS support for Windows is unconfirmed at this time.</p>
 
-<p>This is only because of a trivial detail. A dependency, the <a href="http://search.npmjs.org/#/glob">glob</a> module, doesn't work on Windows. We aim to replace the glob module ASAP, so we can support Windows.</p>
+<p>
+  As far as we know, the glob module is our only obstacle for your Windows
+  JavaScript testing pleasure. Windows support is a priority and will land soon.
+</p>
 
 <h2>Create config file</h2>
 
@@ -36,7 +39,7 @@ Getting Started
 <pre><code>var config = module.exports;
 
 config["My tests"] = {
-    env: "browser",        // or "node"
+    environment: "browser",        // or "node"
     sources: [
         "../lib/mylib.js", // Paths are relative to config file
         "../lib/**/*.js"   // Glob patterns supported
@@ -62,11 +65,21 @@ config["My tests"] = {
 
 <pre><code>// Browser tests
 
-buster.testCase("A test case", {
-    "test it": function () {
+buster.testCase("A module", {
+    "states the obvious": function () {
         assert(true);
     }
-})</code></pre>
+});</code></pre>
+
+<p>The BDD inclined might prefer this alternate syntax:</p>
+
+<pre><code>buster.spec.expose(); // Make some functions global
+
+describe("A module", function () {
+    it("states the obvious", function () {
+        expect(true).toEqual(true);
+    });
+});</code></pre>
 
 <p>If your test is a Node test, you also need to require Buster.JS.</p>
 
@@ -74,11 +87,11 @@ buster.testCase("A test case", {
 var buster = require("buster");
 var myLib = require("../lib/my-lib");
 
-buster.testCase("A test case", {
-    "test it": function () {
+buster.testCase("A module", {
+    "states the obvious": function () {
         assert(true);
     }
-})</code></pre>
+});</code></pre>
 
 <p>See the full <%= m "test/test-case", "buster.testCase" %> docs and <%= m "assertions" %> docs for details. There are also mocks and stubs and more, via the <a href="<%= doc_url "sinon-buster" %>">sinon-buster</a> module.</p>
 
@@ -114,7 +127,7 @@ buster.testCase("A test case", {
 
 <p>If your project has both Node and browser tests, and your config file specifies multiple groups for the different environments, running <kbd>buster test</kbd> will automatically run all the groups, both Node and browser. This requires that you already have a <kbd>buster server</kbd> up and running.</p>
 
-<p>If you only want to run tests for one environment, use <kbd>buster test --env browser</kbd> or <kbd>buster test --env node</kbd>.</p>
+<p>If you only want to run tests for one environment, use <kbd>buster test --environment browser</kbd> or <kbd>buster test -e node</kbd>.</p>
 
 <p>You have to manually make sure your test cases and source files are able to run in both browsers and Node. Here's an example:</p>
 
