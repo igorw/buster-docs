@@ -8,8 +8,8 @@
   <dd>N/A</dd>
 </dl>
 <p>
-  The client uses a <%=m "client/session-config", "session configuration" %> to
-  create a <%=m "client/session", "session" %>.
+  The client creates a <%=m "client/session", "session" %> given some
+  <%=m "configuration", "configuration" %>.
 </p>
 <div class="section">
   <h2 id="<%= id('methods') %>">Methods</h2>
@@ -18,14 +18,14 @@
     Create a new client. Arguments are strings and describes where to find a
     running <%=m "capture-server" %>.
   </p>
-  <h3 id="<%= id('createSession') %>" data-title="+createSession(sessionConfig);+">
-    <code>var <%=m "promise", "promise" %> = client.createSession(<%=m "client/session-config", "sessionConfig" %>);</code>
+  <h3 id="<%= id('createSession') %>" data-title="+createSession(config);+">
+    <code>var <%=m "promise", "promise" %> = client.createSession(<%=anchor "options", "options" %>);</code>
   </h3>
   <p>
-    Creates and runs a new session on the server. The provided session config
+    Creates and runs a new session on the server. The provided resource set
     determines what resources to make available, and which to load by
-    default. If <%=l "useCache" %> is <code>true</code> (default), cached
-    resources will be used when possible.
+    default. If the client's <%=l "cacheResources" %> property is
+    <code>true</code> (default), cached resources will be used when possible.
   </p>
   <p>
     The returned promise is resolved with a <%=m "client/session" %> object when

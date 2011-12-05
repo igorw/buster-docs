@@ -1,49 +1,51 @@
 <h1><code>buster.client</code></h1>
 <dl>
   <dt>Version</dt>
-  <dd>0.1.0 <span class="date">(2011-04-10)</span></dd>
+  <dd>0.4.0 <span class="date">(2011-12-05)</span></dd>
   <dt>Module</dt>
   <dd><code>require("buster-client");</code></dd>
   <dt>In browsers</dt>
   <dd>N/A (pure node.js API)</dd>
 </dl>
 <p>
-  Client library that implements the <%=m "capture-server" %> API. The client library
-  allows for configuring a browser automation program, and to automate/run tasks
-  in multiple browsers simultaneously in a pure JavaScript API.
+  Client library that implements the <%=m "capture-server" %> API. The client
+  library allows for configuring a browser automation program, and to
+  automate/run tasks in multiple browsers simultaneously in a pure JavaScript
+  API.
 </p>
 <h2>Sample usage</h2>
 <p>
-  The following example shows how you can use the client library to read
-  <code>buster.json</code> (a <%=m "client/session-config", "session
-  configuration" %> file) and start a <%=m "capture-server#session", "session" %>,
-  trigger interaction in multiple browsers and finally close the session.
+  The following example shows how you can use the client library to start a
+  <%=m "capture-server#session", "session" %> given some <%=m "client#options",
+  "options" %>, including a <%=m "resources/resource-set", "resource set" %>.
+  Resource sets can be conveniently read from files or created in-memory through
+  <%=m "configuration", "the configuration module" %>.
 </p>
-<h4><code>buster.json</code> (configuration file)</h4>
-<pre><code>{
-    "server": "http://localhost:1111",
-    "load": ["src/1.js", "src/2.js"],
-
-    "resources": [{
-        "path": "src/1.js",
-        "content": "var meaningOfLife = 42;"
-    }]
-}</code></pre>
 <h4><code>src/2.js</code></h4>
 <pre><code>buster.client.on("question:ultimate", function (msg) {
     alert(msg.data);
     buster.client.emit("answer", "The meaning of life is " + meaningOfLife);
 });</code></pre>
 <pre><code>var buster = require("buster-client");
+var bConfiguration = require("<%=m "configuration", "buster-configuration" %>");
 
-var config = <%=m "client/config-builder", "buster.configBuilder" %>.create();
-config.<%=m "client/config-builder#loadFile", "loadFile" %>("buster.json");
+var config = bConfiguration.create();
+config.<%=m "configuration#addGroup", "addGroup" %>("Browser stuff", {
+    resources: [{
+        path: "src/1.js",
+        content: "var meaningOfLife = 42;"
+    }],
 
-config.<%=m "client/config-builder#configure", "configure" %>().then(function (<%=m "client/config-builder#config", "cfg" %>) {
+    load: ["src/1.js", "src/2.js"]
+}, __dirname);
+
+config.<%=m "configuration#resolveGroups", "resolveGroups" %>().then(function () {
     var client = <%=m "client/client", "buster.client" %>.<%=m "client/client#create", "create" %>(
                      cfg.server.port, cfg.server.host, cfg.server.path);
 
-    client.<%=m "client/client#createSession", "createSession" %>(config.sessionConfig).then(function (<%=m "client/session", "session" %>) {
+    client.<%=m "client/client#createSession", "createSession" %>({
+        resourceSet: config.groups[0]
+    }).then(function (<%=m "client/session", "session" %>) {
         session.on("answer", function (msg) {
             console.log(msg.data);
         });
