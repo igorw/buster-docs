@@ -80,7 +80,7 @@ buster.testCase("A test case", {
     }
 })</code></pre>
 
-<p>See the full <%= m "test/test-case", "buster.testCase" %> docs and <%= m "assertions" %> docs for details.</p>
+<p>See the full <%= m "test/test-case", "buster.testCase" %> docs and <%= m "assertions" %> docs for details. There are also mocks and stubs and more, via the <a href="<%= doc_url "sinon-buster" %>">sinon-buster</a> module.</p>
 
 <h2>Run tests</h2>
 
@@ -91,6 +91,12 @@ buster.testCase("A test case", {
 <p>For Node tests, you don't need any additional setup. Open a terminal, go to your project, and type in:</p>
 
 <p><kbd>buster test</kbd></p>
+
+<p>Here's the output from the test run of <%= m "args" %>.</p>
+
+<p><%= img "node-testing/buster-test-node.png", :width => "633", :height => "382" %></p>
+
+<p>See the <a href="<%= doc_url "node-testing" %>">Node testing</a> documentation for more.</p>
 
 <h3>Browser tests</h3>
 
@@ -109,6 +115,8 @@ buster.testCase("A test case", {
 <p><kbd>buster test</kbd></p>
 
 <p><%= img "overview/buster-test-run-browsers.png", :width => "633", :height => "382" %></p>
+
+<p>See the <a href="<%= doc_url "browser-testing" %>">browser testing</a> documentation for more.</p>
 
 <h3>Hybrid tests</h3>
 
@@ -130,3 +138,5 @@ buster.testCase("A test case", {
         assert(true);
     }
 })</code></pre>
+
+<p>See the <a href="<%= doc_url "hybrid-testing" %>">hybrid testing</a> documentation for more.</p>
