@@ -1,0 +1,25 @@
+Manually starting test run (AMD)
+
+<p>When you use AMD (Asynchronous Module Loading) systems, or otherwise need to manually specify when your system is ready to run tests, you can easily disable auto running of tests and manually start the test run. Normally, Buster.JS starts running tests when the browser has finished loading the page. Since AMD is a manual module loader that Buster.JS can't automatically be aware of, you are required to manually tell Buster.JS when your good to go.</p>
+
+<h2>Manually start the test run</h2>
+
+<p>Add <code>autoRun: false</code> to your config file.</p>
+
+<pre><code>var config = module.exports;
+
+config["My tests"] = {
+    autoRun: false,
+    sources: ["../lib/**/*.js"],
+    tests: ["**/*-test.js", "run.js"]
+}</code></pre>
+
+<p>We added the file <tt>run.js</tt> to the <code>tests</code> group. In this file, call <code>buster.run()</code> to start the test run.</p>
+
+<pre><code>// App specific notification of when your app is ready to be tested
+myApp.onReady = function () {
+    buster.run();
+};</code></pre>
+
+<p>You're of course free to call <code>buster.run()</code> anywhere you want, the only important thing is that it gets called when you load your tests, and when it gets called your application is ready to ge ttested.</p>
+
