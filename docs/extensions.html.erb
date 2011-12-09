@@ -1,0 +1,39 @@
+Buster extensions
+
+<p>
+  Extensions augment the capabilities of Buster.JS at runtime. This page
+  describes extensions to the browser runner (i.e. available with
+  <code>buster test -e browser</code> and <code>buster static</code>).
+</p>
+<h2>Available extensions</h2>
+<h3>buster-jstestdriver</h3>
+<p>
+  Run test cases written for JsTestDriver with the Buster runner. To install:
+  <code>npm install -g buster-jstestdriver</code>. To use it, simply add the
+  following line to your configuration file: <code>extensions:
+  ["buster-jstestdriver"]</code>. Example:
+</p>
+<pre><code>var config = module.exports;
+
+config["Browser tests"] = {
+    rootPath: "../",
+    sources: ["src/**/*.js"]
+    tests: ["test/**/*.js"],
+    extensions: ["buster-jstestdriver"]
+};</code></pre>
+<p>
+  Note that the extension does not support the <code>:DOC</code> style comments
+  in JsTestDriver.
+</p>
+<h3>buster-amd</h3>
+<p>
+  Work in progress to improve support for projects that use AMD loaders.
+</p>
+<h2>Building extensions</h2>
+<p>TODO</p>
+<p>
+ Extension objects needs to expose a function named <code>configure</code>,
+ which will be called with a <%= anchor("group", "<code>group</code>") %>
+ object.
+</p>
+

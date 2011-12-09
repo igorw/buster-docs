@@ -1,34 +1,241 @@
-<h1><code>buster.configuration</code></h1>
+Buster.JS Configuration
+
 <dl>
   <dt>Version</dt>
-  <dd>0.2.0 <span class="date">(2011-10-04)</span></dd>
+  <dd>0.2.0 <span class="date">(2011-12-05)</span></dd>
   <dt>Module</dt>
   <dd><code>require("buster-configuration");</code></dd>
+  <dt>In the browser</dt>
+  <dd>N/A (Node only)</dd>
 </dl>
+<p>
+  The Buster configuration file (typically named buster.js) helps Buster
+  understand how to automate your test runs. You can run tests on Node without
+  the configuration file (i.e. with <kbd>node my-test.js</kbd>), but it is
+  required when using <kbd>buster test</kbd> to run tests.
+</p>
+<p>
+  A configuration file can contain one or more test run configurations, called
+  "groups". A group specifies what tests to run, in what environment (Node or
+  browsers for now, possibly others later) to run them, and can provide certain
+  configuration options to the test runner.
+</p>
+<p>
+  The configuration file is focused on how to automate test runs. It is designed
+  specifically for project-specific settings only. User-specific settings, like
+  whether or not to use colors, what reporter to use and so on, is not part of
+  this configuration. Refer to the
+  <a href="<%= doc_url "customizing" %>">customizing page</a> for more on how to
+  customize Buster for developer happiness.
+</p>
+<h3>A simple configuration file</h3>
+<p>
+  At its very simplest, a configuration file merely states what resources to
+  load. For browser tests, this includes libraries and sources, while for Node
+  you only need to specify tests (as typically they <code>require</code> their
+  own sources.
+</p>
+<pre><code>var config = module.exports;
 
-<p>Handles the loading of buster config files. This module is probably never used directly by any module other than <%= m "cli" %>.</p>
-
+config["Browser tests"] = {
+    environment: "browser",
+    libs: ["lib/**/*.js"],
+    sources: ["src/core.js", "src/**/*.js"],
+    tests: ["test/**/*.js"]
+};</code></pre>
+<p>
+  The configuration file is a JavaScript file. In fact, it is a Node module, as
+  you might have guessed from the first line. The first line is pure vanity by
+  the way. We think "config" reads better throughout the file than "exports".
+</p>
+<p>
+  This configuration specifies a browser run (as seen from the
+  <code>environment</code> property). It will cause all files in <kbd>lib</kbd>
+  to be loaded first (using <code>script</code> tags), then all files
+  in <code>src</code>, then all files in <code>tests</code>.
+  Note how we specified <code>src/core.js</code> separately. Buster resolves
+  these duplications, and you typically want to specify some files manually if
+  ordering is important.
+</p>
 <div class="section">
+  <h2 id="properties">Configuration properties</h2>
+  <p>
+    To avoid wasting your time on typos and misunderstandings, Buster will
+    fiercefully throw errors if you feed it configuration properties it does not
+    recognize. The following is a list of all the properties Buster recognizes.
+  </p>
+  <dl>
+    <dt><code>tests</code></dt>
+    <dd>
+      The test files to load and run. Value is an array of file names and/or
+      glob patterns. Files are loaded in the order provided. Like the
+      <code>libs</code> and <code>sources</code> properties, it may include
+      duplicates. However, it is highly recommended that your tests are not
+      order dependent. Whenever possible, include test helpers and so on in the
+      <code>libs</code> property (or just <code>require</code> them on Node).
+    </dd>
+    <dt><code>specs</code></dt>
+    <dd>
+      Alias for <code>tests</code>
+    </dd>
+    <dt><code>environment</code></dt>
+    <dd>
+      <code>browser</code> or <code>node</code>. The browser environment allows
+      you to run tests from the command-line and have them executed in one or
+      more browsers through the server component of Buster.JS. Refer to the
+      <a href="<%= doc_url "browser-testing" %>">browser testing page</a>.
+    </dd>
+    <dt><code>env</code></dt>
+    <dd>
+      Alias for <code>environment</code>.
+    </dd>
+    <dt><code>rootPath</code></dt>
+    <dd>
+      By default, Buster will resolve file paths in the configuration file
+      relative to the directory in which the configuration file is
+      found. Setting a <code>rootPath</code> allows you to change the base of
+      path lookups. Note that <code>rootPath</code> itself is also resolved
+      relative to the directory where the configuration file is found.
+    </dd>
+  </dl>
+  <p>
+    The following properties only apply to the browser environment.
+  </p>
+  <dl>
+    <dt><code>libs</code></dt>
+    <dd>
+      Library files to load in <code>script</code> tags in the browser. This
+      setting should normally not be used for node runs. If it is, files will be
+      <code>require</code>'d. Value is an array of file names and/or glob
+      patterns. Files are loaded in the order provided. It may include
+      duplicates, e.g. <code>["lib/core.js", "lib/**/*.js"]</code>, files will
+      only be loaded once.
+    </dd>
+    <dt><code>deps</code></dt>
+    <dd>
+      Alias for <code>libs</code>
+    </dd>
+    <dt><code>sources</code></dt>
+    <dd>
+      Source files to load in <code>script</code> tags in the browser. This
+      setting should normally not be used for node runs. If it is, files will be
+      <code>require</code>'d. Value is an array of file names and/or glob
+      patterns. Files are loaded in the order provided. It may include
+      duplicates, e.g. <code>["src/core.js", "src/**/*.js"]</code>, files will
+      only be loaded once.
+    </dd>
+    <dt><code>src</code></dt>
+    <dd>
+      Alias for <code>sources</code>
+    </dd>
+    <dt><code>resources</code></dt>
+    <dd>
+      <p>
+        Additional resources that will be made available for test runs, but not
+        explicitly loaded. Value is an array of resources.
+      </p>
+      <p>
+        A resource can be a string, i.e. a glob pattern/file name, or an object.
+        Objects may specify resources that are inlined content to be served
+        as a file, a combination of other resources (optionally minified) or a
+        proxy to another web server. See <%= anchor("resource",
+        "<code>resource</code>") %>.
+      </p>
+    </dd>
+    <dt><code>server</code></dt>
+    <dd>
+      The server to run the group on, e.g. <code>"http://localhost:1919"</code>,
+      <code>"localhost:8978"</code> or <code>"ci.myplace:8080"</code>.
+    </dd>
+    <dt><code>autoRun</code></dt>
+    <dd>
+      Only applies to browser runs. When set to <code>false</code>, Buster will
+      not run tests immediately after loading all files.
+      Refer to <a href="<%= doc_url("starting-testrun-manually") %>">starting
+      test runs manually</a> for more information.
+    </dd>
+    <dt><code>extends</code></dt>
+    <dd>
+      <p>
+        Takes a group name, and loads all the configuration from that group as the
+        basis for this group. Content in <code>libs</code>, <code>sources</code>,
+        <code>tests</code> and <code>resources</code> will be appended to the
+        content from the original group. Other options will default to the value
+        from the referenced group unless the group itself specifies a value.
+      </p>
+      <pre><code>var config = module.exports;
+
+config["Shared tests"] = {
+    tests: ["test/shared/**/*.js"]
+};
+
+config["Browser defaults"] = {
+    extends: "Shared tests",
+    environment: "browser",
+    libs: ["lib/**.js"],
+    extensions: ["buster-amd"]
+};
+
+config["Node tests"] = {
+    extends: "Shared tests",
+    tests: ["test/server/**.js"]
+};
+
+config["Browser unit tests"] = {
+    extends: "Browser defaults",
+    tests: ["test/browser/unit/**.js"]
+};
+
+config["Browser integration tests"] = {
+    extends: "Browser defaults",
+    tests: ["test/browser/integration/**.js"]
+};</code></pre>
+      <p>
+        As you can see, the <code>extends</code> property makes it possible to
+        greatly reduce the duplication in configuration files if you use
+        multiple groups. It also encourages the use of multiple groups for
+        multiple test profiles.
+      </p>
+    </dd>
+    <dt><code>extensions</code></dt>
+    <dd>
+      Extensions to load at runtime. The value is an array of strings understood
+      by the <%= m "module-loader" %> which will be pinged when the
+      configuration is loaded.
+      <a href="<%= doc_url('extensions') %>">List of known extensions</a>. In
+      most cases, these strings will be names of installed NPM packages. If you
+      are interested in developing extensions, check out <%= anchor "events",
+      "events" %> and the
+      <a href="<%= doc_url('extensions') %>">extensions page</a>.
+    </dd>
+  </dl>
+</div>
+<div class="section">
+  <h2>API Documentation</h2>
+  <p>
+    The following is only relevant if you plan on working with the Buster.JS
+    configuration file programatically.
+  </p>
   <h2>Configuration</h2>
-
-  <p>Represents the overall configuration file. Has a list of <%= anchor "groups", "group" %> and functionality to add new groups, filter groups based on various criteria, and more.</p>
-
+  <p>
+    The configuration has a list of <%= anchor "groups", "group" %> and
+    functionality to add new groups, filter groups based on various criteria,
+    and more.
+  </p>
   <h3><code>conf.groups</code></h3>
-  <p>An array consisting of all the <%= anchor "groups", "group" %> in the config file.</p>
-
+  <p>
+    An array consisting of all the <%= anchor "groups", "group" %> in the config
+    file.
+  </p>
   <h3><code>conf.resolveGroups(function (err) {})</code></h3>
   <p>Resolves all of the groups. See <%= anchor "group-resolve" %>.</p>
-
   <h3><code>conf.addGroup(name, groupData)</code></h3>
   <p>Adds a new group.</p>
-
   <h3><code>conf.filterEnv(envName)</code></h3>
   <p>Permanently removes all groups that aren't of <code>envName</code>'s environment. The available environments are <code>"browser"</code> and <code>"node"</code>.</p>
-
   <h3><code>conf.filterGroup(regex)</code></h3>
   <p>Permanently filters out groups which name doesn't match the regex.</p>
 </div>
-
 <div class="section">
   <h2 id="<%= id "group" %>">Configuration group</h2>
 
