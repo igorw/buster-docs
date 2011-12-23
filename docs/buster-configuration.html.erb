@@ -33,7 +33,7 @@ Buster.JS Configuration
   At its very simplest, a configuration file merely states what resources to
   load. For browser tests, this includes libraries and sources, while for Node
   you only need to specify tests (as typically they <code>require</code> their
-  own sources.
+  own sources).
 </p>
 <pre><code>var config = module.exports;
 
@@ -71,8 +71,9 @@ config["Browser tests"] = {
       glob patterns. Files are loaded in the order provided. Like the
       <code>libs</code> and <code>sources</code> properties, it may include
       duplicates. However, it is highly recommended that your tests are not
-      order dependent. Whenever possible, include test helpers and so on in the
-      <code>libs</code> property (or just <code>require</code> them on Node).
+      order dependent. Test helpers and similar utilities should be loaded with
+      the <code>testLibs</code> property (or just <code>require</code> them on
+      Node).
     </dd>
     <dt><code>specs</code></dt>
     <dd>
@@ -102,6 +103,20 @@ config["Browser tests"] = {
     The following properties only apply to the browser environment.
   </p>
   <dl>
+    <dt><code>testLibs</code></dt>
+    <dd>
+      Library files to load in <code>script</code> tags in the browser. This
+      setting should normally not be used for node runs. If it is, files will be
+      <code>require</code>'d. Value is an array of file names and/or glob
+      patterns. Files are loaded in the order provided. It may include
+      duplicates, e.g. <code>["test/lib/core.js", "test/lib/**/*.js"]</code>,
+      files will only be loaded once. <code>testLibs</code> are loaded after
+      libraries and sources, but before tests.
+    </dd>
+    <dt><code>specLibs</code></dt>
+    <dd>
+      Alias for <code>testLibs</code>
+    </dd>
     <dt><code>libs</code></dt>
     <dd>
       Library files to load in <code>script</code> tags in the browser. This
@@ -109,7 +124,7 @@ config["Browser tests"] = {
       <code>require</code>'d. Value is an array of file names and/or glob
       patterns. Files are loaded in the order provided. It may include
       duplicates, e.g. <code>["lib/core.js", "lib/**/*.js"]</code>, files will
-      only be loaded once.
+      only be loaded once. Libraries are loaded before anything else.
     </dd>
     <dt><code>deps</code></dt>
     <dd>
@@ -122,7 +137,8 @@ config["Browser tests"] = {
       <code>require</code>'d. Value is an array of file names and/or glob
       patterns. Files are loaded in the order provided. It may include
       duplicates, e.g. <code>["src/core.js", "src/**/*.js"]</code>, files will
-      only be loaded once.
+      only be loaded once. Sources are loaded after libraries and before test
+      libraries and tests.
     </dd>
     <dt><code>src</code></dt>
     <dd>
@@ -135,7 +151,7 @@ config["Browser tests"] = {
         explicitly loaded. Value is an array of resources. Resources are served
         from a context path on the server. To request a resource in your test
         runs, you need to scope resource paths with <code>buster.env.path</code>.
-        So, the resource <code>/some/cookies.json</code> can be requested as
+        The resource <code>/some/cookies.json</code> can be requested as
         <code>jQuery.get(buster.env.path + "/some/cookies.json");</code>
       </p>
       <p>
@@ -204,17 +220,16 @@ config["Browser integration tests"] = {
     <dt><code>extensions</code></dt>
     <dd>
       <p>
-        Extensions to load at runtime. The value is an array of strings understood
-        by the <%= m "module-loader" %> which will be pinged when the
-        configuration is loaded.
-        <a href="<%= doc_url('extensions') %>">List of known extensions</a>. In
-        most cases, these strings will be names of installed NPM packages. If you
-        are interested in developing extensions, check out <%= anchor "events",
-                                                               "events" %> and the
-        <a href="<%= doc_url('extensions') %>">extensions page</a>.
+        Extensions to load at runtime. The value is an array of strings
+        understood by the <%= m "module-loader" %> which will be pinged when the
+        configuration is loaded. In most cases, these strings will be names of
+        installed NPM packages. If you are interested in developing extensions,
+        check out <%= anchor "events", "events" %> and the
+        <a href="<%= doc_url('extensions') %>">extensions page</a> (which also
+        lists known extensions).
       </p>
       <p>
-        To configure a extension, provide an object in place of a string. The
+        To configure an extension, provide an object in place of a string. The
         object should have the extension identifier as keys and an object of
         options as values:
       </p>
@@ -235,44 +250,93 @@ config["Browser integration tests"] = {
     The following is only relevant if you plan on working with the Buster.JS
     configuration file programatically.
   </p>
-  <h2>Configuration</h2>
+  <h2>The Configuration API</h2>
   <p>
-    The configuration has a list of <%= anchor "groups", "group" %> and
-    functionality to add new groups, filter groups based on various criteria,
-    and more.
+    The <code>configuration</code> object allows you to work with a collection
+    of groups, possibly read from a file.
   </p>
+  <pre><code>// /tmp/buster.js:
+// var config = exports;
+//
+// exports["Browser tests"] = {
+//     environment: "browser",
+//     sources: ["client/src/*.js"],
+//     tests: ["client/test/*.js"]
+// };
+//
+// exports["Server tests"] = {
+//     environment: "node",
+//     tests: ["server/test/*.js"]
+// };
+
+var configuration = require("buster-configuration");
+
+var config = configuration.create();
+config.loadFile("/tmp/buster.js");
+config.filterEnv("browser");
+config.filterGroup(/browser/);
+
+config.resolveGroups(function (err, groups) {
+    // groups[0].resourceSet.load ==
+    // ["/client/src/todo-list.js", "/client/test/todo-list-test.js"]
+});
+</code></pre>
   <h3><code>conf.groups</code></h3>
   <p>
-    An array consisting of all the <%= anchor "groups", "group" %> in the config
-    file.
+    An array consisting of all the <%= anchor "groups", "group" %>.
   </p>
-  <h3><code>conf.resolveGroups(function (err) {})</code></h3>
+  <h3><code>conf.resolveGroups(function (err, groups) {})</code></h3>
   <p>Resolves all of the groups. See <%= anchor "group-resolve" %>.</p>
   <h3><code>conf.addGroup(name, groupData)</code></h3>
   <p>Adds a new group.</p>
   <h3><code>conf.filterEnv(envName)</code></h3>
-  <p>Permanently removes all groups that aren't of <code>envName</code>'s environment. The available environments are <code>"browser"</code> and <code>"node"</code>.</p>
+  <p>
+    Permanently removes all groups that aren't of <code>envName</code>'s
+    environment. The available environments are <code>"browser"</code>
+    and <code>"node"</code>.
+  </p>
   <h3><code>conf.filterGroup(regex)</code></h3>
-  <p>Permanently filters out groups which name doesn't match the regex.</p>
+  <p>
+    Permanently filters out groups which name doesn't match the regex. If the
+    name provided is a string, it will be converted to a regular expression
+    through the <code>RegExp</code> constructor.
+  </p>
 </div>
 <div class="section">
   <h2 id="<%= id "group" %>">Configuration group</h2>
-
   <p>The individual object in the configuration's list of groups.</p>
-
   <h3 id="<%= id "group-resource-set" %>"><code>grp.resourceSet</code></h3>
-  <p>A <%= m "resources" %> resource set, containing resources for all the objects in the config file group.</p>
-
-  <p>This property is undefined before <%= anchor "resolve", "group-resolve" %> is called.</p>
-
+  <p>
+    A <%= m "resources" %> resource set, containing resources for all the
+    objects in the config group.
+  </p>
+  <p>
+    This property is undefined until <%= anchor "resolve", "group-resolve" %>
+    is called.
+  </p>
   <h3 id="<%= id "group-resolve" %>">var <%= m "promise", "promise" %> = grp.resolve()</code></h3>
-  <p>Creates the resource set by performing all globs and file system operations neccesary to build up the full resource set for the config group. The group is pretty much useless until this method is called. It won't even have a <code>resourceSet</code> property defined.</p>
-  <p>The promise is resolved when the group has been fully loaded.</p>
-
+  <p>
+    Creates the resource set by performing all globs and file system operations
+    neccesary to build up the full resource set for the config group. The group
+    is pretty much useless until this method is called. It won't even have
+    a <code>resourceSet</code> property defined.
+  </p>
+  <p>
+    The promise is resolved with the <code>resourceSet</code> object when the
+    group has been fully loaded.
+  </p>
   <h3 id="<%= id "group-setup-framework" %>">grp.setupFrameworkResources()</h3>
-  <p>Adds all the framework resources such as <%= m "assert" %>, <%= m "promise" %>, <%= m "test" %> and Sinon to the resource set for the group. These resources are prepended so they appear before the files of the config group, so that everything is loaded beforehand.</p>
-  <p>This is a separate method so you can easily inject your own wiring code between the framework code and the group specific code.</p>
-
+  <p>
+    Adds all the framework resources such as <%= m "assert" %>, <%= m "promise"
+    %>, <%= m "test" %> and Sinon to the resource set for the group. These
+    resources are prepended so they appear before the files of the config group,
+    so that everything is loaded beforehand.
+  </p>
+  <p>
+    <strong>NOTE</strong>: This method is going away in favor of generic
+    hooks. Buster will load its "framework resources" as extensions using these
+    hooks (work in progress).
+  </p>
   <pre><code>grp.resolve().then(function () {
     // Load custom-thing before the files in the config group.
     grp.resourceSet.addResource("/custom-thing", {...});
@@ -303,27 +367,76 @@ config["Browser integration tests"] = {
   <dl>
     <dt><code>etag</code></dt>
     <dd>
+      The <code>etag</code> is used by Buster to cache resources on the
+      server. If the <code>etag</code> has not changed since the last time the
+      resource was uploaded on the server, it will use the cached version. This
+      improves the performance, especially if only one or two out of potentially
+      tens or hundreds of files changed since the last run.
     </dd>
     <dt><code>minify</code></dt>
     <dd>
+      If set to <code>true</code>, Buster will serve this resource minified with
+      Ugliy.JS.
     </dd>
     <dt><code>combine</code></dt>
     <dd>
+      Takes an array of resources to combine into one. Useful to run tests
+      against a combined build of your project:
+      <pre><code>config["Browser build tests"] = {
+    environment: "browser",
+    libs: ["lib/**.js"],
+    resources: [
+        "src/**.js",
+        { path: "/mylib.min.js",
+          combine: ["src/base.js", "src/dom.js"],
+          minify: true  }
+    ],
+    sources: ["/mylib.min.js"],
+    tests: ["test/**.js"]
+};
+</code></pre>
+      <p>
+        The above configuration will run tests against a combined and minified
+        bundle of your application. Note that the <code>combine</code> property
+        unfortunately does <strong>not</strong> understand globs (yet).
+      </p>
+      <p>
+        When <code>combine</code> is set, you can not set <code>content</code>
+        or <code>file</code>.
+      </p>
     </dd>
     <dt><code>headers</code></dt>
     <dd>
+      Custom headers to serve the resource with. Content is an object where the
+      property name is the header name, and the value is the header value.
     </dd>
     <dt><code>content</code></dt>
     <dd>
+      Contents to serve as a string or a <code>Buffer</code>. When
+      <code>content</code> is set, you can not set <code>combine</code> or
+      <code>file</code>.
     </dd>
     <dt><code>file</code></dt>
     <dd>
+      File to serve. When <code>file</code> is set, you can not set
+      <code>combine</code> or <code>content</code>.
     </dd>
   </dl>
   <h4>Proxy resources</h4>
   <dl>
     <dt><code>backend</code></dt>
     <dd>
+      Another HTTP server that will handle the requests for <code>path</code>.
+      <pre><code>config["Browser integration tests"] = {
+    resources: [
+        { path: "/todo-items", backend: "http://localhost:8000/todo/todo-items" }
+    ]
+};</code></pre>
+      <p>
+        With this configuration, a request to
+        <code>buster.env.path + "/todo-items/2"</code> would be proxyed to
+        <code>"http://localhost:8000/todo/todo-items/2"</code>
+      </p>
     </dd>
   </dl>
 </div>
