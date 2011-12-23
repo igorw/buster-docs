@@ -132,7 +132,11 @@ config["Browser tests"] = {
     <dd>
       <p>
         Additional resources that will be made available for test runs, but not
-        explicitly loaded. Value is an array of resources.
+        explicitly loaded. Value is an array of resources. Resources are served
+        from a context path on the server. To request a resource in your test
+        runs, you need to scope resource paths with <code>buster.env.path</code>.
+        So, the resource <code>/some/cookies.json</code> can be requested as
+        <code>jQuery.get(buster.env.path + "/some/cookies.json");</code>
       </p>
       <p>
         A resource can be a string, i.e. a glob pattern/file name, or an object.
@@ -199,14 +203,29 @@ config["Browser integration tests"] = {
     </dd>
     <dt><code>extensions</code></dt>
     <dd>
-      Extensions to load at runtime. The value is an array of strings understood
-      by the <%= m "module-loader" %> which will be pinged when the
-      configuration is loaded.
-      <a href="<%= doc_url('extensions') %>">List of known extensions</a>. In
-      most cases, these strings will be names of installed NPM packages. If you
-      are interested in developing extensions, check out <%= anchor "events",
-      "events" %> and the
-      <a href="<%= doc_url('extensions') %>">extensions page</a>.
+      <p>
+        Extensions to load at runtime. The value is an array of strings understood
+        by the <%= m "module-loader" %> which will be pinged when the
+        configuration is loaded.
+        <a href="<%= doc_url('extensions') %>">List of known extensions</a>. In
+        most cases, these strings will be names of installed NPM packages. If you
+        are interested in developing extensions, check out <%= anchor "events",
+                                                               "events" %> and the
+        <a href="<%= doc_url('extensions') %>">extensions page</a>.
+      </p>
+      <p>
+        To configure a extension, provide an object in place of a string. The
+        object should have the extension identifier as keys and an object of
+        options as values:
+      </p>
+      <pre><code>config["Browser integration tests"] = {
+    extensions: [
+        "buster-jstestdriver",
+        { "buster-coverage": {
+            "outputDirectory": "coverage"
+        }}
+    ]
+};</code></pre>
     </dd>
   </dl>
 </div>
@@ -269,4 +288,42 @@ config["Browser integration tests"] = {
     grp.prependToLoad("/something-else");
 });
 </code></pre>
+</div>
+<div class="section">
+  <h2 id="<%= id "supporting-objects" %>">Supporting objects</h2>
+  <h3 id="<%= id "resource" %>">Resource</h3>
+  <p>
+    A "resource" is something exposed on the server when you run browser tests
+    using <code>buster-server</code> and
+    <code>buster-test</code>. Exposing the resource <code>/something.json</code>
+    allows you to request it in your tests using e.g.
+    <code>jQuery.ajax({ url: "something.json" });</code>.
+  </p>
+  <h4>Content/file resources</h4>
+  <dl>
+    <dt><code>etag</code></dt>
+    <dd>
+    </dd>
+    <dt><code>minify</code></dt>
+    <dd>
+    </dd>
+    <dt><code>combine</code></dt>
+    <dd>
+    </dd>
+    <dt><code>headers</code></dt>
+    <dd>
+    </dd>
+    <dt><code>content</code></dt>
+    <dd>
+    </dd>
+    <dt><code>file</code></dt>
+    <dd>
+    </dd>
+  </dl>
+  <h4>Proxy resources</h4>
+  <dl>
+    <dt><code>backend</code></dt>
+    <dd>
+    </dd>
+  </dl>
 </div>
