@@ -27,7 +27,7 @@
   <h3 id="<%= id "oncapture" %>"><code>server.oncapture = function(req, res, <%= anchor "client", "captured-client" %>){}</code></h3>
   <p>This property is required.</p>
 
-  <p>Capturing a browser is always done via a GET request to the <%= anchor "captureUrl", "capture-url" %>. That request will set up everything buster-server needs to perform the capture (read: load the HTML page with the frameset).</p>
+  <p>Capturing a browser is always done via a GET request to the <%= anchor "capturePath", "capture-path" %>. That request will set up everything buster-server needs to perform the capture (read: load the HTML page with the frameset).</p>
 
   <p>You are required to define the behaviour of the HTTP stack when everything has been set up and is ready to go.</p>
 
@@ -40,7 +40,7 @@
 
   <p>You are free to do whatever you want here. You don't have to redirect to the <%= anchor "captured client's URL", "captured-client-url" %>. You can for example redirect to a page that lets you configure additional options for the captured browser instead, and then redirect to the <code>client.url</code> when you're done.<</p>
 
-  <h3 id="<%= id "capture-url" %>"><code>server.captureUrl = "/capture"</code></h3>
+  <h3 id="<%= id "capture-path" %>"><code>server.capturePath = "/capture"</code></h3>
   <p>The default value of this property is <code>"/capture"</code>.</p>
 
   <h3 id="<%= id "capture-header" %>"><code>server.header(height, resourceSet)</code></h3>
