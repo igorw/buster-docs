@@ -11,8 +11,11 @@
 <div class="section">
   <h2>Creating a server</h2>
 
-  <h3 id="<%= id "create" %>"><code>var server = bCaptureServer.create(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
+  <h3 id="<%= id "create" %>"><code>var server = bCaptureServer.create()</code></h3>
   <p>Creates a new server instance.</p>
+
+  <h3 id="<%= id "attach" %>"><code>server.attach(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
+  <p>Attaches the buster-capture-server to a Node.js HTTP server.</p>
   <p>Normally, node HTTP servers will emit the <code>"request"</code> event to all listeners on all requests. This is <strong>not</strong> the case with buster-server. buster-server injects itself into the HTTP server so that the <code>"request"</code> handlers only run for requests that buster-server doesn't handle. Other than that, buster-server leaves the HTTP server untouched.</p>
 </div>
 
