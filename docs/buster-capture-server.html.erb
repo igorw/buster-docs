@@ -11,8 +11,11 @@
 <div class="section">
   <h2>Creating a server</h2>
 
-  <h3 id="<%= id "create" %>"><code>var server = bCaptureServer.create(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
+  <h3 id="<%= id "create" %>"><code>var server = bCaptureServer.create()</code></h3>
   <p>Creates a new server instance.</p>
+
+  <h3 id="<%= id "attach" %>"><code>server.attach(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
+  <p>Attaches the buster-capture-server to a Node.js HTTP server.</p>
   <p>Normally, node HTTP servers will emit the <code>"request"</code> event to all listeners on all requests. This is <strong>not</strong> the case with buster-server. buster-server injects itself into the HTTP server so that the <code>"request"</code> handlers only run for requests that buster-server doesn't handle. Other than that, buster-server leaves the HTTP server untouched.</p>
 </div>
 
@@ -24,7 +27,7 @@
   <h3 id="<%= id "oncapture" %>"><code>server.oncapture = function(req, res, <%= anchor "client", "captured-client" %>){}</code></h3>
   <p>This property is required.</p>
 
-  <p>Capturing a browser is always done via a GET request to the <%= anchor "captureUrl", "capture-url" %>. That request will set up everything buster-server needs to perform the capture (read: load the HTML page with the frameset).</p>
+  <p>Capturing a browser is always done via a GET request to the <%= anchor "capturePath", "capture-path" %>. That request will set up everything buster-server needs to perform the capture (read: load the HTML page with the frameset).</p>
 
   <p>You are required to define the behaviour of the HTTP stack when everything has been set up and is ready to go.</p>
 
@@ -37,7 +40,7 @@
 
   <p>You are free to do whatever you want here. You don't have to redirect to the <%= anchor "captured client's URL", "captured-client-url" %>. You can for example redirect to a page that lets you configure additional options for the captured browser instead, and then redirect to the <code>client.url</code> when you're done.<</p>
 
-  <h3 id="<%= id "capture-url" %>"><code>server.captureUrl = "/capture"</code></h3>
+  <h3 id="<%= id "capture-path" %>"><code>server.capturePath = "/capture"</code></h3>
   <p>The default value of this property is <code>"/capture"</code>.</p>
 
   <h3 id="<%= id "capture-header" %>"><code>server.header(height, resourceSet)</code></h3>
