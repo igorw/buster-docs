@@ -1,4 +1,5 @@
-        <h1><code>buster.testRunner</code></h1>
+buster.testRunner
+
         <dl>
           <dt>Version</dt>
           <dd>See <%=m "test", "buster-test" %></dd>
@@ -41,6 +42,12 @@ runner.<%=anchor "runSuite" %>([<%=m "test/test-context", "testContext" %>, test
           <%= event("context:end", [[:testContext, "test/test-context"]]) %>
           <p>
             Emitted every time a context is completed.
+          </p>
+          <%= event("context:unsupported", [[:unsupported, "#unsupported"]]) %>
+          <p>
+            Emitted every time a context fails its requirements (when that
+            happens, neither <code>context:start</code> or
+            <code>context:end</code> is emitted).
           </p>
           <%= event("test:setUp", [[:test, "test/test-context#test"]]) %>
           <p>
@@ -233,7 +240,7 @@ runner.timeout = 500;</code></pre>
 }</code></pre>
           <h3 id="<%= id('exception') %>"><code>exception</code></h3>
           <p>
-            An exception-like object, emitted with 
+            An exception-like object, emitted with
             <%=e "uncaughtException" %>.
             In browsers, this object does not have a stack trace.
           </p>
@@ -241,6 +248,16 @@ runner.timeout = 500;</code></pre>
     name: "Type of exception",
     message: "Exception message",
     stack: "Stack trace as string"
+}</code></pre>
+          <h3 id="<%= id('unsupported') %>"><code>unsupported</code></h3>
+          <p>
+            Information about an unsupported context. Emitted with
+            <%=e "context:unsupported" %>. Contains an array of names of failed
+            requirements and a context object.
+          </p>
+          <pre><code>{
+    context: <%=m "context") %>,
+    unsupported: ["label1", "label2"]
 }</code></pre>
         </div>
 
