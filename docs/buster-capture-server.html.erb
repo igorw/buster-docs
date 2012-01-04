@@ -6,7 +6,10 @@
   <dd><code>require("buster-capture-server");</code></dd>
 </dl>
 
-<p>Loads HTML documents (sessions) into browsers (captured clients) via a HTTP API and/or a JavaScript API. Internally in buster, we create one session per test run. There are a number of uses for buster-server other than running tests, though. One example is <a href="http://github.com/augustl/slidebuster">Slidebuster</a>, where a session is a presentation, and the generic messaging in buster-capture-server is used to synchronize state across the captured browsers.</p>
+<p>Loads resource sets (HTML, CSS, JavaScript, images, ...) into browsers (captured slaves) via an HTTP API and/or a JavaScript API.</p>
+<p>Resource sets are loaded into the server as sessions. Sessions are queued, so that when the current session ends, the next session in the queue is immediately loaded into the captured slaves.</p>
+<p>Buster.JS creates one session for each test run.</p>
+<p>buster-capture-server is also completely reusable, and has no direct knowledge of running tests. One example is <a href="http://github.com/augustl/slidebuster">Slidebuster</a>, where a session is a presentation, and the generic messaging in buster-capture-server is used to synchronize current slide state across the captured browsers.</p>
 
 <div class="section">
   <h2>Creating a server</h2>
@@ -16,69 +19,75 @@
 
   <h3 id="<%= id "attach" %>"><code>server.attach(<a href="http://nodejs.org/docs/latest/api/http.html">httpServer</a>)</code></h3>
   <p>Attaches the buster-capture-server to a Node.js HTTP server.</p>
-  <p>Normally, node HTTP servers will emit the <code>"request"</code> event to all listeners on all requests. This is <strong>not</strong> the case with buster-server. buster-server injects itself into the HTTP server so that the <code>"request"</code> handlers only run for requests that buster-server doesn't handle. Other than that, buster-server leaves the HTTP server untouched.</p>
+  <p>The procedure injects itself into the request event of the http server so that the <code>"request"</code> handlers only run for requests that buster-server doesn't handle. Other than that, buster-server leaves the HTTP server untouched.</p>
 </div>
 
 <div class="section">
-  <h2>Capturing browsers</h2>
+  <h2>Capturing slaves</h2>
 
-  <p>Capturing browsers essentialy means opening a special buster-server HTML page in a web browser. This page has a frameset that consists of one hidden and one visible frame. The hidden frame is internal to buster-server and is responsible for loading sessions into the other frame, the visible one. This allows buster-server to dynamically change the visible part of the page, via network commands that buster-server sends to the hidden frame.</p>
+  <p>A captured slave is (typically) a browser that is "captured" by loading an HTML page with a communication channel (event emitter) between the buster-capture-server and the browser. When the browser receives the event for loading a session, a frame gets its <code>src</code> attribute set to the URL that corresponds to the root HTML page for that session.</p>
+  <p>For Buster.JS testing, the root document contains the specified testbed or the default plain testbed, and <code>&lt;script&gt;</code> tags for all the loadable scripts from the config file.</p>
+  <p>Framesets are used so that the session root HTML page spans the full viewport of the captured slave (browser).</p>  
 
-  <h3 id="<%= id "oncapture" %>"><code>server.oncapture = function(req, res, <%= anchor "client", "captured-client" %>){}</code></h3>
+  <h3 id="<%= id "oncapture" %>"><code>server.oncapture = function(req, res, <%= anchor "slave", "captured-slave" %>){}</code></h3>
   <p>This property is required.</p>
 
-  <p>Capturing a browser is always done via a GET request to the <%= anchor "capturePath", "capture-path" %>. That request will set up everything buster-server needs to perform the capture (read: load the HTML page with the frameset).</p>
+  <p>Capturing a slave is always done via a GET request to the <%= anchor "capturePath", "capture-path" %>.</p>
 
-  <p>You are required to define the behaviour of the HTTP stack when everything has been set up and is ready to go.</p>
+  <p>You are required to define the behaviour of the HTTP request.</p>
 
-  <pre><code>server.oncapture = function (req, res, <%= anchor "client", "captured-client" %>) {
-    res.writeHead(302, {"Location": client.<%= anchor "url", "captured-client-url" %>});
+  <pre><code>server.oncapture = function (req, res, <%= anchor "slave", "captured-slave" %>) {
+    res.writeHead(302, {"Location": slave.<%= anchor "url", "captured-slave-url" %>});
     res.end();
 }</code></pre>
  
-  <p>As with all HTTP requests, the request will hang and eventually time out if you don't manually <code>end()</code> the request.</p>
+  <p>It's important that you <code>end()</code> the request. If you don't, it'll hang indefinitely and the browser will eventually time out.</p>
 
-  <p>You are free to do whatever you want here. You don't have to redirect to the <%= anchor "captured client's URL", "captured-client-url" %>. You can for example redirect to a page that lets you configure additional options for the captured browser instead, and then redirect to the <code>client.url</code> when you're done.<</p>
+  <p>You are free to do whatever you want here. You don't have to redirect to <code>slave.url</code>. You can for example redirect to a page that lets you configure additional options for the captured browser, and then redirect to the <code>slave.url</code> when you're done.</p>
 
   <h3 id="<%= id "capture-path" %>"><code>server.capturePath = "/capture"</code></h3>
   <p>The default value of this property is <code>"/capture"</code>.</p>
 
   <h3 id="<%= id "capture-header" %>"><code>server.header(height, resourceSet)</code></h3>
-  <p>Adds a header to captured browsers. It is positioned above the main session frame, and is given the height specified. It will get the root resource loaded into it. It will stay in place when you change session, and even when there's no session in progress.</p>
-  <pre><code>myServer.header(80, {
-    resources: {"/": {content: "Hello, World!"}}
-});</code></pre>
+  <p>Adds a header to captured browsers. It is positioned above the main session frame, and is given the height specified. The document in the frame will be the root resource in the resource set. It will stay in place when you change session, and even when there's no session in progress.</p>
   <p>TODO: Write about the environment. We probably want messaging here, for example.</p>
 </div>
 
 <div class="section">
   <h2>Sessions</h2>
 
-  <p>Sessions live in a FIFO queue. A session is loaded immediately if there are no sessions in progress at the time, or is added to the queue of sessions if there is one in progress. As soon as the in-progress session ends, the next session in the queue is automatically loaded.</p>
-  <p>A session is very similar to a resource set. In fact, the APIs for creating a session takes a resource set payload 1:1.</p>    
-  <p>When the session starts, buster-server sets the <code>"src"</code> property of the visible <code>&lt;frame&gt;</code> in each of the servers captured browsers to the URL to the root resource of the sessions resource set.</p>
+  <p>A session is the unit of work in a buster-capture-server.</p>
+  <p>When a session is created, it is added to the bottom of the session queue. As soon as there are no other sessions above it in the queue, it is loaded into the captured slaves. When there are no other sessions in the queue, the session loads immediately upon creation.</p>
+  <p>Loading a session into a captured slave basically means setting the <code>src</code> attribute of the session frame in the captured slave to the path to the root HTML document of the session's resource set.</p>
 
-  <h3 id="<%= id "create-session" %>"><code>var sess = server.createSession(sessionData)</code></h3>
-  <p>Creates a new session. <code>sessionData</code> is identical to that of a resource set. TODO: link to resource set docs here.</p>
+  <h3 id="<%= id "create-session" %>"><code>var sess = server.createSession(<%= anchor "sessionPayload", "session-payload" %>)</code></h3>
+  <p>Creates a new session.</p>
+
+  <h3 id="<%= id "session-payload" %>">Session payload</h3>
+  <p>The session payload is an object where the following properties are used:</p>
+  <p><code>resourceSet</code>: A resource set instance. The root HTML page is the resource with the path <code>"/"</code>. It is assumed to be a HTML document. Everything in <code>load</code> of the resource set is added as script tags to the root HTML page. All other resources are made available to the session. Relative paths should be used since resources are not served on root and the context path isn't available to the session.</p>
+  <p><code>joinable</code>: Defaults to <code>true</code>. A joinable session will be loaded in slaves that are captured while the session is active. In Buster.JS it's set to false for test run sessions.</p>
 
   <h3 id="<%= id "create-session-http" %>">POST /sessions</h3>
 
-  <p>Creates a new session.</p>
+  <p>Creates a new session with HTTP.</p>
 
   <h4>Request body</h4>
-  <p>The payload for creating a session is identical to that of a resource set. TODO: Link to resource-set docs here.</p>
+  <p>A JSON encoded <%= anchor "sessionPayload", "session-payload" %>. Instead of a resource set instance, a resource set object payload is instead used. TODO: Link to the docs for resource set object payloads.</p>
 
   <h4>Response body</h4>
+  <p>A JSON encoded object with relevant information about the newly created session.</p>
   <pre><code>{
     "id": <%= anchor "session-id" %>,
-    "rootPath": <%= anchor "session-root-path" %>,
-    "bayeuxClientUrl": <%= anchor "session-bayeux-url" %>,
+    "contextPath": <%= anchor "session-context-path" %>
+    "resourceSetPath": <%= anchor "session-resource-set-path" %>
+    "bayeuxClientPath": <%= anchor "session-bayeux-path" %>,
 }</code></pre>
 
   <h4>Response status code</h4>
   <dl>
     <dt>201</dt>
-    <dd>Session successfully created and will be loaded immediately.</dd>
+    <dd>Session successfully created and will be loaded immediately due to empty session queue.</dd>
     <dt>202</dt>
     <dd>Session successfully created and was queued.</dd>
   </dl>
@@ -86,36 +95,46 @@
   <h3 id="<%= id "stop-session" %>"><code>server.destroySession(<%= anchor "sess.id", "session-id" %>)</code></h3>
   <p>Stops the session with the given ID.</p>
 
-  <h3 id="<%= id "stop-session-http" %>">DELETE <%= anchor "/session-root-path", "session-root-path" %></h3>
-  <p>Stops the session with the given root path.</p>
+  <h3 id="<%= id "stop-session-http" %>">DELETE <%= anchor "/session-context-path", "session-context-path" %></h3>
+  <p>Stops the session with the given context path.</p>
 
   <h3 id="<%= id "session-id" %>"><code>sess.id</code></h3>
   <p>The ID of the session. TODO: Write about how this ID is useful for faye messaging.</p>
 
-  <h3 id="<%= id "session-root-path" %>"><code>sess.rootPath</code></h3>
-  <p>Used to kill the session.</p>
+  <h3 id="<%= id "session-context-path" %>"><code>sess.contextPath</code></h3>
+  <p>Used to reference the session by URL, such as when killing the session.</p>
 
-  <h3 id="<%= id "session-bayeux-url" %>"><code>sess.bayeuxClientUrl</code></h3>
+  <h3 id="<%= id "session-resource-set-path" %>"><code>sess.resourceSetPath</code></h3>
+  <p>The path to the root resource of the sessions resource set.</p>
+
+  <h3 id="<%= id "session-bayeux-path" %>"><code>sess.bayeuxClientPath</code></h3>
   <p>The URL to use for creating Faye/bayeux clients. This property is also available on the server itself if you have programmatic access to it. The URL is the same for all sessions.</p>
+
+  <h3 id="<%= id "session-publish" %>"><code>sess.publish(url, message)</code></h3>
+  <p>Publishes a message on the session. Will be published to all captured slaves with the session loaded.</p>
+
+  <h3 id="<%= id "session-subscribe" %>"><code>sess.subscribe(url, handler)</code></h3>
+  <p>Subscribes on messages sent to the session. Will receive messages from all captured slaves with the session loaded, as well as the session object self.</p>
 </div>
 
 <div class="section">
   <h2>Session browser runtime</h2>
-  <p>These global variables are automatically available to all sessions. They are loaded before the session scripts so they can safely be referenced at all times in your session scripts.</p>
+  <p>These global variables are loaded before everything else in your session.</p>
 
   <h3><code>buster</code></h3>
-  <p>The buster-core module in its entirety.</p>
+  <p>The <%= m "core" %> module in its entirety.</p>
 
-  <h3><code>buster.bayeuxClient</code></h3>
-  <p>The Faye/bayeux client to use for messaging to other clients of the buster-server.</p>
-  <p>buster-server imposes no restrictions on usage or event names. NOTE: this is not true, there are some events that are internal to buster-server sessions for starting and stopping sessions etc.</p>
-  <p>Read documentation for the Faye clients <a href="http://faye.jcoglan.com/browser.html">here</a>.</p>
+  <h3><code>buster.publish(url, message)</code></h3>
+  <p>Publishes messages on the session event emitter. Will be published to all captured slaves listening on the event, including the sender, as well as the session object on the server itself.</p>
+
+  <h3><code>buster.subscribe(url, handler)</code></h3>
+  <p>Subscribes to messages on the session event emitter. Will be published to all other captured slaves as well as the session object on the server itself.</p>
 </div>
 
 <div class="section">
-  <h2 id="<%= id "captured-client" %>">Captured client</h2>
-  <p>A captured client is the object that represents a captured browser. You usually only deal with this object in <code><%= anchor "server.oncapture", "oncapture" %></code>.</p>
+  <h2 id="<%= id "captured-slave" %>">Captured slave</h2>
+  <p>A captured slave is the object that represents a captured slave/browser. You usually only deal with this object in <code><%= anchor "server.oncapture", "oncapture" %></code>.</p>
 
-  <h3 id="<%= id "captured-client-url" %>"><code>client.url</code></h3>
+  <h3 id="<%= id "captured-slave-url" %>"><code>slave.url</code></h3>
   <p>The URL to open in the browser in order to initiate the capture and load the frameset.</p>
 </div>
