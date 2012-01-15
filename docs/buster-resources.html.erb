@@ -190,43 +190,142 @@ resourceSet.deserialize(JSON.parse(data)).then(function (set) {
     outside the resource set root directory.
   </p>
 
+  <h3 id="<%= id "resource-set-length" %>"><code>rs.length</code></h3>
+  <p>
+    The length of the resource set is the number of resources in it.
+    Resource sets expose resources through an array-like interface with
+    <code>length</code> and numeric properties.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-resources" %>"><code>var promise = rs.addResources(resources)</code></h3>
+  <p>
+    Adds multiple resources. Argument is an array of resources as accepted by
+    <%= anchor "<code>addResource</code>", "resource-set-add-resource" %>.
+    The method returns a promise that resolves with an array of resources.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-resource" %>"><code>var promise = rs.addResource(<%= anchor "resource", "extended-resource-spec" %>)</code></h3>
+
+  <p>
+    Adds a resource. The argument can be either a proper
+    <%= anchor "<code>resource</code>", "resource" %> instance, a string (either
+    a file path or a glob, see
+    <%= anchor "<code>addGlobResource</code>", "resource-set-add-glob-resource" %>)
+    or an object with properties describing a resource
+    (<%= anchor "extended resource 'spec'", "extended-resource-spec" %>).
+    The method returns a promise that resolves with a single resource.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-glob-resource" %>"><code>var promise = rs.addGlobResource(path)</code></h3>
+
+  <p>
+    Add all files matching the glob as resources. Returns a promise that
+    resolves with an array of resources. The glob is resolved relatively to the
+    resource set <code>rootPath</code>.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-file-resources" %>"><code>var promise = rs.addFileResources(paths, rs)</code></h3>
+  <p>
+    Add multiple files as resources with common meta data <code>rs</code>. Each
+    path will be passed along with <code>rs</code> to
+    <%= anchor "addFileResource", "resource-set-add-file-resource" %>.
+    Returns a promise that resolves with an array of resources.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-file-resource" %>"><code>var promise = rs.addFileResource(path, rs)</code></h3>
+
+  <p>
+    Adds a file as resource. The path is resolved against the resource
+    set <code>rootPath</code>. You can provide the path to serve the resource
+    through as part of the <%= anchor "<code>rs</code>", "resource-spec" %>
+    object. Returns a promise that resolves with a single resource.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-combined-resource" %>"><code>var promise = rs.addCombinedResource(sources, rs)</code></h3>
+  <p>
+    Add a resource whos content is the combination of other resources in the
+    set. <code>sources</code> is an array of paths to other pre-existing
+    resources. Returns a promise that resolves with a single resource.
+  </p>
+
+  <h3 id="<%= id "resource-set-get" %>"><code>var resource = rs.get(path)</code></h3>
+  <p>
+    Returns the resource at <code>path</code>. The path will be normalized
+    before lookup, so <code>rs.get("buster.js") === rs.get("/buster.js");</code>
+  </p>
+
+  <h3 id="<%= id "resource-set-remove" %>"><code>rs.remove(path)</code></h3>
+  <p>
+    Removes a resource with the  given path. Will also remove it
+    from <code>loadPath</code> if present.
+  </p>
+
+  <h3 id="<%= id "resource-set-serialize" %>"><code>var promise = rs.serialize()</code></h3>
+  <p>
+    Serializes the resource set. The serialization format is a plain JavaScript
+    object with two properties: <code>resources</code> and <code>load</code>,
+    both of which are arrays. The serialized object can safely be JSON encoded
+    for wire transfer. The serialization will also have all resource contents
+    loaded in a flat structure.
+  </p>
+
+  <h3 id="<%= id "resource-set-concat" %>"><code>var newRs = rs.concat(rs2, rs3, ...)</code></h3>
+  <p>
+    Create a new resource set by combining this one with one or more other
+    resource sets. Does not mutate any of the existing resource sets.
+  </p>
+
+
+  <h3 id="<%= id "resource-set-append-load" %>"><code>rs.appendLoad(paths)</code></h3>
+  <p>
+    Append paths to the load path. Paths may be glob patterns. Any path does not
+    match an existing resource in the resource set will be added from disk
+    before added to the load path. This is different from calling
+    <code>append</code> directly on the <code>loadPath</code>, where a missing
+    resource causes an error.
+  </p>
+
+  <h3 id="<%= id "resource-set-prepend-load" %>"><code>rs.prependLoad(paths)</code></h3>
+  <p>
+    Like <code>appendLoad</code>, only prepend to the load path in place of
+    append.
+  </p>
+
+  <h3 id="<%= id "resource-set-load-path" %>"><code>rs.loadPath</code></h3>
+  <p>
+    An object that allows you to control what resources should be loaded when
+    the resource set is loaded.
+  </p>
 </div>
+
 <div class="section">
-  <h2>WARNING: This is old docs</h2>
-
-  <h3 id="<%= id "resource-set-add-resource" %>"><code>rs.addResource(path, <%= anchor "resourcePayload", "resource-payload" %>)</code></h3>
-
-  <p>Adds a new resource, per the resource payload data structure. The path has to start with a slash.</p>
-
-  <h3 id="<%= id "resource-set-add-file" %>"><code>rs.addFile(filePath, options)</code></h3>
-
-  <p>A convenience method for adding a file by path to a resource set. The file is not loaded immediately, but upon <code><%= anchor "getResource", "resource-set-get-resource" %></code>. If the file doesn't exist, you won't get an error message when calling this function.</p>
-
-  <p><code>rs.addFile("/absolute/path/to/file");</code> will create a resource for that file with the resource set path being the same as the absolute path to the file.</p>
-
-  <p><code>rs.addFile("/absolute/path/to/file", {path: "/my-file"});</code> will create a resource for that file with a custom resource set path.</p>
-
-  <p>Other than <code>path</code>, the options passed are normal <%= anchor "resource payloads", "resource-payload" %>, i.e. <code>rs.addFile("/my/file", {headers: {"Content-Type": "text/plain"}})</code>.</p>
-
-  <h3 id="<%= id "resource-set-remove" %>"><code>rs.removeResource(path)</code></h3>
-
-  <p>Removes a resource with the  given path. Will also remove it from <code>load</code> if present.</p>
-
-  <h3 id="<%= id "resource-set-get-resource" %>"><code>rs.getResource(path, function (err, resource) {})</code></h3>
-
-  <p>Gets a resource by path. If there was an error, the <code>err</code> will be none-<code>undefined</code>. The resource is a read-only representation of the resource. TODO: document those.</p>
-
-  <h3 id="<%= id "resource-set-get-resource-http" %>"><code>rs.getResourceViaHttp(req, res)</code></h3>
-
-  <p>Gets the resource via a HTTP request.</p>
-  <p>Responds with 200 OK with the resource if everything went OK. Responds with the appropriate error codes when stuff goes wrong. TODO: write about customized error handling.</p>
-
-  <h3 id="<%= id "resource-set-get-read-only" %>"><code>rs.getReadOnly(function (err, resourceSet) {})</code></h3>
-
-  <p>Gets a read-only representation of the entire resource set. Any property in this object can be modified without altering the original resource set. All resources has been resolved so their <code>content</code> properties are strings, ready for JSON-ifying etc.</p>
+  <h2 id="<%= id "resource-set-load-path" %>">Resource set load path</h2>
+  <h3 id="<%= id "load-path-append" %>"><code>loadPath.append(paths)</code></h3>
+  <p>
+    Append paths to the end of the load path.
+  </p>
+  <h3 id="<%= id "load-path-prepend" %>"><code>loadPath.prepend(paths)</code></h3>
+  <p>
+    Prepend paths to the beginning of the load path.
+  </p>
+  <h3 id="<%= id "load-path-remove" %>"><code>loadPath.remove(path)</code></h3>
+  <p>
+    Remove path from load path.
+  </p>
+  <h3 id="<%= id "load-path-clear" %>"><code>loadPath.clear()</code></h3>
+  <p>
+    Remove all paths from load path.
+  </p>
+  <h3 id="<%= id "load-path-paths" %>"><code>var paths = loadPath.paths()</code></h3>
+  <p>
+    Returns an array of paths on the load path. This array is just a copy, and
+    can not be used to mutate the load path.
+  </p>
 </div>
 
+
 <div class="section">
+  <h2>WARNING: OLD AND OUTDATED</h2>
   <h2 id="<%= id "resource-set-payload" %>">Resource set payload</h2>
 
   <p>The resource set payload is an object that consists of a set of resources, and optionally a list of resources to automatically load in the root resource. TODO: Write about root resource and auto injection.</p>
