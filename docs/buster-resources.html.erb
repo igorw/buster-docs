@@ -24,8 +24,9 @@
   <pre><code>var resourceMiddleware = require("buster-resources").resourceMiddleware</code></pre>
   <p>
     The resource middleware can serve resource sets over HTTP. In its simplest
-    form, you spin up an instance, designate a context path to it, mount some
-    resource sets, and allow it to handle requests entirely on its own:
+    form, you spin up an instance, designate a context path to it, mount a
+    resource set (only one can be served at any given time), and allow it to
+    handle requests entirely on its own:
   </p>
   <pre><code>var http = require("http");
 var rs = require("buster-resources");
@@ -65,15 +66,8 @@ http.request({
   </p>
   <h3 id="<%= id "resource-middleware-mount" %>"><code>middleware.mount(resourceSet)</code></h3>
   <p>
-    Serve contents of resource set. The middleware looks for available resources
-    in resource sets in the order they are added. So if you call this method
-    twice, and both sets contain a resource at a specific path, the middleware
-    will serve the resource from the set that was added first.
-  </p>
-  <h3 id="<%= id "resource-middleware-unmount" %>"><code>middleware.unmount(resourceSet)</code></h3>
-  <p>
-    Stop serving a specific resource set. If you unmount something which isn't
-    already mounted it is not considered an error, and will just fail silently.
+    Serve contents of resource set. If another resource set is mounted, it will
+    be dismounted.
   </p>
   <h3 id="<%= id "resource-middleware-respond" %>"><code>var willRespond = middleware.respond(req, res)</code></h3>
   <p>
