@@ -1,29 +1,198 @@
 <h1><code>buster.resources</code></h1>
 <dl>
   <dt>Version</dt>
-  <dd>0.1 <span class="date">(2011-10-04)</span></dd>
+  <dd>0.2 <span class="date">(2012-01-15)</span></dd>
   <dt>Module</dt>
   <dd><code>require("buster-resources");</code></dd>
 </dl>
-
-<p>Manages resources for <%= m "capture-server" %>.</p>
+<p>
+  Manages virtual file systems that can be easily transported over
+  network. Buster uses resource collections to ship your source files and tests
+  to <%= m "capture-server" %>, but they can also be used for other purposes,
+  like mixing files on disk and "virtual" files for build scripts and whatnot.
+</p>
+<p>
+  The central data types is the resource - which can be a file on disk, an
+  in-memory "file" or an http proxy - and the resource set. A resource set is a
+  collection of resources that allows the creation of e.g. combined resources,
+  and can be serialized as a whole and transported over the network. Resource
+  sets can be cached and served over http using objects in this module.
+</p>
 
 <div class="section">
-  <h2>Bundling multiple resource sets</h2>
+  <h2>Resource middleware</h2>
+  <pre><code>var resourceMiddleware = require("buster-resources").resourceMiddleware</code></pre>
+  <p>
+    The resource middleware can serve resource sets over HTTP. In its simplest
+    form, you spin up an instance, designate a context path to it, mount some
+    resource sets, and allow it to handle requests entirely on its own:
+  </p>
+  <pre><code>var http = require("http");
+var rs = require("buster-resources");
 
-  <p>This section will contain information about the resource set manager that allows creation of resource set that have a common ground used for caching etc across multiple resource sets.</p>
+var middleware = rs.resourceMiddleware.create("/resources");
+
+var set = rs.resourceSet.create();
+set.addResource({ path: "/buster.js", content: "Booyah!" });
+middleware.mount(set);
+
+http.createServer(function (req, res) {
+    if (middleware.respond(req, res)) { return; }
+    res.writeHead(404);
+    res.end();
+}).listen(8000);
+
+// Test it
+http.request({
+    host: "localhost",
+    port: 8000,
+    path: "/resources/buster.js"
+}, function (res) {
+    res.setEncoding("utf8");
+    res.on("data", function (chunk) {
+        console.log(chunk);
+    });
+});</code></pre>
+  <h3 id="<%= id "resource-middleware-create" %>"><code>var middleware = resourceMiddleware.create(contextPath)</code></h3>
+  <p>
+    Create a new instance to serve resource sets. The middleware will only
+    respond to requests within the context path. The context path is also
+    stripped from the URL before finding resources.
+  </p>
+  <h3 id="<%= id "resource-middleware-set-context-path" %>"><code>middleware.setContextPath(contextPath)</code></h3>
+  <p>
+    Change the context path.
+  </p>
+  <h3 id="<%= id "resource-middleware-mount" %>"><code>middleware.mount(resourceSet)</code></h3>
+  <p>
+    Serve contents of resource set. The middleware looks for available resources
+    in resource sets in the order they are added. So if you call this method
+    twice, and both sets contain a resource at a specific path, the middleware
+    will serve the resource from the set that was added first.
+  </p>
+  <h3 id="<%= id "resource-middleware-unmount" %>"><code>middleware.unmount(resourceSet)</code></h3>
+  <p>
+    Stop serving a specific resource set. If you unmount something which isn't
+    already mounted it is not considered an error, and will just fail silently.
+  </p>
+  <h3 id="<%= id "resource-middleware-respond" %>"><code>var willRespond = middleware.respond(req, res)</code></h3>
+  <p>
+    Responds to an HTTP request, if the request is for a path within the
+    middleware's context path. If the middleware intends to handle the request,
+    this method returns <code>true</code> (even if the request may not have been
+    handled synchronously). Otherwise, it returns <code>false</code>.
+  </p>
+  <p>
+    If the request is within the middleware's context path, but does not match
+    any resources, the middleware will give a 404 response.
+  </p>
+  <h4>Typical usage</h4>
+  <pre><code>var http = require("http");
+var resourceMiddleware = require("buster-resources").resourceMiddleware;
+var middleware = resourceMiddleware.create("/resources");
+
+// Mount sets
+
+http.createServer(function (req, res) {
+    if (middleware.respond(req, res)) { return; }
+
+    // Handle requests not handled by the middleware
+}).listen(8000);</code></pre>
 </div>
 
+<div class="section">
+  <h2>Resource cache</h2>
+  <pre><code>var resourceSetCache = require("buster-resources").resourceSetCache</code></pre>
+  <p>
+    Cache content across resource sets. The resource set cache works as a
+    central repository that you pass resource sets by to have their contents
+    cached, and their missing contents replenished from the cache.
+  </p>
+  <h3 id="<%= id "resource-set-cache-create" %>"><code>var cache = resourceSetCache.create(ttl)</code></h3>
+  <p>
+    Creates a new cache. <code>ttl</code> decides for how many milliseconds
+    individual resources are cached. The default time to live for resources is
+    one hour. Note that the <code>ttl</code> only determines how long resources
+    stay in the internal cache. Once you've <code>inflate</code>d a resource set
+    with a cached resource, it will stick around in that resource set until you
+    remove it on your own.
+  </p>
+  <h3 id="<%= id "resource-set-cache-inflate" %>"><code>var promise = cache.inflate(resourceSet)</code></h3>
+  <p>
+    Inflating a resource set achieves two things: 1) Any resource in the set
+    that has an <code>etag</code> and content will be cached. 2) Any resource in
+    the set that has an <code>etag</code> and whose content is empty, will be
+    replaced with a cached copy, if one exists.
+  </p>
+  <p>
+    Note that the resource cache caches entire resources, not only content. To
+    avoid having certain resources cached, simply make sure they don't have an
+    <code>etag</code> set.
+  </p>
+  <h4>Serving resource sets with a cache</h4>
+  <pre><code>var http = require("http");
+var rs = require("buster-resources");
+
+var middleware = rs.resourceMiddleware.create("/resources");
+var cache = rs.resourceSetCache.create(60 * 60 * 1000);
+
+// Assume 'set' is a resourceSet instance
+cache.inflate(set).then(function (inflatedSet) {
+    middleware.mount(inflatedSet);
+});</code></pre>
+  <h3 id="<%= id "resource-set-cache-resource-versions" %>"><code>var result = cache.resourceVersions(resourceSet)</code></h3>
+  <p>
+    Returns an object with information about all path/etag combinations
+    contained in the cache:
+  </p>
+  <pre><code>set.addResource({ path: "/buster.js", etag: "123", content: "OK" });
+set2.addResource({ path: "/buster.js", etag: "abc", content: "Newer" });
+
+when.all([cache.inflate(set1), cache.inflate(set2)], function () {
+    cache.resourceVersions() === {
+        "/buster.js": ["abc", "123"]
+    };
+});</code></pre>
+</div>
 
 <div class="section">
-  <h2>Resource set</h2>
+  <h2>Resource sets</h2>
+  <pre><code>var resourceSet = require("buster-resources").resourceSet</code></pre>
+  <p>
+    A resource set lets you represent a set of files associated with paths. It
+    lets you create bundles of multiple resources, proxy certain paths to other
+    HTTP servers, preprocess resources (for example convert CoffeeScript into
+    JavaScript), and more.
+  </p>
+  <h3 id="<%= id "resource-set-deserialize" %>"><code>var promise = resourceSet.deserialize(data)</code></h3>
+  <p>
+    Deserialize a resource set. The <code>data</code> should be a JavaScript
+    object, the kind that <%= anchor "<code>serialize</code>", "resource-set-serialize" %>
+    produces. The method returns a promise that resolves with the fully inflated
+    resource set.
+  </p>
+  <p>
+    Typically, when receiving resource sets over HTTP, they will be JSON
+    encoded, bring it back to life like so:
+  </p>
+  <pre><code>var resourceSet = require("buster-resource").resourceSet;
 
-  <p>A resource set lets you represent a set of files associated with paths. It lets you create bundles of multiple resources, proxy certain paths to other HTTP servers, preprocess resources (for example convert CoffeeScript into JavaScript), and more.</p>
+// Assume 'data' holds a JSON encoded resource set serialization
+resourceSet.deserialize(JSON.parse(data)).then(function (set) {
+      // Serve set over HTTP or similar
+});</code></pre>
 
-  <p>Resource sets can technically speaking be created individually without a resource set manager, but that's not a public API at the moment.</p>
+  <h3 id="<%= id "resource-set-create" %>"><code>var set = resourceSet.create(rootPath)</code></h3>
+  <p>
+    Creates a new resource set. The <code>rootPath</code> is used to resolve
+    globs and direct file paths. If not provided, it defaults to the current
+    working directory. You can not add files to a resource set if they live
+    outside the resource set root directory.
+  </p>
 
-  <h3 id="<%= id "resource-set-create" %>"><code>var rs = resources.createResourceSet(<%= anchor "resourceSetPayload", "resource-set-payload" %>)</code></h3>
-  <p>Creates a new resource set with the given resource set payload.</p>
+</div>
+<div class="section">
+  <h2>WARNING: This is old docs</h2>
 
   <h3 id="<%= id "resource-set-add-resource" %>"><code>rs.addResource(path, <%= anchor "resourcePayload", "resource-payload" %>)</code></h3>
 
