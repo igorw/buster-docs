@@ -27,4 +27,13 @@ class BusterJsDocsPageTest < ActiveSupport::TestCase
     assert_equal "Magic title", page.title
     assert_equal "<h1>Magic title</h1>\n<p>foo</p>", page.html
   end
+
+  test "page with p tag as first node" do
+    template = "<p>foo</p>"
+    page = BusterJsDocs::Page.new(template)
+    page.parse
+
+    assert_equal "", page.title
+    assert_equal template, page.html
+  end
 end
