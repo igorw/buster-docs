@@ -1,3 +1,5 @@
+require "nokogiri"
+
 module BusterJsDocs
   class Page
     attr_reader :title, :html
@@ -7,11 +9,17 @@ module BusterJsDocs
     end
 
     def parse
+      doc = Nokogiri::HTML(@template)
       lines = @template.split("\n")
       header = lines[0]
 
       if header.start_with?("<")
-        @title = "Documentation"
+        title_h1 = doc.css("h1")[0]
+        if title_h1
+          @title = title_h1.inner_text
+        else
+          @title = "Documentation"
+        end
         @html = @template
       else
         @title = header
