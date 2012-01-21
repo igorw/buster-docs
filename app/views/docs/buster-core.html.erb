@@ -13,8 +13,8 @@
   projects should you wish to do so.
 </p>
 <div class="section">
-  <h2 id="<%= id('methods') %>">Methods</h2>
-  <h3 id="<%= id('bind') %>"><code>bind(object, methodOrString)</code></h3>
+  <h2 id="methods">Methods</h2>
+  <h3 id="bind"><code>bind(object, methodOrString)</code></h3>
   <p>
     Binds a function to an object, such that its <code>this</code> value is
     fixed regardless of how it's called. The function works much
@@ -35,14 +35,14 @@ func(); // "Homer goes buuuuuurp"
 
 var func2 = buster.bind(homer, "burp");
 func2(); // "Homer goes buuuuuurp"</code></pre>
-  <h3 id="<%= id('create') %>"><code>create(object)</code></h3>
+  <h3 id="create"><code>create(object)</code></h3>
   <p>
     Cross-browser implementation of
     <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/create">Object.create</a>
     <code>buster.create</code> only supports creating a new object with the
     specified object as its prototype. It does not support property descriptors.
   </p>
-  <h3 id="<%= id('extend') %>"><code>extend(target[, source1[, source2[, ...]]])</code></h3>
+  <h3 id="extend"><code>extend(target[, source1[, source2[, ...]]])</code></h3>
   <p>
     Extends the target object by copying all the properties of all the sources
     onto it. Sources as processed in order. The method also returns the target
@@ -55,14 +55,14 @@ target = buster.extend(target,
                        { name: "Two", prop: "erty" });
 
 //=> { id: 13, num: 0, name: "Two", prop: "erty" }</code></pre>
-  <h3 id="<%= id('nextTick') %>"><code>nextTick(callback)</code></h3>
+  <h3 id="nextTick"><code>nextTick(callback)</code></h3>
   <p>
     Calls the callback on the next tick of the event loop. On Node.js this
     method simply delegates to <code>process.nextTick</code>. In the
     browser, <code>nextTick</code> is emulated by passing the callback
     to <code>setTimeout(callback, 0)</code>
   </p>
-  <h3 id="<%= id('functionName') %>"><code>functionName(func)</code></h3>
+  <h3 id="functionName"><code>functionName(func)</code></h3>
   <p>
     Returns the name of the function, or an empty string if
     the <code>function</code> is a falsy value. The method tries three
