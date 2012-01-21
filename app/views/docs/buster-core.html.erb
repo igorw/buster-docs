@@ -74,3 +74,63 @@ target = buster.extend(target,
     <li>Attempt to infer the name through <code>func.toString()</code></li>
   </ol>
 </div>
+
+
+<h2>Event emitter</h2>
+
+<p>A standalone Node.js and browser compatible event emitter API.</p>
+
+<h3 id="event-emitter-create"><code>var emitter = buster.eventEmitter.create()</code></h3>
+<p>Creates a new event emitter object.</p>
+
+<h3>emitter.addListener(event, listener[, thisObject])</h3>
+<p>Adds the listener function to the named event. The optional <code>thisObject</code> will be the <code>this</code> of the listener when called.</p>
+<pre><code>emitter.addListener("myevent", function () {
+    // ...
+});</code></pre>
+
+<h3>emitter.on(event, listener[, thisObject])</h3>
+<p>Alias to <code>addListener</code>.</p>
+
+<h3>emitter.once(event, listener[, thisObject])</h3>
+<p>Like <code>addListener</code>, but is removed after one emission.</p>
+<pre><code>emitter.once("myevent", function () {
+    console.log("hello");
+});
+emitter.emit("myevent"); // Logs "hello"
+emitter.emit("myevent"); // Nothing happens</code></pre>
+
+<h3>emitter.emit(event[, arg1, arg2, ...])</h3>
+<p>Emits the event, triggering all the listeners with the given arguments.</p>
+<pre><code>emitter.addListener("myevent", function (a, b, c) {
+    console.log(a, b, c);
+});
+emitter.emit("myevent");            // undefined, undefined, undefined
+emitter.emit("myevent", {}, "foo"); // {}, "foo", undefined</code></pre>
+
+<h3>emitter.removeListener(event, listener)</h3>
+<p>Removes the listener for that event.</p>
+<pre><code>var mylistener = function(){};
+emitter.addListener("myevent", mylistener);
+emitter.removeListener("myevent", mylistener);
+emitter.emit("myevent"); // Does not call 'mylistener'
+</code></pre>
+
+<h3>emitter.hasListener(event, listener[, thisObject])</h3>
+<p>Tests if the event emitter has the given listener for that event, optionally a listener for the given <code>thisObject</code>.</p>
+
+<pre><code>var func1 = function () {};
+var func2 = function () {};
+var thisObj = {};
+
+emitter.addListener("foo", func1);
+emitter.addListener("bar", func2,  thisObj);
+
+emitter.hasListener("foo", func1); // true
+emitter.hasListener("foo", func2); // false
+
+emitter.hasListener("bar", func1); // false
+emitter.hasListener("bar", func2); // true
+
+emitter.hasListener("bar", func2, {});      // false
+emitter.hasListener("bar", func2, thisObj); // true</code></pre>
