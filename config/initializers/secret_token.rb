@@ -1,0 +1,1 @@
+BusterJsDocs::Application.config.secret_token = "829bef9db7e9d93318f59a6c4e5a58648491e82edd249c5c02f9a9a2f04969b0e7d59638457ff1ac7deff190ee11101540b11cc9be23495e3ee157f1b72483d3"
