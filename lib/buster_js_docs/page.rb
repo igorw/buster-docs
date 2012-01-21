@@ -15,7 +15,7 @@ module BusterJsDocs
         @html = @template
       else
         @title = header
-        @html = "<h1>#{header}</h1>" + lines[1..-1].join("\n")
+        @html = "<h1>#{header}</h1>\n" + lines[1..-1].join("\n")
       end
     end
   end
