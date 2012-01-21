@@ -83,16 +83,16 @@ target = buster.extend(target,
 <h3 id="event-emitter-create"><code>var emitter = buster.eventEmitter.create()</code></h3>
 <p>Creates a new event emitter object.</p>
 
-<h3>emitter.addListener(event, listener[, thisObject])</h3>
+<h3><code>emitter.addListener(event, listener[, thisObject])</code></h3>
 <p>Adds the listener function to the named event. The optional <code>thisObject</code> will be the <code>this</code> of the listener when called.</p>
 <pre><code>emitter.addListener("myevent", function () {
     // ...
 });</code></pre>
 
-<h3>emitter.on(event, listener[, thisObject])</h3>
+<h3><code>emitter.on(event, listener[, thisObject])</code></h3>
 <p>Alias to <code>addListener</code>.</p>
 
-<h3>emitter.once(event, listener[, thisObject])</h3>
+<h3><code>emitter.once(event, listener[, thisObject])</code></h3>
 <p>Like <code>addListener</code>, but is removed after one emission.</p>
 <pre><code>emitter.once("myevent", function () {
     console.log("hello");
@@ -100,7 +100,7 @@ target = buster.extend(target,
 emitter.emit("myevent"); // Logs "hello"
 emitter.emit("myevent"); // Nothing happens</code></pre>
 
-<h3>emitter.emit(event[, arg1, arg2, ...])</h3>
+<h3><code>emitter.emit(event[, arg1, arg2, ...])</code></h3>
 <p>Emits the event, triggering all the listeners with the given arguments.</p>
 <pre><code>emitter.addListener("myevent", function (a, b, c) {
     console.log(a, b, c);
@@ -108,7 +108,7 @@ emitter.emit("myevent"); // Nothing happens</code></pre>
 emitter.emit("myevent");            // undefined, undefined, undefined
 emitter.emit("myevent", {}, "foo"); // {}, "foo", undefined</code></pre>
 
-<h3>emitter.removeListener(event, listener)</h3>
+<h3><code>emitter.removeListener(event, listener)</code></h3>
 <p>Removes the listener for that event.</p>
 <pre><code>var mylistener = function(){};
 emitter.addListener("myevent", mylistener);
@@ -116,7 +116,7 @@ emitter.removeListener("myevent", mylistener);
 emitter.emit("myevent"); // Does not call 'mylistener'
 </code></pre>
 
-<h3>emitter.hasListener(event, listener[, thisObject])</h3>
+<h3><code>emitter.hasListener(event, listener[, thisObject])</code></h3>
 <p>Tests if the event emitter has the given listener for that event, optionally a listener for the given <code>thisObject</code>.</p>
 
 <pre><code>var func1 = function () {};
