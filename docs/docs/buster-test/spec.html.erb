@@ -1,0 +1,382 @@
+<h1><code>buster.spec</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>See <%=m "test", "buster-test" %></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-test").spec;</code></dd>
+  <dt>In browsers</dt>
+  <dd><code>buster.spec;</code></dd>
+</dl>
+<p>
+  <a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">BDD</a>-style
+  specifications. <strong>buster-spce</strong> supports the same features as
+  <%=m "test/test-case", "<code>buster.testCase</code>" %> but with a syntax
+  closer to BDD-style frameworks such as <a href="http://rspec.info/">RSpec</a>,
+  <a href="http://pivotal.github.com/jasmine/">Jasmine</a> and others.
+  <%= l "describe" %> produces <%=m "test/test-context",
+  "<code>buster.testContext</code>" %> objects that can be run using
+  <%=m "test/test-runner", "<code>buster.testRunner</code>" %>.
+</p>
+<h3>Unboxing the namespace</h3>
+<p>
+  One of Buster's core principles is to not pollute the global environment. For
+  this reason we only add one single global object
+  - <code>buster</code>. However, in some cases, like this one, the namespaces
+  seriously desugars your code. For this reason, <strong>buster-spec</strong>
+  has a <%=l "expose" %> method that allows you to use <%=l "describe" %>,
+  <%=l "should" %> and the others with the "buster" prefix:
+</p>
+<pre><code>buster.spec.expose();
+
+describe("Namespace-less functions for ya", function () {
+    // ...
+});</code></pre>
+<div>
+  <h2 id="<%= id('describe') %>"><code>describe(name, callback)</code></h2>
+  <p>
+    Creates a specification. The name should be a string, and the callback can
+    be used to further describe your specification.
+  </p>
+  <h3 id="<%= id('example-bowling-kata') %>">Example: Bowling kata</h3>
+  <p>
+    The following example shows some specs from
+    <a href="http://butunclebob.com/ArticleS.UncleBob.TheBowlingGameKata">the
+      bowling kata</a>, using a before method.
+  </p>
+  <pre><code>buster.spec.expose(); // Make functions global
+
+var spec = describe("Bowling kata", function () {
+    before(function () {
+        this.game = new BowlingGame();
+
+        this.rollMany = function (rolls, pins) {
+            for (var i = 0; i &lt; rolls; ++i) {
+                this.game.roll(pins);
+            }
+        };
+    });
+
+    should("yield 0 in score for gutter game", function () {
+        this.rollMany(20, 0);
+        buster.assert.equals(0, this.game.score());
+    });
+
+    should("yield score of 20 for 1 pin on each roll", function () {
+        this.rollMany(20, 1);
+        buster.assert.equals(20, this.game.score());
+    });
+});</code></pre>
+<h3 id="<%= id('example-controller-specs') %>">Example: controller specs</h3>
+<p>
+  The following (slightly more involved) example shows some specs from a todo
+  application's form controller. Nested describes are used to separate both
+  controller actions as well as successful and failed attempts at posting the
+  form. Note the use of nested setup methods - both before callbacks will be run
+  (the outer first, then the inner) for each requirement in the "adding items"
+  specification.
+</p>
+<pre><code>var spec = describe("Form controller", function () {
+    before(function () {
+        this.form = document.createElement("form");
+        this.form.innerHTML = "&lt;fieldset>" +
+                              "&lt;input type='text' name='item' id='item'>" +
+                              "&lt;/fieldset>";
+
+        this.input = this.form.getElementsByTagName("input")[0];
+        this.backend = { add: sinon.spy() };
+        this.controller = todoList.formController.create(this.form, this.backend);
+        this.callback = sinon.spy();
+        this.controller.on('item', this.callback);
+     });
+
+    describe("adding items", function () {
+        before(function () {
+            this.input.value = "It puts the lotion in the basket";
+        });
+
+       describe( "successfully", function () {
+            should("emit onItem on success", function () {
+                var item = { text: "It puts the lotion in the basket" };
+                sinon.stub(this.backend, "add").yields(item);
+
+                this.controller.addItem();
+
+                sinon.assert.calledOnce(this.callback);
+                sinon.assert.calledWith(this.callback, item);
+            });
+
+            should("clear form on success", function () {
+                this.input.value = "It puts the lotion in the basket";
+                this.backend.add = sinon.stub().yields({});
+
+                this.controller.addItem();
+
+                buster.assert.equals("", this.input.value);
+            });
+        });
+
+        describe("unsuccessfully", function () {
+            should("render error on failure", function () {
+                sinon.stub(this.backend, "add").yields(null);
+
+                this.controller.addItem();
+                var err = this.form.firstChild;
+
+                buster.assert.match(err, {
+                    tagName: "p",
+                    className: "error",
+                    innerHTML: "An error prevented the item from being saved"
+                });
+            });
+        });
+    });
+});</code></pre>
+</div>
+<div>
+<h2 id="<%= id('async-specs') %>">Asynchronous specs</h2>
+<p>
+  To create asynchronous specs (i.e. ones that the runner will wait for), the
+  spec function can either explicitly accept a single argument, which is a
+  function, <strong>or</strong> return a <%=m "promise", "thenable promise" %>.
+</p>
+<h4>Explicitly accepting an argument</h4>
+<p>
+  The argument passed to the spec is a function. When the function is called,
+  the asynchronous spec is deemed done. The idiomatic way of creating
+  asynchronous specs using this arguments looks like the following:
+</p>
+<pre><code>describe("Buster async specs", function () {
+    should("be asynchronous", function (done) {
+        setTimeout(function () {
+            buster.assert(true);
+            done();
+        }, 100);
+    });
+});</code></pre>
+<p>
+  This assumes that the assertion framework can fail without throwing an error
+  (as an error would be intercepted as uncaught in the above example, if
+  intercepted at all). If this is not the case, you can make your assertions in
+  a callback to the <code>done</code> function:
+</p>
+<pre><code>describe("Buster async specs", function () {
+    should("be asynchronous", function (done) {
+        setTimeout(function () {
+            done(function () {
+                buster.assert(true);
+            });
+        }, 100);
+    });
+});</code></pre>
+<h4>Returning a promise</h4>
+<p>
+  Specs can be made asynchronous by way of returning a promise. The spec
+  runner considers any object with a <code>then</code> method a promise:
+</p>
+<pre><code>describe("Buster async/promise specs", function () {
+    should("be asynchronous", function () {
+        var promise = {
+            then: function (callback) {
+                this.callbacks = this.callbacks || [];
+                this.callbacks.push(callback);
+            }
+        };
+
+        setTimeout(function () {
+            buster.assert(true);
+            var callbacks = promise.callbacks || [];
+
+            for (var i = 0, l = callbacks.length; i &lt; l; ++i) {
+                callbacks[i]();
+            }
+        }, 100);
+
+        return promise;
+    });
+});</code></pre>
+<p>
+  Note that this does not work entirely as expected unless your assertion
+  framework of choice is able to notify the runner of failure without throwing
+  an exception. If the assertion fails (and throws an exception), the promise
+  will never be resolved, thus the runner will fail the spec with a
+  timeout, <strong>not</strong> an assertion error.
+</p>
+<p>
+  The above example is very verbose, simply to illustrate the duck-typed nature
+  of promises. You can do better by using e.g. <%=m "promise" %>:
+</p>
+<pre><code>describe("Buster async/promise specs", function () {
+    should("be asynchronous", function () {
+        var promise = buster.promise.create();
+
+        setTimeout(function () {
+            buster.assert(true);
+            promise.resolve();
+        }, 100);
+
+        return promise;
+    });
+});</code></pre>
+<p>
+  Before and after callbacks can use the same mechanism to be asynchronous.
+</p>
+</div>
+<div>
+  <h2 id="<%= id('before-after') %>">Before and after</h2>
+  <p>
+    Specs can use before and after callbacks. Before callbacks are called
+    before every spec, and is a suitable place to put shared setup code:
+  </p>
+  <pre><code>var spec = describe("Spec with before", function () {
+    before(function () {
+        this.object = { id: 42 };
+    });
+
+    should("override id": function () {
+        this.object.id = 43;
+        buster.assert.equals(this.object.id, 43);
+    });
+
+    should("not have id equal 43": function () {
+        // The object is recreated in setUp for each spec
+        buster.assert.notEquals(this.object.id, 43);
+    });
+});</code></pre>
+  <p>
+    Similarly, after callbacks can be used to clean up after each spec. Keep in
+    mind though, that the spec's <code>this</code> object is discarded and
+    recreated for each spec. If your specs are properly isolated you rarely
+    need clean up.
+  </p>
+  <pre><code>var spec = describe("Spec with teardown", function () {
+    after(function () {
+        if (jQuery.ajax.restore) {
+            jQuery.ajax.restore();
+        }
+    });
+
+    should("make http request": function () {
+        twitter.timeline("cjno", function () {});
+
+        buster.assert(jQuery.ajax.calledOnce);
+    });
+});</code></pre>
+  <h3 id="<%= id('nested-before-after') %>">Nested before and after</h3>
+  <p>
+    When nesting describes, you can add before and after callbacks to some or
+    all of your specs. All applicable before and after callbacks are called
+    before each spec function. Before callbacks are called starting from the
+    outermost describe, while after callbacks are called starting from the
+    spec's local describe. Let's illustrate by way of an example.
+  </p>
+  <pre><code>var spec = describe("Nested before and after call order", function () {
+    before(function () {
+        console.log("Before #1");
+    });
+
+    after(function () {
+        console.log("After #1");
+    });
+
+    should("do #1", function () {
+        console.log("Spec #1");
+    });
+
+    describe("context", function () {
+        before(function () {
+            console.log("Before #2");
+        });
+
+        should("do #2", function () {
+            console.log("Spec #2");
+        });
+
+        describe("context", function () {
+            before(function () {
+                console.log("Before #3");
+            });
+
+            after(function () {
+                console.log("After #3");
+            });
+
+            should("do #3": function () {
+                console.log("Spec #3");
+            });
+        }
+    }
+});
+
+// Will print:
+// Before #1
+// Spec #1
+// After #1
+// Before #1
+// Before #2
+// Spec #2
+// After #1
+// Before #1
+// Before #2
+// Before #3
+// Spec #3
+// After #3
+// After #1</code></pre>
+  <h3 id="<%= id('async-before-after') %>">Asynchronous before and after</h3>
+  <p>
+    Before and after callbacks are treated as asynchronous by the test runner if
+    they either return a thenable promise or if they explicitly accept an
+    argument. See <%=l "async-specs" %>.
+  </p>
+</div>
+<div>
+  <h2 id="<%= id('nested-describes') %>">Nested describes</h2>
+  <p>
+    Calls to <code>describe</code> can be arbitrarily nested. See the
+    explanation of <%= anchor "nested setup and teardown",
+    "nested-setup-teardown" %> for an example of using nested describes.
+  </p>
+</div>
+<div>
+  <h2 id="<%= id('deferred-specs') %>">Deferred specs</h2>
+  <p>
+    If you have written a spec that for some reason is impossible to pass in the
+    near future, you may grow tired of seeing it fail while working on other
+    parts of the system. Because the spec may represent an important
+    goal/requirement (perhaps the goal of a longer refactoring session) it is
+    undesirable to delete it. Simply commenting out the spec may cause you to
+    forget it and commit commented out code, which isn't very nice.
+  </p>
+  <p>
+    Buster recognizes the valid use of deferred specs and provides a simple way
+    to defer a spec &emdash; simply change <code>should</code> to the aptly
+    named <code>shouldEventually</code>:
+  </p>
+  <pre><code>var spec = describe("Bowling kata specs", {
+    before(function () {
+        this.game = new BowlingGame();
+
+        this.rollMany = function (rolls, pins) {
+            for (var i = 0; i < rolls; ++i) {
+                this.game.roll(pins);
+            }
+        };
+    });
+
+    should("yield 0 in score for gutter game", function () {
+        this.rollMany(20, 0);
+
+        buster.assert.equals(0, this.game.score());
+    });
+
+    shouldEventually("1 pin on each roll should yield score of 20", function () {
+        this.rollMany(20, 1);
+
+        buster.assert.equals(20, this.game.score());
+    });
+});</code></pre>
+<p>
+  In this example, the second spec will not run, but <strong>the reporter will
+  include it</strong> and explicitly mark it as deferred, helping you avoid
+  forgetting about it.
+</p>
+</div>

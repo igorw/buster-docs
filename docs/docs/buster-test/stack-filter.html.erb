@@ -1,0 +1,83 @@
+<h1><code>buster.stackFilter</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>See <%=m "test", "buster-test" %></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-test").stackFilter;</code></dd>
+  <dt>In browsers</dt>
+  <dd><code>buster.stackFilter;</code></dd>
+</dl>
+<p>
+  Stack traces contain some interesting information and (often) lots of
+  noise. The stack filter helps reduce the noise to help you find errors
+  faster. It can do so by 1) stripping the current working directory from paths,
+  and 2) removing lines from inside buster (or other libraries not of your
+  interest).
+</p>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('stackFilter') %>" data-title="+stackFilter(stack[, cwd])+">
+    <code>var lines = buster.stackFilter(stack[, cwd]);</code>
+  </h3>
+  <p>
+    Trims a stack trace by removing lines that match <%=l "filters" %>.
+    <code>stack</code> is a string containing the entire stack trace.
+    The optional <code>cwd</code> argument is a string containing the current
+    working directory. When provided, it is stripped from all lines in the
+    resulting stack trace.
+  </p>
+  <p>
+    The function returns an array of stack trace lines. Given the following
+    stack trace:
+  </p>
+  <pre class="long-lines"><code>var stack = 'AssertionError: [assert.equals] Expected "Something" to be equal to "Other"' +
+    'at Function.fail (/home/christian/buster/node_modules/buster-assert/lib/buster-assert.js:147:25)' +
+    'at fail (/home/christian/buster/node_modules/buster-assert/lib/buster-assert.js:61:16)' +
+    'at Function.equals (/home/christian/buster/node_modules/buster-assert/lib/buster-assert.js:237:13)' +
+    'at Object.&lt;anonymous> (/home/christian/buster/doc/samples/test-case.js:101:23)' +
+    'at asyncFunction (/home/christian/buster/node_modules/buster-test/lib/buster-test/test-runner.js:79:21)' +
+    'at Object.runTestFunction (/home/christian/buster/node_modules/buster-test/lib/buster-test/test-runner.js:312:26)' +
+    'at /home/christian/buster/node_modules/buster-core/lib/buster-core.js:45:31' +
+    'at runOne (/home/christian/buster/node_modules/buster-promise/lib/buster-promise.js:89:35)' +
+    'at Array.0 (/home/christian/buster/node_modules/buster-promise/lib/buster-promise.js:75:47)' +
+    'at EventEmitter._tickCallback (node.js:108:26)';</code></pre>
+  <p><code>stackFilter</code> would reduce it like so:</p>
+  <pre><code>var lines = buster.stackFilter(stack, "/home/christian/buster");
+
+// lines:
+// ['AssertionError: [assert.equals] Expected "Something" to be equal to "Other"',
+//  'at Object.&lt;anonymous> (doc/samples/test-case.js:101:23)',
+//  'at runOne (node_modules/buster-promise/lib/buster-promise.js:89:35',
+//  'at Array.0 (node_modules/buster-promise/lib/buster-promise.js:75:47']</code></pre>
+  <h3 id="<%= id('match') %>" data-title="+match(line)+">
+    <code>var isMatch = buster.match(line);</code>
+  </h3>
+  <p>
+    Helper function used by <%=l "stackFilter" %>. Returns <code>true</code>
+    if <code>line</code> matches any of <code>stackFilter.filters</code>.
+  </p>
+</div>
+<div class="section">
+  <h2 id="<%= id('properties') %>">Properties</h2>
+  <%= property("filters") %>
+  <p>
+    The <code>filters</code> property is an array of strings to match against
+    lines in a stack trace. Any stack trace line that match one of these filters
+    will be stripped. The default value is an array of core buster modules. If
+    you are developing add-ons to Buster, and don't want long traces from inside
+    these libraries in test reports, add entries to this array.
+  </p>
+  <p>
+    The <%=m "sinon-buster" %> module adds the core
+    <a href="http://sinonjs.org">Sinon.JS</a> libraries to the array to avoid
+    them getting in the way of finding where in your test and implementation a
+    failure originated. (Note that the added entry filters out lines from both
+    Sinon.JS and the sinon-buster adapter).
+  </p>
+  <pre><code>buster.stackFilter.filters.push("lib/sinon");</code></pre>
+  <p>
+    If you want the full traces, you can simply wipe the <code>filters</code>
+    array in your tests:
+  </p>
+  <pre><code>delete buster.stackFilter.filters;</code></pre>
+</div>

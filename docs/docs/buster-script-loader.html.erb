@@ -1,0 +1,136 @@
+<h1><code>buster.scriptLoader</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.1.0 <span class="date">(2011-03-18)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-script-loader");</code></dd>
+  <dt>In browsers</dt>
+  <dd>N/A</dd>
+</dl>
+<p>
+  A simple utility for loading scripts written for the browser on node.js. It
+  is *not* a general
+  <a href="https://spreadsheets.google.com/ccc?key=0Aqln2akPWiMIdERkY3J2OXdOUVJDTkNSQ2ZsV3hoWVE#gid=2">script loader</a>
+  for browser use. It is also not a headless runner - it provides no DOM
+  API or other browser APIs. Buster script loader simply loads scripts with a
+  shared 'global' context object and provides the timer functions.
+</p>
+<p>
+  The script loader assists with testing scripts on node, even when they don't
+  implement
+  <a href="http://www.commonjs.org/specs/modules/1.0/">CommonJS
+  modules</a>. This is a neat way to test general purpose (non-browser specific)
+  code on node.
+</p>
+<h3 id="<%= id('tests') %>">Running tests with the script loader</h3>
+<p>
+  The following is an example of combining <strong>buster-script-loader</strong>
+  and <strong>buster</strong> to test code that don't use CommonJS modules on
+  node.js. It uses
+  <a href="http://code.google.com/p/js-test-driver/">JsTestDriver</a> to test
+  <a href="https://github.com/mroderick/PubSubJS">Morgan Roderick's PubSubJS</a>,
+  which does not make use of browser-specific features.
+</p>
+<p>
+  Also note that the example preloads the context object with the
+  <a href="http://sinonjs.org">Sinon.JS</a> stub/mock tool. Had it not supported
+  CommonJS modules, it could have been loaded through the loader as well.
+</p>
+<pre><code>#!/usr/bin/env node
+var scriptLoader = require("buster-script-loader");
+var jstd = require("buster-jstestdriver");
+
+var context = {
+    sinon: require("sinon"),
+    TestCase: jstd.TestCase,
+    jstestdriver: jstd.jstestdriver
+};
+
+var loader = scriptLoader.create(context);
+
+loader.onLoad(function (ctx) {
+    console.log("Tests run");
+});
+
+loader.add(__dirname + "/jstestdriver/Asserts.js");
+loader.add(__dirname + "/pubsub.js");
+loader.add(__dirname + "/test-pubsub.js");
+
+loader.load();</code></pre>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('create') %>"><code>create([context])</code></h3>
+  <p>
+    Create a new loader. Optionally provide a context object to act as the
+    global object in loaded scripts. If you don't provide one, the loader will
+    create an empty object. In any case, the context will be yielded back to you
+    in the <%=l "onLoad" %> callback.
+  </p>
+  <p>
+    Any property defined on the context object will be available as globals in
+    the loaded scripts.
+  </p>
+  <pre><code>var scriptLoader = require("buster-script-loader");
+var loader = scriptLoader.create();
+
+// OR
+var loader = scriptLoader.create({ preLoadedGlobal: 42 });</code></pre>
+  <h3 id="<%= id('add') %>"><code>add(fileName)</code></h3>
+  <p>
+    Load the script in <code>fileName</code>. Calls to <code>add</code> are
+    synchronized so each script is loaded sequentially, in the order they are
+    passed to <code>add</code>.
+  </p>
+  <pre><code>var scriptLoader = require("buster-script-loader");
+var loader = scriptLoader.create();
+
+loader.add(__dirname + "/script.js");
+loader.add(__dirname + "/other.js");</code></pre>
+  <h3 id="<%= id('addScript') %>"><code>addScript(scriptText)</code></h3>
+  <p>Load an inline script block that will run in the shared context.</p>
+  <pre><code>var scriptLoader = require("buster-script-loader");
+var loader = scriptLoader.create();
+
+loader.add(__dirname + "/script.js");
+loader.addScript("var someGlobal = globalLoadedInScriptJs;");</code></pre>
+  <h3 id="<%= id('onLoad') %>"><code>onLoad(callback)</code></h3>
+  <p>
+    Register a callback that will be invoked when the loader has loaded all
+    scripts and is fully loaded. To "fully load" a loader, call <%=l "load" %>.
+  </p>
+  <p>
+    The callback is called with the context - the scripts' global object - as
+    its only argument.
+  </p>
+  <pre><code>var scriptLoader = require("buster-script-loader");
+var loader = scriptLoader.create();
+
+loader(function (context) {
+    for (var prop in context) {
+        console.log("Scripts defined global: " + prop);
+    }
+});
+
+loader.add(__dirname + "/script.js");
+loader.add(__dirname + "/other.js");
+loader.load();</code></pre>
+  <h3 id="<%= id('load') %>"><code>load()</code></h3>
+  <p>
+    Indicate that there are no more scripts to load. This method causes the
+    loader to trigger the <%=l "onLoad" %> callbacks once all scripts have
+    loaded.
+  </p>
+  <pre><code>var scriptLoader = require("buster-script-loader");
+var loader = scriptLoader.create();
+
+loader(function (context) {
+    for (var prop in context) {
+        console.log("Scripts defined global: " + prop);
+    }
+});
+
+loader.add(__dirname + "/script.js");
+loader.add(__dirname + "/other.js");
+
+loader.load();</code></pre>
+</div>

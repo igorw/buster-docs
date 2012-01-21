@@ -1,0 +1,86 @@
+<h1><code>buster.session</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>See <%=m "client", "buster-client" %></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-client").session;</code></dd>
+  <dt>In browsers</dt>
+  <dd>N/A</dd>
+</dl>
+<p>
+  The client of a connected <%=m "capture-server" %> session. If you are looking to
+  create a session, you are most likely looking for
+  <%=m "client/client#createSession", "<code>buster.client.createSession(config)</code>" %>.
+</p>
+<p>
+  The session can be used to communicate with captured clients through messaging
+  (<%=l "on" %>, <%=l "emit" %>). When your work is completed, the session can
+  be cleanly shut down using <%=l "close" %>.
+</p>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('on') %>"><code>on(event, callback);</code></h3>
+  <p>
+    Subscribe to messages sent from any client. See
+    <%=m "multicast#on", "<code>buster.multicast.on</code>" %> for details.
+  </p>
+  <h3 id="<%= id('emit') %>"><code>emit(event, data);</code></h3>
+  <p>
+    Send a message to all clients. See
+    <%=m "multicast#on", "<code>buster.multicast.emit</code>" %> for details.
+  </p>
+  <h3 id="<%= id('close') %>" data-title="+close();+"><code>var <%=m "promise", "promise" %> = session.close();</code></h3>
+  <p>
+    Close session. Sends a HTTP request to the server. Returns a promise that
+    will resolve once the session has been removed from the server.
+  </p>
+  <h3 id="<%= id('create') %>" data-title="+create(options);+"><code>var config = buster.sessionConfig.create(<%= anchor "options" %>);</code></h3>
+  <p>
+    Create a new session instance. The session is assumed to already be
+    registered on the server. See <%=m "client/client#createSession", "<code>buster.client.createSession(config)</code>" %>.
+  </p>
+  <h3 id="<%= id('connect') %>"><code>connect();</code></h3>
+  <p>
+    Connects the multicast client, if any was provided when the session was
+    created (requires the <code>multicast</code> property on the <%=l "options" %>
+    object). You only need to call this method when using <%= l "create" %>,
+    since <%= l "createFromHttpResponse" %> does this for you.
+  </p>
+  <h3 id="<%= id('createFromHttpResponse') %>"><code>createFromHttpResponse(res, opt);</code></h3>
+  <p>
+    Accepts the response from the request to create a session on the server and
+    initializes a <code>session</code> object. The response body is the JSON
+    payload including <code>rootPath</code>, <code>multicast</code> and possibly
+    other configuration. The opt object contains additional arguments
+    <code>host</code>, <code>port</code> and <code>path</code> for the server.
+  </p>
+</div>
+<div class="section">
+  <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+  <h3 id="options"><code>options</code></h3>
+  <p>
+    Options for <%=l "create" %>.
+  </p>
+  <dl class="properties">
+    <dt><code>rootPath</code></dt>
+    <dd>
+      The root path of the session, typically something like
+      <code>"/sessions/1"</code>. Should be retrieved from the server hosting
+      the session.
+    </dd>
+    <dt><code>host</code></dt>
+    <dd>
+      Host where the server is running.
+    </dd>
+    <dt><code>port</code></dt>
+    <dd>
+      Port where the server is running.
+    </dd>
+    <dt><code>multicast</code></dt>
+    <dd>
+      <%=m "multicast", "Multicasting" %> options. Should contain two
+      properties, <code>path</code> and <code>id</code>. Should be retrieved
+      from the server when the session is created remotely.
+    </dd>
+  </dl>
+</div>

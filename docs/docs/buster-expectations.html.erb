@@ -1,0 +1,77 @@
+        <h1>Expectations</h1>
+        <dl>
+          <dt>Version</dt>
+          <dd>N/A (see <%=m "assertions", "the assertions module" %>)</dd>
+          <dt>Module</dt>
+          <dd><code>require("buster-assertions").expect;</code></dd>
+          <dt>In browsers</dt>
+          <dd><code>buster.assertions.expect;</code></dd>
+        </dl>
+        <p>
+          Expectations are an alternate frontend to <%=m "assertions", "assertions" %>.
+          The verification and error messages are the same, but the syntax is
+          different:
+        </p>
+        <pre><code>var assert = buster.assertions.assert;
+var refute = buster.assertions.refute;
+var expect = buster.assertions.expect;
+
+assert.equals({ id: 42 }, { id: 42 });
+expect({ id: 42 }).toEqual({ id: 42 });
+
+refute.equals({ id: 42 }, { id: 10 });
+expect({ id: 42 }).not().toEqual({ id: 10 });</code></pre>
+        <div class="section">
+          <h2 id="<%= id('expectations') %>">Expectations</h2>
+          <p>
+            Examples assume that you have
+            aliased <code>buster.assertions.expect</code> as such:
+          </p>
+          <pre><code>var expect = buster.assertions.expect;</code></pre>
+          <p>
+            Refer to the <%=m "assertions" %> documentation for details on each
+            method.
+          </p>
+          <h3 id="<%= id('toBeTrue') %>" data-title="+toBeTrue()+"><code>expect(actual).toBeTrue();</code></h3>
+          <p><%=m "assertions#isTrue" %></p>
+          <h3 id="<%= id('toBeFalse') %>" data-title="+toBeFalse()+"><code>expect(actual).toBeFalse()</code></h3>
+          <p><%=m "assertions#isFalse" %></p>
+          <h3 id="<%= id('toBeSameAs') %>" data-title="+toBeSameAs()+"><code>expect(actual).toBeSameAs()</code></h3>
+          <p><%=m "assertions#same" %></p>
+          <h3 id="<%= id('toEqual') %>" data-title="+toEqual()+"><code>expect(actual).toEqual()</code></h3>
+          <p><%=m "assertions#equals" %></p>
+          <h3 id="<%= id('toBeType') %>" data-title="+toBeType()+"><code>expect(actual).toBeType()</code></h3>
+          <p><%=m "assertions#typeOf" %></p>
+          <h3 id="<%= id('toBeString') %>" data-title="+toBeString()+"><code>expect(actual).toBeString()</code></h3>
+          <p><%=m "assertions#isString" %></p>
+          <h3 id="<%= id('toBeObject') %>" data-title="+toBeObject()+"><code>expect(actual).toBeObject()</code></h3>
+          <p><%=m "assertions#isObject" %></p>
+          <h3 id="<%= id('toBeFunction') %>" data-title="+toBeFunction()+"><code>expect(actual).toBeFunction()</code></h3>
+          <p><%=m "assertions#isFunction" %></p>
+          <h3 id="<%= id('toBeBoolean') %>" data-title="+toBeBoolean()+"><code>expect(actual).toBeBoolean()</code></h3>
+          <p><%=m "assertions#isBoolean" %></p>
+          <h3 id="<%= id('toBeNumber') %>" data-title="+toBeNumber()+"><code>expect(actual).toBeNumber()</code></h3>
+          <p><%=m "assertions#isNumber" %></p>
+          <h3 id="<%= id('toBeUndefined') %>" data-title="+toBeUndefined()+"><code>expect(actual).toBeUndefined()</code></h3>
+          <p><%=m "assertions#isUndefined" %></p>
+          <h3 id="<%= id('toBeNull') %>" data-title="+toBeNull()+"><code>expect(actual).toBeNull()</code></h3>
+          <p><%=m "assertions#isNull" %></p>
+          <h3 id="<%= id('toBeNaN') %>" data-title="+toBeNaN()+"><code>expect(actual).toBeNaN()</code></h3>
+          <p><%=m "assertions#isNaN" %></p>
+          <h3 id="<%= id('toBeArray') %>" data-title="+toBeArray()+"><code>expect(actual).toBeArray()</code></h3>
+          <p><%=m "assertions#isArray" %></p>
+          <h3 id="<%= id('toBeArrayLike') %>" data-title="+toBeArrayLike()+"><code>expect(actual).toBeArrayLike()</code></h3>
+          <p><%=m "assertions#isArrayLike" %></p>
+          <h3 id="<%= id('toMatch') %>" data-title="+toMatch()+"><code>expect(actual).toMatch()</code></h3>
+          <p><%=m "assertions#match" %></p>
+          <h3 id="<%= id('toThrow') %>" data-title="+toThrow()+"><code>expect(actual).toThrow()</code></h3>
+          <p><%=m "assertions#exception" %></p>
+          <h3 id="<%= id('toHaveTagName') %>" data-title="+toHaveTagName()+"><code>expect(actual).toHaveTagName()</code></h3>
+          <p><%=m "assertions#tagName" %></p>
+          <h3 id="<%= id('toHaveClassName') %>" data-title="+toHaveClassName()+"><code>expect(actual).toHaveClassName()</code></h3>
+          <p><%=m "assertions#className" %></p>
+          <h3 id="<%= id('toBeInDelta') %>" data-title="+toBeInDelta()+"><code>expect(actual).toBeInDelta()</code></h3>
+          <p><%=m "assertions#inDelta" %></p>
+          <h3 id="<%= id('toHavePrototype') %>" data-title="+toHavePrototype()+"><code>expect(actual).toHavePrototype()</code></h3>
+        <p><%=m "assertions#hasPrototype" %></p>
+        </div>

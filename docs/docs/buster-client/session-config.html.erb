@@ -1,0 +1,219 @@
+<h1><code>buster.sessionConfig</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>See <%=m "client", "buster-client" %></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-client").sessionConfig;</code></dd>
+  <dt>In browsers</dt>
+  <dd>N/A</dd>
+</dl>
+<p>
+  Configures a session to run in <%=m "buster-capture-server",
+  "<code>buster.server</code>" %> with the help of <%=m "buster-client/client",
+  "<code>buster.client</code>" %>. The session configuration contains resources
+  and various backends that should be available for a given task.
+</p>
+<h3>Sample usage</h3>
+<pre><code>var buster = require("buster-client");
+
+var config = buster.sessionConfig.create();
+
+// Make some scripts available on the server
+config.addFileAsResource("src/mylib.js");
+config.addFileAsResource("test/mylib-test.js");
+
+// Make JSON feed available on the server
+config.addResource("env.json", {
+    content: JSON.stringify({ path: "/rest" }),
+    headers: { "Content-Type": "application/json" }
+});
+
+// Proxy all requests to {env.rootPath}/rest/
+config.addResource("rest/", {
+    backend: "http://10.0.0.3:9876/rest/"
+});
+
+// Load these files when page loads
+config.load("src/mylib.js");
+config.load("test/mylib-test.js");
+
+// Create the session
+var client = buster.client.create(1111, "localhost");
+client.createSession(config);</code></pre>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('create') %>" data-title="+create()+"><code>var config = buster.sessionConfig.create();</code></h3>
+  <p>Create a new session configuration.</p>
+  <h3 id="<%= id('addResource') %>" data-title="+addResource(path, resource)+"><code>addResource(path, <%= anchor("resource", "resource") %>);</code></h3>
+  <p>
+    Expose a resource at the specified path. The path will possibly be prefixed
+    with the server's mount point, see <%=m "capture-server" %>. 
+  </p>
+  <h4>Adding a JavaScript resource</h4>
+  <pre><code>var buster = require("buster-client");
+
+var config = buster.sessionConfig.create();
+
+// Make JSON feed available on the server
+config.addResource("/javascripts/jquery.js", {
+    content: "jQuery = function () { ... }"
+});</code></pre>
+  <h4>Configuring a proxy</h4>
+  <pre><code>var buster = require("buster-client");
+
+var config = buster.sessionConfig.create();
+
+config.addResource("rest/", {
+    backend: "http://10.0.0.3:9876/rest/"
+});
+</code></pre>
+  <h3 id="<%= id('getResource') %>" data-title="+getResource(path)+"><code>var <%= anchor("resource", "resource") %> = config.getResource(path);</code></h3>
+  <p>
+    Fetches the <%=l "resource" %> configured at the provided path.
+  </p>
+  <h3 id="<%= id('addFileAsResource') %>" data-title="+addFileAsResource(fileName[, meta])+"><code>var <%=m "promise", "promise" %> = addFileAsResource(fileName[, <%= anchor("meta", "resource") %>]);</code></h3>
+  <p>
+    Expose the contents of a file as a resource. This method reads the contents
+    of <code>fileName</code> and adds it as a resource
+    with <code>fileName</code> for path. If you want the resource to be exposed
+    at a different path, provide the <code>path</code> property in
+    the <code>meta</code> resource object.
+  </p>
+  <p>
+    The method returns a promise that will resolve once the file has been read
+    and the resource has been added. While the file loads, a placeholder
+    resource will be added. If the file can not be found, the promise is
+    rejected.
+  </p>
+  <p>
+    The file is read as utf-8 text. If this is not suitable for your resource,
+    consider reading the file manually and use <%=l "addResource" %>. Binary
+    resources are currently not supported.
+  </p>
+  <h3 id="<%= id('load') %>" data-title="+load(path[, resource])+"><code>load(path[, <%= anchor("resource", "resource") %>]);</code></h3>
+  <p>
+    Load this resource when the session loads in a browser. JavaScript resources
+    are loaded using <code>&lt;script></code> tags and CSS resources with
+    <code>&lt;link></code> tags. Other resources can not be loaded on session
+    load.
+  </p>
+  <p>
+    The resource to configure for load must be added first, either by first
+    calling <%=l "addResource" %>/<%=l "addFileAsResource" %>, or by providing
+    the <code>resource</code> argument, in which case <code>load</code> acts
+    like:
+  </p>
+  <pre><code>config.addResource(path, resource);
+config.load(path);</code></pre>
+  <h3 id="<%= id('configure') %>"><code>configure(callback);</code></h3>
+  <p>
+    Calls the callback when all currently loading files are fully loaded and
+    added as resources. The callback receives a
+    <%= anchor "formatted session configuration", "formatted-session-config" %>.
+  </p>
+  <pre><code>var buster = require("buster-client");
+
+var config = buster.sessionConfig.create();
+
+config.addResource("script.js", {
+    content: "alert('Hello world');",
+    headers: { "Content-Type": "application/javascript" }
+});
+
+config.addResource("rest/", {
+    backend: "http://10.0.0.3:9876/rest/"
+});
+
+config.load("script.js");
+var client = buster.client.create(1111, "localhost");
+
+client.createSession(config, function (configuration) {
+    // configuration == {
+    //     resources: {
+    //         "/script.js": {
+    //             content: "alert('Hello world');",
+    //             headers: { "Content-Type": "application/javascript" }
+    //         },
+    //         "/rest": {
+    //             backend: "http://10.0.0.3:9876/rest/",
+    //         }
+    //     },
+    //     load: ["/script.js"]
+    // }
+});</code></pre>
+</div>
+<div class="section">
+  <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+  <h3 id="resource"><code>resource</code></h3>
+  <p>
+    A general-purpose resource that should be made available at the
+    <%=m "capture-server", "server" %>. The resource can be either a "file" — a
+    string located at a certain URL, or a proxy. Binary resources are currently
+    not supported.
+  </p>
+  <p>
+    The resource must be <strong>either</strong> a file-ish resource
+    (with <code>content</code>, <code>etag</code>
+    or <code>combine</code>) <strong>or</strong> a proxy (i.e. using
+    <code>backend</code>). Attempting to provide both for a single resource will
+    result in an error.
+  </p>
+  <dl class="properties">
+    <dt><code>content</code></dt>
+    <dd>
+      The content of the resource, as a string.
+    </dd>
+    <dt>etag</dt>
+    <dd>
+      A unique string for this version of the resource. If not provided
+      manually, <%= l "addResource" %> will generate a SHA256 hash of the
+      resource contents to use for etag. If <code>etag</code> is provided
+      without <code>content</code>, the server is instructed to use the cached
+      resource at the same path with that etag.
+    </dd>
+    <dt><code>combine</code></dt>
+    <dd>
+      Used in place of <code>content</code> to indicate to the server that the
+      resource is a combination of several other resources. Should be an array
+      of (existing) resource paths. Naming resources in <code>combine</code>
+      that are not added to the configuration will cause an error. A combined
+      resource can be served with custom headers. Etags is not supported for
+      combined resources, as it has no "own content" - i.e., whether this
+      resource is cached on the server or not is determined by the individual
+      resources this one combines.
+    </dd>
+    <dt><code>backend</code></dt>
+    <dd>
+      The URL (scheme and hostname, optionally also port and path) of another
+      server that should handle all requests to URLs under the mounted path.
+    </dd>
+    <dt><code>headers</code></dt>
+    <dd>
+      Custom headers for the resource. The server uses MIME type heuristics to
+      provide a reasonable <code>Content-Type</code> header as well
+      as <code>Content-Length</code> and more (see <%=m "capture-server" %>). You can
+      use this object to either override default headers or provide custom
+      ones.
+    </dd>
+    <dt><code>path</code></dt>
+    <dd>
+      The path property is only used in <%=l "addFileAsResource" %>, if the
+      desired path on the server does not match the file name of the exposed
+      resource.
+    </dd>
+    <dt><code>cacheable</code></dt>
+    <dd>
+      Set to <code>false</code> to always disable caching between the client and
+      the server of this resource. Default is <code>true</code> (i.e., don't
+      resend resource to server if a resource at the same path with the same
+      <code>etag</code> already exists).
+    </dd>
+  </dl>
+  <h3 id="<%= id('formatted-session-config') %>"><code>formattedSessionConfig</code></h3>
+  <dl class="properties">
+    <dt><code>resources</code></dt>
+    <dd>An object of resources with paths as keys</dd>
+    <dt><code>load</code></dt>
+    <dd>An array of resource paths to load on session load</dd>
+  </dl>
+</div>

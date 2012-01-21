@@ -1,0 +1,29 @@
+Sinon integration
+
+<p class="warning">
+  Note: this documentation is incomplete
+</p>
+
+<p>Sinon specific assertions are documented at <%= m "assertions" %>.</p>
+<p>Refer to <a href="http://sinonjs.org/docs/">the Sinon.JS documentation</a> and do some guesswork for the other functionality.</p>
+
+<p>Quick cheat sheet:</p>
+
+<pre><code>buster.testCase("Foo", {
+    "test a stub": function () {    
+        // Overrides "aMethod" and restores when test finishes running
+        this.stub(myLib, "aMethod");
+        myLib.otherThing();
+        assert.calledOnce(myLib.aMethod);
+    },
+
+    "test a spy": function () {
+        // Wraps "aMethod". The original method is called, and you can also
+        // do stub like assertions with it.
+        this.spy(myLib, "aMethod");
+        myLib.otherThing();
+        assert.calledOnce(myLib.aMethod);
+    }
+});</code></pre>
+
+<p>And much, much more!</p>

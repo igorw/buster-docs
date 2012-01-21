@@ -1,0 +1,372 @@
+API Stability
+=============
+* RC       - API changes not likely. Feature complete and mostly bug free.
+* DEV      - API changes not likely. Not feature complete and/or too buggy.
+* Unstable - (API) Still under heavy development.
+
+Documentation rating
+====================
+Documentation is never "done". We rate it like this:
+* Complete   - Covers the entire public API - at the very least by enumerating all
+               functions, return values and arguments.
+* Incomplete - Lacks coverage of public APIs
+* Spotty     - Mostly missing, wrong or incomplete documentation
+
+buster-core
+===========
+Version: 0.4.0 (Last released 0.3.1)
+Dependencies: None
+Purpose: Provide commonly used low-level utilities.
+
+Modules:
+var buster = require("buster-core");
+
+API:
+buster.bind(obj, methodOrProperty);
+buster.create(object);
+buster.extend(target[, extension1[, extension2[, ...]]]);
+buster.nextTick(func);
+buster.functionName(func);
+buster.isNode(object);
+buster.isElement(object);
+buster.defineVersionGetter(module, dirName);
+
+API Stability: RC
+Documentation: Complete
+
+buster-terminal
+===============
+Version: 0.2.1
+Dependencies: None
+Purpose: String utilities for terminal output formatting.
+
+Modules:
+var terminal = require("buster-terminal");
+
+API:
+var term = terminal.create({ color: true, bright: false });
+term.colorize(string, color);
+term.bold(string);
+term.red(string);
+term.yellow(string);
+term.green(string);
+term.purple(string);
+term.cyan(string);
+term.up(string);
+term.down(string);
+term.fwd(string);
+term.save();
+term.restore();
+term.move(callback);
+term.stripSeq(string);
+term.labeledList
+    var ll = term.labeledList.create({
+        puts: function (str) {},
+        print: function (str) {}
+    }[, label1[, label2[, ...]]]);
+
+    ll.add(label);
+    ll.refitLabels(label); // STRANGE, should be ll.reflow();
+    ll.print(label, text);
+    ll.printAt(pos, text, update);
+term.strings
+    repeat(char, times);
+    maxWidth(strings);
+    alignLeft(string, width);
+    alignRight(string, width);
+
+API Stability: DEV
+Documentation: Spotty
+
+Roadmap:
+API feels strange. The module exposes too many orthogonal things. The module
+seems somewhat "hard to sell". Maybe rename it buster-ansi and have it focus
+solely on the ansi escape sequences?
+
+Also; The IO objects should ditch the print/puts analogy, and go with the
+streams API instead.
+
+* Rename print -> write
+* puts -> write(str + "\n");
+* Ditch labeledList - only used in progress-reporter in buster-test-cli
+* Ditch strings - Put in separate package? buster-cli uses a few methods,
+  the labeledList thing uses repeat(" ", 5);
+
+buster-module-loader
+====================
+Version: 0.2.1
+Dependencies: None
+Purpose: Load specific object from a module using a string identifier
+
+Modules:
+require("buster-module-loader");
+
+API:
+load(identifier);
+
+API Stability: RC
+Documentation: Complete
+
+buster-user-agent-parser
+========================
+Version: 0.2.1
+Dependencies: None
+Purpose: Identify browser name and version as well as OS. Used only to
+         communicate browser identities in e.g. the test runner.
+
+Modules:
+require("buster-user-agent-parser");
+
+API:
+parse(userAgent);
+
+API Stability: RC
+Documentation: Complete
+
+buster-assertions
+=================
+Version: 0.6.2 (Last released 0.6.1)
+Dependencies: buster-core
+Purpose: A collection of unit test verfication methods (assertions).
+
+Modules:
+var assert = require("buster-assertions").assert;
+var refute = require("buster-assertions").refute;
+assert.that / refute.that
+
+API:
+See documentation
+
+API Stability: DEV
+Documentation: Incomplete
+
+Roadmap:
+* Remove assert.isTrue
+* Remove assert.isFalse
+* Add expect(a).toXXX(b) (Wrapper, like assertThat)
+* Finish documentation
+
+buster-format
+=============
+Version: 0.4.1
+Dependencies: buster-core
+Purpose: Nicely format JavaScript values as strings for human inspection.
+
+Modules:
+require("buster-format");
+
+API:
+See documentation
+
+API Stability: RC
+Documentation: Complete
+
+buster-promise
+==============
+Version: 0.3.1
+Dependencies: buster-core
+Purpose: Provide a simple promise implementation along with some flow control
+         utilities.
+
+Modules:
+require("buster-promise");
+
+API:
+create();
+    then(func, func);
+    resolve([ obj1[, obj2[, ...]]]);
+    reject([ obj1[, obj2[, ...]]]);
+sequential([ promise1[, promise2[, ...]]]);
+thenable(value);
+all(promises);
+
+API Stability: RC
+Documentation: Complete
+
+buster-evented-logger
+=====================
+Version: 0.3.1
+Dependencies: buster-core
+Purpose: A logger interfaced backed by events rather than a writable stream.
+
+Modules:
+require("buster-evented-logger");
+
+API:
+create(options);
+    level(message[, msg2[, ...]]);
+format(object); // Allows for extensions to overwrite, say with buster.format
+
+API Stability: RC
+Documentation: Complete
+
+buster-configuration
+====================
+Version: 0.1.0
+Dependencies: buster-core, buster-promise, buster-module-loader, glob
+Purpose: Provide an abstraction to Buster.JS's configuration modules.
+
+Modules:
+require("buster-configuration").config;
+require("buster-configuration").group;
+require("buster-configuration").session;
+
+API:
+config
+    create();
+    addGroup(config, rootPath);
+    loadModule(fileName, rootPath);
+    safeRequire(fileName, rootPath);
+    configsFor(environment);
+    eachGroup([environment, ]callback);
+    configure();
+group
+    extend(config, rootPath);
+    loadPreProcessors();
+    loadResourceConfigs();
+    loadResourceLoadConfigs();
+    loadServerConfig();
+    configure();
+session
+    create();
+    addResource(path, resource);
+    preProcess(path, resource);
+    getResource(path);
+    load(path, resource);
+    loadFirst(path, resource);
+    addFileAsResource(file, meta);
+    configure();
+
+API Stability: DEV
+Documentation: Spotty
+
+Roadmap:
+Too much duplication in resource management code. Should probably extract
+buster-resources somehow. API is not golden - somewhat weird methods, not very
+telling what it does.
+
+* Extract a higher-level glob utility. This could take care of things like
+  "flattenPathArray" (as found in group.js)
+* Streamline resource handling (Christian does this) - use same validation and
+  processor handling on client and server.
+
+buster-multicast (To be destroyed)
+==================================
+Version: 0.1.1
+Dependencies: buster-core, buster-promise, buster-user-agent-parser, node-uuid
+Purpose: Bidirectional message channel for browsers and Node.js
+
+TO BE DESTROYED
+
+buster-client
+=============
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+
+buster-args
+===========
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+
+buster-cli
+==========
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+
+buster-server
+=============
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+
+buster-test
+===========
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+
+sinon-buster
+============
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+
+buster-test-cli
+===============
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+
+buster
+======
+Version:
+Dependencies:
+Purpose:
+
+Modules:
+require("");
+
+API:
+
+API Stability:
+Documentation:
+

@@ -1,0 +1,76 @@
+<h1>Buster core</h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.4.0 <span class="date">(2011-08-26)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-core");</code></dd>
+  <dt>In browsers</dt>
+  <dd><code>buster;</code></dd>
+</dl>
+<p>
+  A collection of utilities commonly used across Buster.JS projects. The module
+  is stable and can be freely used when extending Buster, or for any other
+  projects should you wish to do so.
+</p>
+<div class="section">
+  <h2 id="<%= id('methods') %>">Methods</h2>
+  <h3 id="<%= id('bind') %>"><code>bind(object, methodOrString)</code></h3>
+  <p>
+    Binds a function to an object, such that its <code>this</code> value is
+    fixed regardless of how it's called. The function works much
+    like <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind"><code>Function.prototype.bind</code></a>
+    - it is provided here to work in environments that do not
+    support <code>Function.prototype.bind</code>.
+  </p>
+  <pre><code>var homer = {
+    name: "Homer",
+
+    burp: function () {
+        return this.name + " goes buuuuuurp";
+    }
+};
+
+var func = buster.bind(homer, homer.burp);
+func(); // "Homer goes buuuuuurp"
+
+var func2 = buster.bind(homer, "burp");
+func2(); // "Homer goes buuuuuurp"</code></pre>
+  <h3 id="<%= id('create') %>"><code>create(object)</code></h3>
+  <p>
+    Cross-browser implementation of
+    <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/create">Object.create</a>
+    <code>buster.create</code> only supports creating a new object with the
+    specified object as its prototype. It does not support property descriptors.
+  </p>
+  <h3 id="<%= id('extend') %>"><code>extend(target[, source1[, source2[, ...]]])</code></h3>
+  <p>
+    Extends the target object by copying all the properties of all the sources
+    onto it. Sources as processed in order. The method also returns the target
+    object.
+  </p>
+  <pre><code>var target = { id: 42, num: 0 };
+
+target = buster.extend(target,
+                       { id: 13, name: "One" },
+                       { name: "Two", prop: "erty" });
+
+//=> { id: 13, num: 0, name: "Two", prop: "erty" }</code></pre>
+  <h3 id="<%= id('nextTick') %>"><code>nextTick(callback)</code></h3>
+  <p>
+    Calls the callback on the next tick of the event loop. On Node.js this
+    method simply delegates to <code>process.nextTick</code>. In the
+    browser, <code>nextTick</code> is emulated by passing the callback
+    to <code>setTimeout(callback, 0)</code>
+  </p>
+  <h3 id="<%= id('functionName') %>"><code>functionName(func)</code></h3>
+  <p>
+    Returns the name of the function, or an empty string if
+    the <code>function</code> is a falsy value. The method tries three
+    approaches, returning an empty string if all approaches fail:
+  </p>
+  <ol>
+    <li>Return <code>func.displayName</code></li>
+    <li>Return <code>func.name</code></li>
+    <li>Attempt to infer the name through <code>func.toString()</code></li>
+  </ol>
+</div>

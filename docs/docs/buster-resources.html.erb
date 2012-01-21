@@ -1,0 +1,410 @@
+<h1><code>buster.resources</code></h1>
+<dl>
+  <dt>Version</dt>
+  <dd>0.2 <span class="date">(2012-01-15)</span></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-resources");</code></dd>
+</dl>
+<p>
+  Manages virtual file systems that can be easily transported over
+  network. Buster uses resource collections to ship your source files and tests
+  to <%= m "capture-server" %>, but they can also be used for other purposes,
+  like mixing files on disk and "virtual" files for build scripts and whatnot.
+</p>
+<p>
+  The central data types is the resource - which can be a file on disk, an
+  in-memory "file" or an http proxy - and the resource set. A resource set is a
+  collection of resources that allows the creation of e.g. combined resources,
+  and can be serialized as a whole and transported over the network. Resource
+  sets can be cached and served over http using objects in this module.
+</p>
+
+<div class="section">
+  <h2>Resource middleware</h2>
+  <pre><code>var resourceMiddleware = require("buster-resources").resourceMiddleware</code></pre>
+  <p>
+    The resource middleware can serve resource sets over HTTP. In its simplest
+    form, you spin up an instance, designate a context path to it, mount a
+    resource set (only one can be served at any given time), and allow it to
+    handle requests entirely on its own:
+  </p>
+  <pre><code>var http = require("http");
+var rs = require("buster-resources");
+
+var middleware = rs.resourceMiddleware.create("/resources");
+
+var set = rs.resourceSet.create();
+set.addResource({ path: "/buster.js", content: "Booyah!" });
+middleware.mount(set);
+
+http.createServer(function (req, res) {
+    if (middleware.respond(req, res)) { return; }
+    res.writeHead(404);
+    res.end();
+}).listen(9988);
+
+// Test it
+http.request({
+    host: "localhost",
+    port: 9988,
+    path: "/resources/buster.js"
+}, function (res) {
+    res.setEncoding("utf8");
+    res.on("data", function (chunk) {
+        console.log(chunk);
+    });
+}).end();</code></pre>
+  <h3 id="<%= id "resource-middleware-create" %>"><code>var middleware = resourceMiddleware.create(contextPath)</code></h3>
+  <p>
+    Create a new instance to serve resource sets. The middleware will only
+    respond to requests within the context path. The context path is also
+    stripped from the URL before finding resources.
+  </p>
+  <h3 id="<%= id "resource-middleware-set-context-path" %>"><code>middleware.setContextPath(contextPath)</code></h3>
+  <p>
+    Change the context path.
+  </p>
+  <h3 id="<%= id "resource-middleware-mount" %>"><code>middleware.mount(resourceSet)</code></h3>
+  <p>
+    Serve contents of resource set. If another resource set is mounted, it will
+    be dismounted.
+  </p>
+  <h3 id="<%= id "resource-middleware-respond" %>"><code>var willRespond = middleware.respond(req, res)</code></h3>
+  <p>
+    Responds to an HTTP request, if the request is for a path within the
+    middleware's context path. If the middleware intends to handle the request,
+    this method returns <code>true</code> (even if the request may not have been
+    handled synchronously). Otherwise, it returns <code>false</code>.
+  </p>
+  <p>
+    If the request is within the middleware's context path, but does not match
+    any resources, the middleware will give a 404 response.
+  </p>
+  <h4>Typical usage</h4>
+  <pre><code>var http = require("http");
+var resourceMiddleware = require("buster-resources").resourceMiddleware;
+var middleware = resourceMiddleware.create("/resources");
+
+// Mount sets
+
+http.createServer(function (req, res) {
+    if (middleware.respond(req, res)) { return; }
+
+    // Handle requests not handled by the middleware
+}).listen(8000);</code></pre>
+</div>
+
+<div class="section">
+  <h2>Resource cache</h2>
+  <pre><code>var resourceSetCache = require("buster-resources").resourceSetCache</code></pre>
+  <p>
+    Cache content across resource sets. The resource set cache works as a
+    central repository that you pass resource sets by to have their contents
+    cached, and their missing contents replenished from the cache.
+  </p>
+  <h3 id="<%= id "resource-set-cache-create" %>"><code>var cache = resourceSetCache.create(ttl)</code></h3>
+  <p>
+    Creates a new cache. <code>ttl</code> decides for how many milliseconds
+    individual resources are cached. The default time to live for resources is
+    one hour. Note that the <code>ttl</code> only determines how long resources
+    stay in the internal cache. Once you've <code>inflate</code>d a resource set
+    with a cached resource, it will stick around in that resource set until you
+    remove it on your own.
+  </p>
+  <h3 id="<%= id "resource-set-cache-inflate" %>"><code>var promise = cache.inflate(resourceSet)</code></h3>
+  <p>
+    Inflating a resource set achieves two things: 1) Any resource in the set
+    that has an <code>etag</code> and content will be cached. 2) Any resource in
+    the set that has an <code>etag</code> and whose content is empty, will be
+    replaced with a cached copy, if one exists.
+  </p>
+  <p>
+    Note that the resource cache caches entire resources, not only content. To
+    avoid having certain resources cached, simply make sure they don't have an
+    <code>etag</code> set.
+  </p>
+  <h4>Serving resource sets with a cache</h4>
+  <pre><code>var http = require("http");
+var rs = require("buster-resources");
+
+var middleware = rs.resourceMiddleware.create("/resources");
+var cache = rs.resourceSetCache.create(60 * 60 * 1000);
+
+// Assume 'set' is a resourceSet instance
+cache.inflate(set).then(function (inflatedSet) {
+    middleware.mount(inflatedSet);
+});</code></pre>
+  <h3 id="<%= id "resource-set-cache-resource-versions" %>"><code>var result = cache.resourceVersions(resourceSet)</code></h3>
+  <p>
+    Returns an object with information about all path/etag combinations
+    contained in the cache:
+  </p>
+  <pre><code>set.addResource({ path: "/buster.js", etag: "123", content: "OK" });
+set2.addResource({ path: "/buster.js", etag: "abc", content: "Newer" });
+
+when.all([cache.inflate(set1), cache.inflate(set2)], function () {
+    cache.resourceVersions() === {
+        "/buster.js": ["abc", "123"]
+    };
+});</code></pre>
+</div>
+
+<div class="section">
+  <h2>Resource sets</h2>
+  <pre><code>var resourceSet = require("buster-resources").resourceSet</code></pre>
+  <p>
+    A resource set lets you represent a set of files associated with paths. It
+    lets you create bundles of multiple resources, proxy certain paths to other
+    HTTP servers, preprocess resources (for example convert CoffeeScript into
+    JavaScript), and more.
+  </p>
+  <h3 id="<%= id "resource-set-deserialize" %>"><code>var promise = resourceSet.deserialize(data)</code></h3>
+  <p>
+    Deserialize a resource set. The <code>data</code> should be a JavaScript
+    object, the kind that <%= anchor "<code>serialize</code>", "resource-set-serialize" %>
+    produces. The method returns a promise that resolves with the fully inflated
+    resource set.
+  </p>
+  <p>
+    Typically, when receiving resource sets over HTTP, they will be JSON
+    encoded, bring it back to life like so:
+  </p>
+  <pre><code>var resourceSet = require("buster-resource").resourceSet;
+
+// Assume 'data' holds a JSON encoded resource set serialization
+resourceSet.deserialize(JSON.parse(data)).then(function (set) {
+      // Serve set over HTTP or similar
+});</code></pre>
+
+  <h3 id="<%= id "resource-set-create" %>"><code>var set = resourceSet.create(rootPath)</code></h3>
+  <p>
+    Creates a new resource set. The <code>rootPath</code> is used to resolve
+    globs and direct file paths. If not provided, it defaults to the current
+    working directory. You can not add files to a resource set if they live
+    outside the resource set root directory.
+  </p>
+
+  <h3 id="<%= id "resource-set-length" %>"><code>rs.length</code></h3>
+  <p>
+    The length of the resource set is the number of resources in it.
+    Resource sets expose resources through an array-like interface with
+    <code>length</code> and numeric properties.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-resources" %>"><code>var promise = rs.addResources(resources)</code></h3>
+  <p>
+    Adds multiple resources. Argument is an array of resources as accepted by
+    <%= anchor "<code>addResource</code>", "resource-set-add-resource" %>.
+    The method returns a promise that resolves with an array of resources.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-resource" %>"><code>var promise = rs.addResource(<%= anchor "resource", "extended-resource-spec" %>)</code></h3>
+
+  <p>
+    Adds a resource. The argument can be either a proper
+    <%= anchor "<code>resource</code>", "resource" %> instance, a string (either
+    a file path or a glob, see
+    <%= anchor "<code>addGlobResource</code>", "resource-set-add-glob-resource" %>)
+    or an object with properties describing a resource
+    (<%= anchor "extended resource 'spec'", "extended-resource-spec" %>).
+    The method returns a promise that resolves with a single resource.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-glob-resource" %>"><code>var promise = rs.addGlobResource(path)</code></h3>
+
+  <p>
+    Add all files matching the glob as resources. Returns a promise that
+    resolves with an array of resources. The glob is resolved relatively to the
+    resource set <code>rootPath</code>.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-file-resources" %>"><code>var promise = rs.addFileResources(paths, rs)</code></h3>
+  <p>
+    Add multiple files as resources with common meta data <code>rs</code>. Each
+    path will be passed along with <code>rs</code> to
+    <%= anchor "addFileResource", "resource-set-add-file-resource" %>.
+    Returns a promise that resolves with an array of resources.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-file-resource" %>"><code>var promise = rs.addFileResource(path, rs)</code></h3>
+
+  <p>
+    Adds a file as resource. The path is resolved against the resource
+    set <code>rootPath</code>. You can provide the path to serve the resource
+    through as part of the <%= anchor "<code>rs</code>", "resource-spec" %>
+    object. Returns a promise that resolves with a single resource.
+  </p>
+
+  <h3 id="<%= id "resource-set-add-combined-resource" %>"><code>var promise = rs.addCombinedResource(sources, rs)</code></h3>
+  <p>
+    Add a resource whos content is the combination of other resources in the
+    set. <code>sources</code> is an array of paths to other pre-existing
+    resources. Returns a promise that resolves with a single resource.
+  </p>
+
+  <h3 id="<%= id "resource-set-get" %>"><code>var resource = rs.get(path)</code></h3>
+  <p>
+    Returns the resource at <code>path</code>. The path will be normalized
+    before lookup, so <code>rs.get("buster.js") === rs.get("/buster.js");</code>
+  </p>
+
+  <h3 id="<%= id "resource-set-remove" %>"><code>rs.remove(path)</code></h3>
+  <p>
+    Removes a resource with the  given path. Will also remove it
+    from <code>loadPath</code> if present.
+  </p>
+
+  <h3 id="<%= id "resource-set-serialize" %>"><code>var promise = rs.serialize()</code></h3>
+  <p>
+    Serializes the resource set. The serialization format is a plain JavaScript
+    object with two properties: <code>resources</code> and <code>load</code>,
+    both of which are arrays. The serialized object can safely be JSON encoded
+    for wire transfer. The serialization will also have all resource contents
+    loaded in a flat structure.
+  </p>
+
+  <h3 id="<%= id "resource-set-concat" %>"><code>var newRs = rs.concat(rs2, rs3, ...)</code></h3>
+  <p>
+    Create a new resource set by combining this one with one or more other
+    resource sets. Does not mutate any of the existing resource sets.
+  </p>
+
+
+  <h3 id="<%= id "resource-set-append-load" %>"><code>rs.appendLoad(paths)</code></h3>
+  <p>
+    Append paths to the load path. Paths may be glob patterns. Any path does not
+    match an existing resource in the resource set will be added from disk
+    before added to the load path. This is different from calling
+    <code>append</code> directly on the <code>loadPath</code>, where a missing
+    resource causes an error.
+  </p>
+
+  <h3 id="<%= id "resource-set-prepend-load" %>"><code>rs.prependLoad(paths)</code></h3>
+  <p>
+    Like <code>appendLoad</code>, only prepend to the load path in place of
+    append.
+  </p>
+
+  <h3 id="<%= id "resource-set-load-path" %>"><code>rs.loadPath</code></h3>
+  <p>
+    An object that allows you to control what resources should be loaded when
+    the resource set is loaded.
+  </p>
+</div>
+
+<div class="section">
+  <h2 id="<%= id "resource-set-load-path" %>">Resource set load path</h2>
+  <h3 id="<%= id "load-path-append" %>"><code>loadPath.append(paths)</code></h3>
+  <p>
+    Append paths to the end of the load path.
+  </p>
+  <h3 id="<%= id "load-path-prepend" %>"><code>loadPath.prepend(paths)</code></h3>
+  <p>
+    Prepend paths to the beginning of the load path.
+  </p>
+  <h3 id="<%= id "load-path-remove" %>"><code>loadPath.remove(path)</code></h3>
+  <p>
+    Remove path from load path.
+  </p>
+  <h3 id="<%= id "load-path-clear" %>"><code>loadPath.clear()</code></h3>
+  <p>
+    Remove all paths from load path.
+  </p>
+  <h3 id="<%= id "load-path-paths" %>"><code>var paths = loadPath.paths()</code></h3>
+  <p>
+    Returns an array of paths on the load path. This array is just a copy, and
+    can not be used to mutate the load path.
+  </p>
+</div>
+
+
+<div class="section">
+  <h2>WARNING: OLD AND OUTDATED</h2>
+  <h2 id="<%= id "resource-set-payload" %>">Resource set payload</h2>
+
+  <p>The resource set payload is an object that consists of a set of resources, and optionally a list of resources to automatically load in the root resource. TODO: Write about root resource and auto injection.</p>
+
+  <pre><code>resources.createResourceSet({
+    resources: {
+        "/path": {<%= anchor "resource-payload" %>},
+        "/other-path": {<%= anchor "resource-payload" %>},
+        ...
+    },
+    load: [resourcePath, ...]
+}
+})</code></pre>
+
+  <h3 id="<%= id "resource-set-payload-resources" %>"><code>resources</code></h3>
+  <p>An object where the key is the path and the value is the <%= anchor "resource payload", "resource-payload" %>. The equivalent of calling <%= anchor "addResource()", "resource-set-add-resource" %>.</p>
+
+  <h3 id="<%= id "resource-set-payload-load" %>"><code>load</code></h3>
+  <p>List of paths to "load". The path must exist as a resource.</p>
+  <p>In <%= m "capture-server" %>, the resources in <code>load</code> will be automatically injected as script tags before the closing <code>&lt;/body&gt;</code> tag. A resource set does not in itself what it means to load something.</p>
+</div>
+
+<div class="section">
+  <h2 id="<%= id "resource-payload" %>">Resource payload</h2>
+
+  <p>This section describes the object that is passed to resource creation, such as <code>rs.addResource("/path", payload)</code> and <code>rs.addFile("/path/to/file", payload)</code>.</p>
+
+  <h3 id="<%= id "resource-payload-content-string" %>"><code>{content: "a string"}</code></h3>
+  <p>Sets the content of the resource to the value of the string.</p>
+
+  <h3 id="<%= id "resource-payload-content-buffer" %>"><code>{content: new Buffer(...)}</code></h3>
+  <p>Sets the content of the resource to the value of the buffer.</p>
+
+  <h3 id="<%= id "resource-payload-content-function" %>"><code>{content: function (<%= m "promise" %>) {}}</code></h3>
+  <p>Function will be called when needed and allows for asynchronous fetching of content via a promise. This is what <%= anchor "addFile", "resource-set-add-file" %> uses under the hood.</p>
+
+  <p>It is imperative that you either resolve or reject the promise. There's no internal time out, so if you do networking or something else that could time out, you should create your own timeout and reject the promise when the timeout fires. You also need to make sure you don't accept the promise after you already rejected it, and vice versa.</p>
+
+  <pre><code>rs.addResource("/foo", {
+    content: function (promise) {
+        // We don't do anything asynchronous here so we might as well
+        // have used a string directly instead of a function.
+        promise.resolve("This is the content");
+    }
+});</code></pre>
+
+  <pre><code>rs.addResource("/foo", {
+    content: function (promise) {
+        fs.readFile("/foo", function (err, data) {
+            if (err) {
+                promise.reject(err);
+            } else {
+                promise.resolve(data);
+            }
+        });
+    }
+});</code></pre>
+
+  <pre><code>rs.addResource("/foo", {
+    content: function (promise) {
+        http.request(
+            {host: "myserver.com", port: 80, path: "/test"},
+            function (res) {
+                var data = "";
+                res.on("data", function (chunk) { data += chunk; });
+                res.on("end", function () { promise.resolve(data); });
+            }
+        ).end();
+    }
+});</code></pre>
+
+  <h3 id="<%= id "resource-payload-headers" %>"><code>{headers:{"Header": "Value"}}</code></h3>
+  <p>Set custom headers. A Content-Type header will be added automatically if not present, via the <a href="https://github.com/bentomas/node-mime">node-mime</a> project.</p>
+
+  <h3 id="<%= id "resource-payload-etag" %>"><code>{etag:"value"}</code></h3>
+  <p>The etag is used in combination with the name of the resource to determine wether the <%= m "capture-server" %> already has this resource.</p>
+  <p>How the etag is calculated is entirely up to you. By convention, the only expectation is that if the file for which the resource points to has changed, the etag should change as well. Internally in buster, we calculate the etag by applying SHA1 to the mtime and the absolute path to the file.</p>
+  <p>TODO: write more about how to practically perform caching against buster-capture-server.</p>
+
+  <h3 id="<%= id "resource-payload-backend" %>"><code>{backend: "url"}</code></h3>
+  <p>A full URL to a http server that will be requested when the resource in question is requested.</p>
+  <p>The URLs will be rewritten based on the path to the resource itself. For <code>rs.addResource("/foo", {backend: "http://foo.com"});</code>, a call to <code>rs.getResource("/foo/test", cb);</code> will perform a request to <em>http://foo.com/test</em>.</p>
+  <p>When <%= anchor "getResource", "resource-set-get-resource" %> is used, a plain HTTP request with no special request headers are performed.</p>
+  <p>When <%= anchor "getResourceViaHttp", "resource-set-get-resource-http" %> is used, a mini proxy server will perform a HTTP request matching the incoming request.</p>
+
+  <h3 id="<%= id "resource-payload-combine" %>"><code>{combine: ["/foo.js", "/bar.js"]}</code></h3>
+  <p>Combines existing reseources into one resource. The resources passed have to exist before you create a combined resource for them.</p>
+</div>

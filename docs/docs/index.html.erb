@@ -1,0 +1,94 @@
+<p>Ask us on the <a href="http://groups.google.com/group/busterjs">mailing list</a>, <a href="irc://irc.freenode.net/buster">#buster on irc.freenode.net</a>, or <a href="http://twitter.com/buster_js">@buster_js on Twitter</a> if you can't find what you're looking for.</p>
+
+<h2>Overview</h2>
+<p>A lits of most of the things Buster.JS can do.</p>
+<p><a href="<%= doc_url "overview" %>">Read more</a></p>
+
+<h2>Installation, getting started</h2>
+<p>Installation instructions, your first test, the config file, and so on.</p>
+<p><a href="<%= doc_url "getting-started" %>">Read more</a></p>
+
+<h2>Writing tests</h2>
+
+<p>Read about <a href="<%= doc_url "browser-testing" %>">browser testing</a>, <a href="<%= doc_url "node-testing" %>">Node testing</a> and <a href="<%= doc_url "hybrid-testing" %>">hybrid Node and browser testing</a>.</p>
+
+<p><%= m "test/test-case", "buster.testCase" %> documents contexts, setUp and tearDown, asynchronous tests, and more.</p>
+
+<p><%= m "assertions", "assertions" %> documents all of our assertions. There are lots of them.</p>
+
+
+<h2>Modules</h2>
+
+<p>These are guides and API documentation for the individual Buster.JS modules.</p>
+
+<table class="first-column-nowrap zebra-striped">
+  <tr>
+    <td><%= m("args") %></td>
+    <td>Reusable and unobtrusive utility for parsing command line options.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("assertions") %></td>
+    <td>Contains all assertions for test cases.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("configuration") %></td>
+    <td>Defines the behaviour of configuration files.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("core", "buster-core") %></td>
+    <td>The <code>buster</code> object.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("evented-logger") %></td>
+    <td>Reusable evebt based logger component</td>
+  </tr>
+
+  <tr>
+    <td><%= m("format") %></td>
+    <td>Utility library for formatting JavaScript objects as nice looking strings.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("module-loader", "buster-module-loader") %></td>
+    <td>Resolves node modules from strings like <code>"module-name#prop-name"</code>.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("promise") %></td>
+    <td>An implementation of the promise pattern.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("resources") %></td>
+    <td>Generic representation</td>
+  </tr>
+
+  <tr>
+    <td><%= m("script-loader", "buster-script-loader") %></td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td><%= m("capture-server") %></td>
+    <td></td>
+  </tr>
+
+  <tr>
+      <td><%= m("test") %></td>
+      <td>Test cases, contexts, reporters, and more.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("user-agent-parser", "buster-user-agent-parser") %></td>
+    <td>Reusable stand-alne module for getting platform, browser name and browser version from a user agent string.</td>
+  </tr>
+
+  <tr>
+    <td><%= m("util") %></td>
+    <td></td>
+  </tr>
+</table>

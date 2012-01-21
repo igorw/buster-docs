@@ -1,0 +1,353 @@
+<h1>Test reporters</h1>
+<dl>
+  <dt>Version</dt>
+  <dd>See <%=m "test", "buster-test" %></dd>
+  <dt>Module</dt>
+  <dd><code>require("buster-test").reporters;</code></dd>
+  <dt>In browsers</dt>
+  <dd><code>buster.reporters;</code></dd>
+</dl>
+<p>
+  Reporters listen to <%=m "test/test-runner", "test runner" %> events and
+  visualize progress and results of test runs. Buster ships with several
+  alternatives, and it is easy to <%= anchor "make your own", "implement" %>.
+</p>
+<div class="section">
+  <h2 id="<%= id('dots') %>"><code>dots</code></h2>
+  <p>
+    Prints a single character for each test as the tests are running. When the
+    test run completes, it prints a list of errors and a summary. The characters
+    printed while running are:
+  </p>
+  <table>
+    <tr>
+      <th>.</th><td>Test passed (green)</td>
+    </tr>
+    <tr>
+      <th>F</th><td>Test failed (red)</td>
+    </tr>
+    <tr>
+      <th>E</th><td>Uncaught error (yellow)</td>
+    </tr>
+    <tr>
+      <th>A</th><td>Asynchronous test (purple)</td>
+    </tr>
+    <tr>
+      <th>T</th><td>Timeout (red)</td>
+    </tr>
+  </table>
+  <p>
+    The <strong>A</strong> indicating an asynchronous test is replaced by one
+    of the others when the test completes, or a <strong>T</strong> if it times
+    out (using <a href="en.wikipedia.org/wiki/ANSI_escape_code">ANSI escape characters</a>).
+  </p>
+  <p>
+    In order to help you find the source of errors faster, the reporter filters
+    the stack trace using
+    <%=m "test/stack-filter", "<code>buster.stackFilter</code>" %>.
+  </p>
+  <h3 id="<%= id('dots-reporter-create') %>" data-title="+create(options)+">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('dots-reporter-listen') %>" data-title="+listen(testRunner)+">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var dotsReporter = require("buster-test").reporters.dots;
+
+var reporter = dotsReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('dots-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/dots-reporter.png",
+         :width => "661", :height => "698" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('specification') %>"><code>specification</code></h2>
+  <p>
+    Reporter inspired by those found in
+    <a href="http://vowsjs.org/">vows.js</a>,
+    <a href="https://github.com/caolan/nodeunit">nodeunit</a>
+    and others. The reporter gives you all information it has as soon as it
+    can. With longer-running test cases, this reporter will give you the meat of
+    your errors faster.
+  </p>
+  <p>
+    In order to help you find the source of errors faster, the reporter filters
+    the stack trace using
+    <%=m "test/stack-filter", "<code>buster.stackFilter</code>" %>.
+  </p>
+  <h3 id="<%= id('specification-reporter-create') %>" data-title="+create(options)+">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('specification-reporter-listen') %>" data-title="+listen(testRunner)+">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var specificationReporter = require("buster-test").reporters.specification;
+
+var reporter = specificationReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('specification-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/specification-reporter.png",
+         :width => "685", :height => "681" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('quiet') %>"><code>quiet</code></h2>
+  <p>
+    The quiet reporter simply prints the ending stats only.
+  </p>
+  <h3 id="<%= id('quiet-reporter-create') %>" data-title="+create(options)+">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('quiet-reporter-listen') %>" data-title="+listen(testRunner)+">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var quietReporter = require("buster-test").reporters.quiet;
+
+var reporter = quietReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('quiet-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/quiet-reporter.png",
+         :width => "661", :height => "34" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('xml') %>"><code>xml</code></h2>
+  <p>
+    Generates JUnit/Ant compatible XML output for use in continuous integration
+    servers. The reporter prints XML to stdout, so you have to pipe it to a file
+    manually if needed. The XML output is compatible with CI servers such as
+    <a href="http://jenkins-ci.org/">Jenkins</a> (formerly Hudson).
+  </p>
+  <h3 id="<%= id('xml-reporter-create') %>" data-title="+create(options)+">
+    <code>create(<%= anchor "options", "options" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('xml-reporter-listen') %>" data-title="+listen(testRunner)+">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var testRunner = require("buster-test").testRunner;
+var xmlReporter = require("buster-test").reporters.xml;
+
+var reporter = xmlReporter.create({ color: false });
+var runner = testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('xml-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/xml-reporter.png",
+         :width => "780", :height => "837" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('html') %>"><code>html</code></h2>
+  <p>
+    The reporter mimics the <%= anchor "specificationReporter", "specification"
+    %>. It can use an entire web page to render a nice test report, or embed
+    itself as a console, making it useful for in-app integration testing. You
+    can also use it on the command line to generate an HTML report of your test
+    run.
+  </p>
+  <p>
+    In order to help you find the source of errors faster, the reporter filters
+    the stack trace using
+    <%=m "test/stack-filter", "<code>buster.stackFilter</code>" %>.
+  </p>
+  <h3 id="<%= id('html-reporter-create') %>" data-title="+create(options)+">
+    <code>create(<%= anchor "htmlOptions", "htmlOptions" %>)</code>
+  </h3>
+  <p>
+    Create an instance.
+  </p>
+  <h3 id="<%= id('html-reporter-listen') %>" data-title="+listen(testRunner)+">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+  <pre><code>var reporter = buster.reporters.html.create({
+    root: document.body // Full webpage mode
+});
+
+var runner = buster.testRunner.<%=m "test/test-runner#create", "create" %>();
+reporter.listen(runner);
+
+runner.<%=m "test/test-runner#runSuite", "runSuite" %>(...);</code></pre>
+  <h3 id="<%= id('html-reporter-sample') %>">Sample output</h3>
+  <p><%= img "buster-test/html-reporter.png",
+         :width => "604", :height => "810" %></p>
+</div>
+<div class="section">
+  <h2 id="<%= id('json-proxy') %>"><code>jsonProxy</code></h2>
+  <p>
+    Not intended for human consumption. The jsonProxy reporter proxies all
+    events from the <%=m "test/test-runner", "test runner" %>, but strips any
+    non-JSON safe value (such as functions). Buster uses this when emitting test
+    results from a browser to the server.
+  </p>
+  <p>
+    The jsonProxy reporter is to be used in place of the test runner when using
+    a reporter that needs pure JSON-friendly objects. The example below uses the
+    XML reporter - it works fine directly with the test runner as well, it is
+    only used to illustrate how jsonProxy works.
+  </p>
+  <pre><code>var proxy = buster.reporters.jsonProxy.create();
+var runner = buster.testRunner.create();
+proxy.listen(runner);
+
+var reporter = buster.reporters.xml.create();
+reporter.listen(proxy);</code></pre>
+  <h3 id="<%= id('json-proxy-create') %>" data-title="+create(emitter)+">
+    <code>create([<%=m "event-emitter", "emitter" %>])</code>
+  </h3>
+  <p>
+    Create an instance. You can optionally provide an event emitter to emit
+    events with. Buster uses this option to provide a messaging client that will
+    emit events directly over the wire.
+  </p>
+  <h3 id="<%= id('json-proxy-listen') %>" data-title="+listen(testRunner)+">
+    <code>listen(<%=m "test/test-runner", "testRunner" %>)</code>
+  </h3>
+  <p>
+    Bind the reporter to a test runner.
+  </p>
+</div>
+<div class="section">
+  <h2 id="<%= id('implement') %>">Implementing a reporter</h2>
+  <p>
+    Buster reporters consume events from a <%= m "test/test-runner",
+    "<code>buster.testRunner</code>" %> instance and should conform to the
+    simple API described below. For the reporter to be usable with Buster's
+    auto-wiring mechanism, you also need to make the reporter available as a
+    Node module. The auto-wiring mechanism is what is in use when you have not
+    instantiated a runner on your own and you do this:
+  </p>
+  <pre><code>env BUSTER_REPORTER=myReporter node mytest.js</code></pre>
+  <p>(Or use <code>buster test -r myReporter</code>)</p>
+  <h4>Include the reporter in <code>buster.reporters</code></h4>
+  <p>
+    In browsers, you must expose the reporter in the correct object:
+    <code>buster.reporters.myReporter = { /*...*/ };</code>.
+  </p>
+  <h4>Implement <code>create(options)</code></h4>
+  <p>
+    This method should return a new instance. It will be passed an
+    <%= l "options" %> object.
+  </p>
+  <h4>Implement <code>listen(testRunner)</code></h4>
+  <p>
+    This method allows you to listen to events of interest on the test
+    runner. The built-in reporters typically use <%= m "event-emitter#bind",
+    "<code>bind</code>" %>, but you are completely free to implement this the
+    way you feel best. See <%=m "test/test-runner#events", "test runner events" %>
+    for available events.
+  </p>
+  <h4>Include your reporter on the load path</h4>
+  <p>
+    In browsers, this means add a script tag loading your
+    reporter <em>after</em> loading Buster and <em>before</em> loading your
+    tests. On node, you must make the reporter available to Buster. This is
+    usually accomplished by coding the reporter as a Node module and
+    doing <code>npm link</code> in the reporter project.
+  </p>
+  <h4>Run it</h4>
+  <pre><code>$ BUSTER_REPORTER=myReporter node mytest.js</code></pre>
+  <h3 id="<%= id('example') %>">Example</h3>
+  <p>
+    The following example shows how to implement a reporter that prints test
+    contexts and test names as a nested tree.
+  </p>
+  <h4>Create a directory for our reporter</h4>
+  <pre><code>mkdir /tmp/spec-tree
+cd /tmp/spec-tree</code></pre>
+  <p>
+    First, let's just create a blank reporter and a sample project to test it
+    with. We'll have the reporter print something so we can verify that it
+    works.
+  </p>
+  <pre><code>// /tmp/spec-tree/index.js
+module.exports = {
+    create: function (options) {
+        return Object.create(this);
+    },
+
+    listen: function (runner) {
+        runner.on("test:start", function (test) {
+            console.log("Test started");
+        });
+    }
+};</code></pre>
+</div>
+<div class="section">
+  <h2 id="<%= id('supporting-objects') %>">Supporting objects</h2>
+  <h3 id="<%= id('options') %>"><code>options</code></h3>
+  <p>Options when creating console reporters. All properties are optional.</p>
+  <dl class="properties">
+    <dt><code>color</code></dt>
+    <dd>
+      When <code>true</code>, print report in colors. Default
+      is <code>true</code>
+    </dd>
+    <dt><code>bright</code></dt>
+    <dd>
+      When <code>true</code>, print report in bright colors
+      (requires <code>color: true</code>). Default is <code>true</code>
+    </dd>
+    <dt><code>cwd</code></dt>
+    <dd>
+      The current working directory. Passed to
+      <%=m "test/stack-filter", "<code>buster.stackFilter</code>" %>.
+    </dd>
+    <dt><code>io</code></dt>
+    <dd>
+      The stream to print to. The default value is to use the <code>sys</code>
+      module. The <code>io</code> object is required to implement two methods:
+      <code>print</code>, which prints a string and <code>puts</code>, which
+      prints a string and a line-break.
+    </dd>
+  </dl>
+  <h4>Default values</h4>
+  <pre><code>{
+    color: true,
+    bright: true,
+    cwd: null,
+    io: require("sys")
+}</code></pre>
+  <h3 id="<%= id('html-options') %>"><code>htmlOptions</code></h3>
+  <p>Options when creating HTML reporters.</p>
+  <dl class="properties">
+    <dt><code>root</code></dt>
+    <dd>The root element to render test results in. Required.</dd>
+  </dl>
+</div>
